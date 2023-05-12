@@ -574,7 +574,7 @@ uint8_t Command(uint8_t TelecommandID)
 	}
 }
 
-class DockingEPS: public Thread {
+class DockingMain: public Thread {
 public:
 	void init()
 	{

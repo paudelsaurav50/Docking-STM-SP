@@ -30,5 +30,13 @@ SUBDIRS := \
 . \
 VL53L4CD \
 decadriver \
+tamariw-testings/Debug_STM32F4 \
+tamariw-testings/Debug_STM32F4/VL53L4CD \
+tamariw-testings/Debug_STM32F4/decadriver \
+tamariw-testings/Debug_STM32F4/wrapper \
+tamariw-testings \
+tamariw-testings/VL53L4CD \
+tamariw-testings/decadriver \
+tamariw-testings/wrapper \
 wrapper \
 

@@ -5,21 +5,21 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../DecaWaveDistanceMeasurement.cpp \
-../DockingEPSTestings.cpp \
+../DockingMain.cpp \
 ../LiDAR_Ranging_Thread.cpp \
 ../decaWaveModule.cpp \
 ../topics.cpp 
 
 OBJS += \
 ./DecaWaveDistanceMeasurement.o \
-./DockingEPSTestings.o \
+./DockingMain.o \
 ./LiDAR_Ranging_Thread.o \
 ./decaWaveModule.o \
 ./topics.o 
 
 CPP_DEPS += \
 ./DecaWaveDistanceMeasurement.d \
-./DockingEPSTestings.d \
+./DockingMain.d \
 ./LiDAR_Ranging_Thread.d \
 ./decaWaveModule.d \
 ./topics.d 

@@ -9,6 +9,14 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include wrapper/subdir.mk
+-include tamariw-testings/wrapper/subdir.mk
+-include tamariw-testings/decadriver/subdir.mk
+-include tamariw-testings/VL53L4CD/subdir.mk
+-include tamariw-testings/Debug_STM32F4/wrapper/subdir.mk
+-include tamariw-testings/Debug_STM32F4/decadriver/subdir.mk
+-include tamariw-testings/Debug_STM32F4/VL53L4CD/subdir.mk
+-include tamariw-testings/Debug_STM32F4/subdir.mk
+-include tamariw-testings/subdir.mk
 -include decadriver/subdir.mk
 -include VL53L4CD/subdir.mk
 -include subdir.mk
@@ -45,38 +53,38 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-tamariw-testings.hex \
+tamariw-testing-panel.hex \
 
 SECONDARY_SIZE += \
-tamariw-testings.siz \
+tamariw-testing-panel.siz \
 
 
 # All Target
-all: tamariw-testings.elf secondary-outputs
+all: tamariw-testing-panel.elf secondary-outputs
 
 # Tool invocations
-tamariw-testings.elf: $(OBJS) $(USER_OBJS)
+tamariw-testing-panel.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -T "C:\Eclipse 2019\Workspace\rodos\src\bare-metal\stm32f4\scripts\stm32_flash.ld" -nostartfiles -nodefaultlibs -nostdlib -Xlinker --gc-sections -L"C:\Eclipse 2019\Workspace\rodos\Debug_STM32F4" -L"C:\Eclipse 2019\Workspace\support_libs\Debug_STM32F4" -Wl,-Map,"tamariw-testings.map" -o "tamariw-testings.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3 -T "C:\Eclipse 2019\Workspace\rodos\src\bare-metal\stm32f4\scripts\stm32_flash.ld" -nostartfiles -nodefaultlibs -nostdlib -Xlinker --gc-sections -L"C:\Eclipse 2019\Workspace\rodos\Debug_STM32F4" -L"C:\Eclipse 2019\Workspace\support_libs\Debug_STM32F4" -Wl,-Map,"tamariw-testing-panel.map" -o "tamariw-testing-panel.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-tamariw-testings.hex: tamariw-testings.elf
+tamariw-testing-panel.hex: tamariw-testing-panel.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy -O ihex "tamariw-testings.elf"  "tamariw-testings.hex"
+	arm-none-eabi-objcopy -O ihex "tamariw-testing-panel.elf"  "tamariw-testing-panel.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-tamariw-testings.siz: tamariw-testings.elf
+tamariw-testing-panel.siz: tamariw-testing-panel.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size --format=berkeley "tamariw-testings.elf"
+	arm-none-eabi-size --format=berkeley "tamariw-testing-panel.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(CPP_DEPS) tamariw-testings.elf
+	-$(RM) $(CC_DEPS)$(C++_DEPS)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(SECONDARY_FLASH)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(CPP_DEPS) tamariw-testing-panel.elf
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
