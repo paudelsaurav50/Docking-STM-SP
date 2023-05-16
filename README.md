@@ -1,7 +1,7 @@
 # Tamariw Testing Panel
 This Project contains the source code for the testing of different modules of the TAMARIW Panel Board.
 
-#Module Testings
+# Module Testings
 - Testing LEDs
 - Testing UART Communication over OBC Port
 - Testing UART Communication over Raspberry Pi
