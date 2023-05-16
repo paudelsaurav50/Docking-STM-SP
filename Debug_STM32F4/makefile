@@ -9,14 +9,6 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include wrapper/subdir.mk
--include tamariw-testings/wrapper/subdir.mk
--include tamariw-testings/decadriver/subdir.mk
--include tamariw-testings/VL53L4CD/subdir.mk
--include tamariw-testings/Debug_STM32F4/wrapper/subdir.mk
--include tamariw-testings/Debug_STM32F4/decadriver/subdir.mk
--include tamariw-testings/Debug_STM32F4/VL53L4CD/subdir.mk
--include tamariw-testings/Debug_STM32F4/subdir.mk
--include tamariw-testings/subdir.mk
 -include decadriver/subdir.mk
 -include VL53L4CD/subdir.mk
 -include subdir.mk

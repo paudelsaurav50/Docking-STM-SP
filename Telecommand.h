@@ -33,6 +33,7 @@ Development environment specifics:
 
 #define HBridgeUnit1EN                               	'H'
 #define Unit2EN                               			'h'
+#define BATCHGEN                               			'B'
 #define DeployCMD                               	    'D'
 #define HBridge1PWM                               	    'i'
 #define HBridge2PWM                               	    'j'

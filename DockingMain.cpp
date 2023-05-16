@@ -53,16 +53,22 @@ extern HAL_UART uart_stdout;
 #define EN_EPS_2 GPIO_059 //PD11, Enable EPS2
 #define EN_HBRIDGE_1 GPIO_056   //PD8, Enable HBridge 1
 #define EN_HBRIDGE_2 GPIO_057   //PD9, Enable HBridge 2
+#define EN_CHG_BAT GPIO_038 //PC6, Charging Enable Pin
 #define DEP_IN GPIO_043 //PC11, Thermal Knife
 
-#define PWM4_2 PWM_IDX00 //Timer 1 CH1 - PE9, HBridge 4 input 2
-#define PWM4_1 PWM_IDX01 //Timer 1 CH2 - PE11, HBridge 4 input 1
-#define PWM3_2 PWM_IDX02 //Timer 1 CH3 - PE13, HBridge 3 input 2
-#define PWM3_1 PWM_IDX03 //Timer 1 CH4 - PE14, HBridge 3 input 1
-#define PWM2_2 PWM_IDX12 //Timer 4 CH1 - PD12, HBridge 2 input 2
-#define PWM2_1 PWM_IDX13 //Timer 4 CH2 - PD13, HBridge 2 input 1
-#define PWM1_2 PWM_IDX14 //Timer 4 CH3 - PD14, HBridge 1 input 2
-#define PWM1_1 PWM_IDX15 //Timer 4 CH4 - PD15, HBridge 1 input 1
+#define IN4_2 GPIO_073 //PE9, HBridge 4 input 2
+#define IN4_1 GPIO_074 //PE10, HBridge 4 input 1
+#define IN3_2 GPIO_075 //PE11, HBridge 3 input 2
+#define IN3_1 GPIO_076 //PE12, HBridge 3 input 1
+#define IN2_2 GPIO_060 //PD12, HBridge 2 input 2
+#define IN2_1 GPIO_061 //PD13, HBridge 2 input 1
+#define IN1_2 GPIO_062 //PD14, HBridge 1 input 2
+#define IN1_1 GPIO_063 //PD15, HBridge 1 input 1
+
+#define PWM1 PWM_IDX04
+#define PWM2 PWM_IDX05
+#define PWM3 PWM_IDX06
+#define PWM4 PWM_IDX07
 
 #define OCC1_CH ADC_CH_010 //ADC3_CH10, PC0, HBridge1 current monitor
 #define OCC2_CH ADC_CH_011 //ADC3_CH11, PC1, HBridge2 current monitor
@@ -70,11 +76,14 @@ extern HAL_UART uart_stdout;
 #define OCC4_CH ADC_CH_013 //ADC3_CH13, PC3, HBridge4 current monitor
 #define ADC_NO ADC_IDX3 //Using ADC 3 for PC0,1,2 and 3
 
-
+#define BATT_MES_ADC_CH ADC_CH_014 //ADC3_CH14, PC4, Battery Voltage Monitor
+#define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
 
 HAL_GPIO EPS1_EN(EN_EPS_1);
 HAL_GPIO EPS2_EN(EN_EPS_2);
 HAL_GPIO EPS1_HBridge_EN(EN_HBRIDGE_1);
+HAL_GPIO CHG_EN(GPIO_038);
+
 HAL_GPIO Deployment_IN(DEP_IN);
 
 HAL_GPIO LED0(GPIO_048);
@@ -86,20 +95,25 @@ HAL_GPIO LED5(GPIO_053);
 HAL_GPIO LED6(GPIO_054);
 HAL_GPIO LED7(GPIO_055);
 
-HAL_PWM  HBridge1_IN1(PWM1_1);
-HAL_PWM  HBridge1_IN2(PWM1_2);
-HAL_PWM  HBridge2_IN1(PWM2_1);
-HAL_PWM  HBridge2_IN2(PWM2_2);
-HAL_PWM  HBridge3_IN1(PWM3_1);
-HAL_PWM  HBridge3_IN2(PWM3_2);
-HAL_PWM  HBridge4_IN1(PWM4_1);
-HAL_PWM  HBridge4_IN2(PWM4_2);
+HAL_GPIO  HBridge1_IN1(IN1_1);
+HAL_GPIO  HBridge1_IN2(IN1_2);
+HAL_GPIO  HBridge2_IN1(IN2_1);
+HAL_GPIO  HBridge2_IN2(IN2_2);
+HAL_GPIO  HBridge3_IN1(IN3_1);
+HAL_GPIO  HBridge3_IN2(IN3_2);
+HAL_GPIO  HBridge4_IN1(IN4_1);
+HAL_GPIO  HBridge4_IN2(IN4_2);
 
+HAL_PWM EM_PWM1(PWM1);
+HAL_PWM EM_PWM2(PWM2);
+HAL_PWM EM_PWM3(PWM3);
+HAL_PWM EM_PWM4(PWM4);
 
 HAL_UART UART_Pi(UART_IDX3, GPIO_026, GPIO_027);
 
 HAL_ADC EM_ADC(ADC_NO);
 
+HAL_ADC BATT_ADC(ADC_NO_BAT_MES);
 
 void setPWM(HAL_PWM pin, float Value)
 {
@@ -176,52 +190,60 @@ void setHBridge(int HBrdigeNo, float Value)
 			//RUN First HBridge
 			if(Value<0)
 			{
-				setPWM(HBridge1_IN1,-1*Value);
-				setPWM(HBridge1_IN2,0);
+				setPWM(EM_PWM1, -1*Value);
+				HBridge1_IN1.setPins(1);
+				HBridge1_IN2.setPins(0);
 			}
 			else
 			{
-				setPWM(HBridge1_IN1,0);
-				setPWM(HBridge1_IN2,1*Value);
+				setPWM(EM_PWM1, Value);
+				HBridge1_IN1.setPins(0);
+				HBridge1_IN2.setPins(1);
 			}
 			break;
 		case 2:
 			//RUN 2nd HBridge
 			if(Value<0)
 			{
-				setPWM(HBridge2_IN1,-1*Value);
-				setPWM(HBridge2_IN2,0);
+				setPWM(EM_PWM2, -1*Value);
+				HBridge2_IN1.setPins(1);
+				HBridge2_IN2.setPins(0);
 			}
 			else
 			{
-				setPWM(HBridge2_IN1,0);
-				setPWM(HBridge2_IN2,1*Value);
+				setPWM(EM_PWM2, Value);
+				HBridge2_IN1.setPins(0);
+				HBridge2_IN2.setPins(1);
 			}
 			break;
 		case 3:
 			//RUN 3rd HBridge
 			if(Value<0)
 			{
-				setPWM(HBridge3_IN1,-1*Value);
-				setPWM(HBridge3_IN2,0);
+				setPWM(EM_PWM3, -1*Value);
+				HBridge3_IN1.setPins(1);
+				HBridge3_IN2.setPins(0);
 			}
 			else
 			{
-				setPWM(HBridge3_IN1,0);
-				setPWM(HBridge3_IN2,1*Value);
+				setPWM(EM_PWM3, Value);
+				HBridge3_IN1.setPins(0);
+				HBridge3_IN2.setPins(1);
 			}
 			break;
 		case 4:
 			//RUN 4th HBridge
 			if(Value<0)
 			{
-				setPWM(HBridge4_IN1,-1*Value);
-				setPWM(HBridge4_IN2,0);
+				setPWM(EM_PWM4, -1*Value);
+				HBridge4_IN1.setPins(1);
+				HBridge4_IN2.setPins(0);
 			}
 			else
 			{
-				setPWM(HBridge4_IN1,0);
-				setPWM(HBridge4_IN2,1*Value);
+				setPWM(EM_PWM4, Value);
+				HBridge4_IN1.setPins(0);
+				HBridge4_IN2.setPins(1);
 			}
 			break;
 
@@ -252,6 +274,14 @@ void getEMCurrent()
 	char uart_data[100];
 	sprintf(uart_data,"I1= %f A,I2= %f A,I3= %f A,I4= %f A \n",currentEM1,currentEM2,currentEM3,currentEM4);
 	UART_Pi.write(uart_data,strlen(uart_data));
+}
+
+void getBATVoltage()
+{
+	float adcValBAT = ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
+	PRINTF("adcValBAT= %f V\n",adcValBAT);
+	float battVoltage=(adcValBAT*4.69);
+	PRINTF("VBat= %f V\n",battVoltage);
 }
 
 uint8_t Decode(uint8_t RxBuffer)
@@ -501,6 +531,7 @@ uint8_t Command(uint8_t TelecommandID)
 	float a;
 	int HBridgeENStatus;
 	int Unit2ENStatus;
+	int BatCHGENStatus;
 	int DeploymentTime;
 	float HBridgeValue;
 	switch (TelecommandID){
@@ -539,6 +570,17 @@ uint8_t Command(uint8_t TelecommandID)
 		}
 		else
 			setENStatus(EPS2_EN,1);
+		return 1;
+	case BATCHGEN:
+		BatCHGENStatus=int(atof(ReceiveData));
+		PRINTF("RECEIVED %d \n",BatCHGENStatus);
+		if(BatCHGENStatus==1)
+		{
+			PRINTF("DISABLING Battery Charging\n ");
+			setENStatus(CHG_EN,0);
+		}
+		else
+			setENStatus(CHG_EN,1);
 		return 1;
 	case DeployCMD:
 		DeploymentTime=int(atof(ReceiveData));
@@ -580,22 +622,28 @@ public:
 	{
 		LED0.init(true,1,0);
 		LED1.init(true,1,0);
-		LED2.init(true,1,1);
-		LED3.init(true,1,1);
+		LED2.init(true,1,0);
+		LED3.init(true,1,0);
 		LED4.init(true,1,0);
 		LED5.init(true,1,0);
-		LED6.init(true,1,1);
-		LED7.init(true,1,1);
-		/*
+		LED6.init(true,1,0);
+		LED7.init(true,1,0);
+
+
 		EPS1_HBridge_EN.init(true,1,0); //Initially disable the HBridge of the unit 1
 
 		EPS1_EN.init(true, 1, 1); //Initially enable the EPS of the unit 1, Own EPS
+
+		CHG_EN.init(true,1, 0);  //Initially enable the Battery Charging
 
 		EM_ADC.init(OCC1_CH); //Initialize the ADCs for voltage measurement for the current measurement
 		EM_ADC.init(OCC2_CH);
 		EM_ADC.init(OCC3_CH);
 		EM_ADC.init(OCC4_CH);
 
+
+		BATT_ADC.config(ADC_PARAMETER_RESOLUTION,12);
+		BATT_ADC.init(BATT_MES_ADC_CH);
 		if (UNIT_PRIMARY)
 			EPS2_EN.init(true, 1, 0); //Initially enable the EPS of the unit 1 //Initially enable the EPS of the unit 1
 		else
@@ -606,16 +654,19 @@ public:
 		Deployment_IN.init(true,1,0); //initially disable the deployment pin
 
 		//Initialize all the Pins
-		HBridge1_IN1.init(1000,1000);
-		HBridge1_IN2.init(1000,1000);
-		HBridge2_IN1.init(1000,1000);
-		HBridge2_IN2.init(1000,1000);
-		HBridge3_IN1.init(1000,1000);
-		HBridge3_IN2.init(1000,1000);
-		HBridge4_IN1.init(1000,1000);
-		HBridge4_IN2.init(1000,1000);
-		*/
+		HBridge1_IN1.init(true,1,0);
+		HBridge1_IN2.init(true,1,0);
+		HBridge2_IN1.init(true,1,0);
+		HBridge2_IN2.init(true,1,0);
+		HBridge3_IN1.init(true,1,0);
+		HBridge3_IN2.init(true,1,0);
+		HBridge4_IN1.init(true,1,0);
+		HBridge4_IN2.init(true,1,0);
 
+		EM_PWM1.init(10000,1000);
+		EM_PWM2.init(10000,1000);
+		EM_PWM3.init(10000,1000);
+		EM_PWM4.init(10000,1000);
 	}
 	void run()
 	{
@@ -636,34 +687,44 @@ public:
 		}
 		*/
 		 while(1){
-			 	//LED6.setPins(1);
-			 	//LED7.setPins(0);
+			 	LED0.setPins(1);
+			 	LED1.setPins(1);
 				LED2.setPins(1);
 				LED3.setPins(1);
+			 	LED4.setPins(1);
+			 	LED5.setPins(1);
 				LED6.setPins(1);
 				LED7.setPins(1);
-				suspendCallerUntil(NOW()+2000*MILLISECONDS);
+				suspendCallerUntil(NOW()+1000*MILLISECONDS);
+			 	LED0.setPins(0);
+				LED1.setPins(0);
 				LED2.setPins(0);
 				LED3.setPins(0);
+			 	LED4.setPins(0);
+			 	LED5.setPins(0);
 				LED6.setPins(0);
 				LED7.setPins(0);
-				suspendCallerUntil(NOW()+2000*MILLISECONDS);
-				/*
+				suspendCallerUntil(NOW()+1000*MILLISECONDS);
+
 				SensorsTelecommandDataBuffer.getOnlyIfNewData(TelecommandDataReceiver);
 				LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
-				getEMCurrent();
+				//getEMCurrent();
 				PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
-				PRINTF("Lidar Main D1=%d \n",LidarDataReceiver.lidar1);
-				*/
+				PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
+				PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
+				PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
+				PRINTF("D4=%d \n",LidarDataReceiver.lidar4);
+
+				getBATVoltage();
 				/*char floatVal[10];
 				memcpy(&floatVal, &TelecommandDataReceiver.DistanceUWB, 10);
 				UART_Pi.write("DIST=",10);
 				float dist=TelecommandDataReceiver.DistanceUWB;
 				*/
-				char uart_data[100];
+				/*char uart_data[100];
 				sprintf(uart_data,"Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
 				UART_Pi.write(uart_data,strlen(uart_data));
-
+*/
 
 		 }
 		//EPS1_HBridge_EN.setPins(1);

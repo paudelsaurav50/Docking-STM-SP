@@ -52,6 +52,66 @@ public:
 		*/
 		init4cd();
 		dev=ADDR_ToF;
+
+		//Initialize first ToF Sensor
+		status=PCA9546_SelPort(0,(uint16_t)MUX_ADDR);
+		status=VL53L4CD_GetSensorId(dev, &sensor_id);
+		if(status || (sensor_id=0xEBAA))
+			{
+				PRINTF("VL53L4CD detected, Status=%6u, Sensor_ID= %x, Device Address= %x \n", status, sensor_id, dev);
+			}
+			if(status)	PRINTF("VL53L4Cd ULD loading failed \n");
+			else{
+					PRINTF ("Lidar Sensor Ready \n");
+					status = VL53L4CD_SensorInit( dev );
+					PRINTF ("Lidar Sensor Initialized \n");
+					status = VL53L4CD_StartRanging(dev);
+				}
+
+			//Initialize 2nd ToF Sensor
+			status=PCA9546_SelPort(1,(uint16_t)MUX_ADDR);
+			status=VL53L4CD_GetSensorId(dev, &sensor_id);
+			if(status || (sensor_id=0xEBAA))
+				{
+					PRINTF("VL53L4CD detected, Status=%6u, Sensor_ID= %x, Device Address= %x \n", status, sensor_id, dev);
+				}
+				if(status)	PRINTF("VL53L4Cd ULD loading failed \n");
+				else{
+						PRINTF ("Lidar Sensor Ready \n");
+						status = VL53L4CD_SensorInit( dev );
+						PRINTF ("Lidar Sensor Initialized \n");
+						status = VL53L4CD_StartRanging(dev);
+					}
+			//Initialize 3rd ToF Sensor
+			status=PCA9546_SelPort(2,(uint16_t)MUX_ADDR);
+			status=VL53L4CD_GetSensorId(dev, &sensor_id);
+			if(status || (sensor_id=0xEBAA))
+				{
+					PRINTF("VL53L4CD detected, Status=%6u, Sensor_ID= %x, Device Address= %x \n", status, sensor_id, dev);
+				}
+				if(status)	PRINTF("VL53L4Cd ULD loading failed \n");
+				else{
+						PRINTF ("Lidar Sensor Ready \n");
+						status = VL53L4CD_SensorInit( dev );
+						PRINTF ("Lidar Sensor Initialized \n");
+						status = VL53L4CD_StartRanging(dev);
+					}
+			//Initialize 4th ToF Sensor
+			status=PCA9546_SelPort(3,(uint16_t)MUX_ADDR);
+			status=VL53L4CD_GetSensorId(dev, &sensor_id);
+			if(status || (sensor_id=0xEBAA))
+				{
+					PRINTF("VL53L4CD detected, Status=%6u, Sensor_ID= %x, Device Address= %x \n", status, sensor_id, dev);
+				}
+				if(status)	PRINTF("VL53L4Cd ULD loading failed \n");
+				else{
+						PRINTF ("Lidar Sensor Ready \n");
+						status = VL53L4CD_SensorInit( dev );
+						PRINTF ("Lidar Sensor Initialized \n");
+						status = VL53L4CD_StartRanging(dev);
+					}
+
+
 	}
 
 
@@ -93,28 +153,108 @@ public:
 			PRINTF("Offset calibration done, offset value = %d mm\n", offset_mm);
 	}
 
-	void rangestart() //used to start the Lidar once called by run1sensor
+	void rangestart(uint8_t portNo) //used to start the Lidar once called by run1sensor
 	{
-		medianFilter1.numNodes = NUM_ELEMENTS;
-		medianFilter1.medianBuffer = medianBuffer1;
-		MEDIANFILTER_Init(&medianFilter1);
-		status=VL53L4CD_GetSensorId(dev, &sensor_id);
-		if(status || (sensor_id=0xEBAA))
-		{
-			PRINTF("VL53L4CD detected, Status=%6u, Sensor_ID= %x, Device Address= %x \n", status, sensor_id, dev);
-		}
 		if(status)	PRINTF("VL53L4Cd ULD loading failed \n");
-		else{
-					PRINTF ("Lidar Sensor Ready \n");
-					status = VL53L4CD_SensorInit( dev );
-					PRINTF ("Lidar Sensor Initialized \n");
-					status = VL53L4CD_StartRanging(dev);
-					loop= 0;
+				else{
+					switch (portNo){
+					case 0:
+						medianFilter1.numNodes = NUM_ELEMENTS;
+						medianFilter1.medianBuffer = medianBuffer1;
+						MEDIANFILTER_Init(&medianFilter1);
+						loop= 0;
+						while (loop<5)
+						{
+							status = VL53L4CD_CheckForDataReady(dev, &isReady);
+							if (isReady)
+								VL53L4CD_ClearInterrupt(dev);
+							VL53L4CD_GetResult(dev, &results1);
+							LidarData.lidar1 = MEDIANFILTER_Insert(&medianFilter1, results1.distance_mm);
+							if(LidarData.lidar1==0)
+								LidarData.lidar1=results1.distance_mm; //until median filter is not in action
+							loop++;
+							//PRINTF("Distance_LiDAR 1: %d \n", LidarData.lidar1);
+							suspendCallerUntil(NOW()+ 2*MILLISECONDS);
+						}
+
+						LidarDataTopic.publish(LidarData);
+
+						break;
+					case 1:
+						medianFilter2.numNodes = NUM_ELEMENTS;
+						medianFilter2.medianBuffer = medianBuffer2;
+						MEDIANFILTER_Init(&medianFilter2);
+						loop= 0;
+						while (loop<5)
+						{
+							status = VL53L4CD_CheckForDataReady(dev, &isReady);
+							if (isReady)
+								VL53L4CD_ClearInterrupt(dev);
+							VL53L4CD_GetResult(dev, &results2);
+							LidarData.lidar2 = MEDIANFILTER_Insert(&medianFilter2, results2.distance_mm);
+							if(LidarData.lidar2==0)
+								LidarData.lidar2=results2.distance_mm; //until median filter is not in action
+							loop++;
+							//PRINTF("Distance_LiDAR 2: %d \n", LidarData.lidar2);
+							suspendCallerUntil(NOW()+ 2*MILLISECONDS);
+						}
+						LidarDataTopic.publish(LidarData);
+						break;
+					case 2:
+						medianFilter3.numNodes = NUM_ELEMENTS;
+						medianFilter3.medianBuffer = medianBuffer3;
+						MEDIANFILTER_Init(&medianFilter3);
+						loop= 0;
+						while (loop<5)
+						{
+							status = VL53L4CD_CheckForDataReady(dev, &isReady);
+							if (isReady)
+								VL53L4CD_ClearInterrupt(dev);
+							VL53L4CD_GetResult(dev, &results3);
+							LidarData.lidar3 = MEDIANFILTER_Insert(&medianFilter3, results3.distance_mm);
+							if(LidarData.lidar3==0)
+								LidarData.lidar3=results3.distance_mm; //until median filter is not in action
+							//PRINTF("Distance_LiDAR 3: %d \n", LidarData.lidar3);
+							loop++;
+							suspendCallerUntil(NOW()+ 2*MILLISECONDS);
+						}
+						LidarDataTopic.publish(LidarData);
+						break;
+					case 3:
+						medianFilter4.numNodes = NUM_ELEMENTS;
+						medianFilter4.medianBuffer = medianBuffer4;
+						MEDIANFILTER_Init(&medianFilter4);
+						loop= 0;
+						while (loop<5)
+						{
+							status = VL53L4CD_CheckForDataReady(dev, &isReady);
+							if (isReady)
+								VL53L4CD_ClearInterrupt(dev);
+							VL53L4CD_GetResult(dev, &results4);
+							LidarData.lidar4 = MEDIANFILTER_Insert(&medianFilter4, results4.distance_mm);
+							if(LidarData.lidar4==0)
+								LidarData.lidar4=results4.distance_mm; //until median filter is not in action
+							//PRINTF("Distance_LiDAR 4: %d \n", LidarData.lidar3);
+							loop++;
+							suspendCallerUntil(NOW()+ 200*MILLISECONDS);
+						}
+						LidarDataTopic.publish(LidarData);
+						break;
+					}
+
+				}
+					/*
 					while (loop<300)
 					{
 					status = VL53L4CD_CheckForDataReady(dev, &isReady);
 					if (isReady)
 						VL53L4CD_ClearInterrupt(dev);
+					switch (portNo){
+					case 0:
+						medianFilter1.numNodes = NUM_ELEMENTS;
+						medianFilter1.medianBuffer = medianBuffer1;
+						MEDIANFILTER_Init(&medianFilter1);
+
 						VL53L4CD_GetResult(dev, &results1);
 						//PRINTF("Device_ID= %x, status1= %6u,Distance1=%6u,Signal1=%6u \n", dev, results1.range_status, results1.distance_mm, results1.signal_per_spad_kcps);
 						LidarData.lidar1 = MEDIANFILTER_Insert(&medianFilter1, results1.distance_mm);
@@ -122,24 +262,79 @@ public:
 						if(LidarData.lidar1==0)
 							LidarData.lidar1=results1.distance_mm; //until median filter is not in action
 						//PRINTF("Distance_LiDAR: %d \n", LidarData.lidar1);
-						LidarDataTopic.publish(LidarData);
+						//LidarDataTopic.publish(LidarData);
 						loop++;
 						suspendCallerUntil(NOW()+ 200*MILLISECONDS);
+						break;
+					case 1:
+						medianFilter2.numNodes = NUM_ELEMENTS;
+						medianFilter2.medianBuffer = medianBuffer1;
+						MEDIANFILTER_Init(&medianFilter2);
+
+						VL53L4CD_GetResult(dev, &results2);
+						//PRINTF("Device_ID= %x, status1= %6u,Distance1=%6u,Signal1=%6u \n", dev, results1.range_status, results1.distance_mm, results1.signal_per_spad_kcps);
+						LidarData.lidar2 = MEDIANFILTER_Insert(&medianFilter2, results2.distance_mm);
+						//PRINTF("Lidar_Distance: %d \t Filtered_Value: %d\r\n", results1.distance_mm, LidarData.lidar1);
+						if(LidarData.lidar2==0)
+							LidarData.lidar2=results2.distance_mm; //until median filter is not in action
+						//PRINTF("Distance_LiDAR: %d \n", LidarData.lidar1);
+						//LidarDataTopic.publish(LidarData);
+						loop++;
+						suspendCallerUntil(NOW()+ 200*MILLISECONDS);
+						break;
+					case 2:
+						medianFilter3.numNodes = NUM_ELEMENTS;
+						medianFilter3.medianBuffer = medianBuffer3;
+						MEDIANFILTER_Init(&medianFilter3);
+
+						VL53L4CD_GetResult(dev, &results3);
+						//PRINTF("Device_ID= %x, status1= %6u,Distance1=%6u,Signal1=%6u \n", dev, results1.range_status, results1.distance_mm, results1.signal_per_spad_kcps);
+						LidarData.lidar3 = MEDIANFILTER_Insert(&medianFilter3, results3.distance_mm);
+						//PRINTF("Lidar_Distance: %d \t Filtered_Value: %d\r\n", results1.distance_mm, LidarData.lidar1);
+						if(LidarData.lidar3==0)
+							LidarData.lidar3=results3.distance_mm; //until median filter is not in action
+						//PRINTF("Distance_LiDAR: %d \n", LidarData.lidar1);
+						//LidarDataTopic.publish(LidarData);
+						loop++;
+						suspendCallerUntil(NOW()+ 200*MILLISECONDS);
+						break;
+					case 3:
+						medianFilter4.numNodes = NUM_ELEMENTS;
+						medianFilter4.medianBuffer = medianBuffer4;
+						MEDIANFILTER_Init(&medianFilter4);
+
+						VL53L4CD_GetResult(dev, &results4);
+						//PRINTF("Device_ID= %x, status1= %6u,Distance1=%6u,Signal1=%6u \n", dev, results1.range_status, results1.distance_mm, results1.signal_per_spad_kcps);
+						LidarData.lidar4 = MEDIANFILTER_Insert(&medianFilter4, results4.distance_mm);
+						//PRINTF("Lidar_Distance: %d \t Filtered_Value: %d\r\n", results1.distance_mm, LidarData.lidar1);
+						if(LidarData.lidar4==0)
+							LidarData.lidar4=results4.distance_mm; //until median filter is not in action
+						//PRINTF("Distance_LiDAR: %d \n", LidarData.lidar1);
+
+						loop++;
+						suspendCallerUntil(NOW()+ 200*MILLISECONDS);
+						break;
+					}
+					LidarDataTopic.publish(LidarData);
 
 					}
-		}
+					*/
+
 					//PRINTF("Ranging Done. GO HOME NOW!!!!\n");
+
 	}
 	void runToFSensor(uint8_t portNo)
 	{
 		status=PCA9546_SelPort(portNo,(uint16_t)MUX_ADDR);
+		/*
 		//setADDR(ADDR1);
 		if(status)	PRINTF("Failed setting port \n");
 		status=VL53L4CD_SetRangeTiming(dev , 200 , 0);
 		if (status)	PRINTF("VL53L4CD_Set range timing failed \n");
 		status=VL53L4CD_SetRangeTiming(dev , 200 , 0);
 		if (status)	PRINTF("VL53L4CD_Set range timing failed\n");
-		rangestart();
+		*/
+		rangestart(portNo);
 	}
 	void run()
 		{
@@ -147,7 +342,13 @@ public:
 			//run3sensors();
 			//run2sensors();
 			//calibrate();
+		while (1)
+		{
+			runToFSensor(0);
 			runToFSensor(1);
+			runToFSensor(2);
+			runToFSensor(3);
+		}
 		}
 };
 LIDAR LIDAR ("LIDAR");

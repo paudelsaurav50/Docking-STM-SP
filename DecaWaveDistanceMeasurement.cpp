@@ -27,7 +27,7 @@ void DecaWaveDistanceMeasurement::init() {
 
     switch (id) {
 
-        case 2818133: //TAMARIW Primary
+        case 2883668: //TAMARIW Primary
             redNodeId = 0;
             break;
         case 4915282: //TAMARIW Secondary
@@ -197,7 +197,7 @@ void DecaWaveDistanceMeasurement::receiveMessages() {
                     memcpy(&distance, &rx_buffer[DISTANCE_MSG_DISTANCE_IDX], sizeof(distance));
                     TelecommandDataReceiverDeca.DistanceUWB=distance;
                     TelecommandDataTopic.publish(TelecommandDataReceiverDeca);
-                    PRINTF("distance: %f m\n", distance);
+                    //PRINTF("distance: %f m\n", distance);
                 }
                 break;
             }

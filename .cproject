@@ -287,6 +287,12 @@
                         					
                     </folderInfo>
                     					
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.12578087.1198767961" name="DecaWaveDistanceMeasurement.h" rcbsApplicability="disable" resourcePath="DecaWaveDistanceMeasurement.h" toolsToInvoke=""/>
+                    					
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.12578087.1991114090" name="decaWaveModule.h" rcbsApplicability="disable" resourcePath="decaWaveModule.h" toolsToInvoke=""/>
+                    					
+                    <fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.12578087.2099527613" name="defines_resp.h" rcbsApplicability="disable" resourcePath="defines_resp.h" toolsToInvoke=""/>
+                    					
                     <sourceEntries>
                         						
                         <entry excluding="Template3.cpp|Template2.cpp|task2.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
