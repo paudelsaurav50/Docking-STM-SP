@@ -261,10 +261,10 @@ void getEMCurrent()
 	float adcValOCM3 = ((float(EM_ADC.read(OCC3_CH)))/4096)*3290;
 	float adcValOCM4 = ((float(EM_ADC.read(OCC4_CH)))/4096)*3290;
 
-	float currentEM1=(3/1.47)*(adcValOCM1/1000);
-	float currentEM2=(3/1.47)*(adcValOCM2/1000);
-	float currentEM3=(3/1.47)*(adcValOCM3/1000);
-	float currentEM4=(3/1.47)*(adcValOCM4/1000);
+	float currentEM1=(adcValOCM1/140);
+	float currentEM2=(adcValOCM2/140);
+	float currentEM3=(adcValOCM3/140);
+	float currentEM4=(adcValOCM4/140);
 	/*uint16_t adcValOCM1 = EM_ADC.read(OCC1_CH);
 	uint16_t adcValOCM2 = EM_ADC.read(OCC2_CH);
 	uint16_t adcValOCM3 = EM_ADC.read(OCC3_CH);
@@ -708,7 +708,8 @@ public:
 
 				SensorsTelecommandDataBuffer.getOnlyIfNewData(TelecommandDataReceiver);
 				LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
-				//getEMCurrent();
+
+				getEMCurrent();
 				PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
 				PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
 				PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
