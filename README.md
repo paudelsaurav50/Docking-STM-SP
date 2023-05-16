@@ -13,7 +13,7 @@ This Project contains the source code for the testing of different modules of th
 - Battery Voltage measurement
 
 ## Authors
-Saurav Paudel, Info VIII, Universtiy of Würzburg
+Source Code By: Saurav Paudel, Info VIII, Universtiy of Würzburg
 
 ## Project status
 - Electronics Design and testings
