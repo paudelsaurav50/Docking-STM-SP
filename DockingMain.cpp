@@ -717,6 +717,7 @@ public:
 				PRINTF("D4=%d \n",LidarDataReceiver.lidar4);
 
 				getBATVoltage();
+				PRINTF("\n");
 				/*char floatVal[10];
 				memcpy(&floatVal, &TelecommandDataReceiver.DistanceUWB, 10);
 				UART_Pi.write("DIST=",10);

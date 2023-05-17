@@ -24,7 +24,7 @@ sTelecommandData TelecommandDataReceiverDeca;
 
 void DecaWaveDistanceMeasurement::init() {
     int32_t id = getNodeNumber();
-
+/*
     switch (id) {
 
         case 2883668: //TAMARIW Primary
@@ -33,7 +33,12 @@ void DecaWaveDistanceMeasurement::init() {
         case 4915282: //TAMARIW Secondary
             redNodeId = 1;
             break;
+
+
     }
+    */
+
+    redNodeId = 0; //My Node Id is 0
 
     //redNodeId=1;
    /* ledb.init(1, 1, 0);
@@ -59,22 +64,29 @@ void DecaWaveDistanceMeasurement::run() {
         //ledb.setPins(~ledb.readPins());
 
         // node 0
-        if (redNodeId == 0) {
+       /* if (redNodeId == 0) {
             if (nextTime2Measure <= NOW()) {
                 start_twr(1);
                 nextTime2Measure = NOW() + 250 * MILLISECONDS;
             }
         }
+        */
+    	if (nextTime2Measure <= NOW()) {
+    	                start_twr(1); //Send to Node 1
+    	                nextTime2Measure = NOW() + 250 * MILLISECONDS;
+    	            }
         // enable receiver
         uint16_t states_reg = dwt_read16bitoffsetreg(SYS_STATE_ID, 2);
         if (!(states_reg & 0x04)) dwt_rxenable(0);  // check if receiver is not already enabled
 
         // suspend
-        if (redNodeId == 0) {
+        UWBirq.suspendUntilDataReady(nextTime2Measure);
+        /*if (redNodeId == 0) {
             UWBirq.suspendUntilDataReady(nextTime2Measure);
         } else {
             UWBirq.suspendUntilDataReady(NOW() + SECONDS);
         }
+        */
         UWBirq.resetInterruptEventStatus();
 
         // analyze received message
