@@ -13,7 +13,7 @@ extern uint32_t baudrate;
 
 #define DW1000_WRITE_FLAG 0x80         // First Bit of the address has to be 1 to indicate we want to write
 #define DW1000_SUBADDRESS_FLAG 0x40    // if we have a sub address second Bit has to be 1
-#define DW1000_2_SUBADDRESS_FLAG 0x80  // if we have a long sub adress (more than 7 Bit) we set this Bit in the first part
+#define DW1000_2_SUBADDRESS_FLAG 0x80  // if we have a long sub address (more than 7 Bit) we set this Bit in the first part
 
 void GPIO_Configuration(void) {
     cs.init(true, 1, 1);
