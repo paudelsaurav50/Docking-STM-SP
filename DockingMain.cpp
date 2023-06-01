@@ -79,13 +79,13 @@ extern HAL_UART uart_stdout;
 #define BATT_MES_ADC_CH ADC_CH_014 //ADC3_CH14, PC4, Battery Voltage Monitor
 #define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
 
-HAL_GPIO EPS1_EN(EN_EPS_1);
-HAL_GPIO EPS2_EN(EN_EPS_2);
-HAL_GPIO EPS1_HBridge_EN(EN_HBRIDGE_1);
-HAL_GPIO CHG_EN(GPIO_038);
+HAL_GPIO EPS1_EN(EN_EPS_1); //EPS 1 Enable HAL GPIO Defn
+HAL_GPIO EPS2_EN(EN_EPS_2); //EPS 2 Enable HAL GPIO Defn
+HAL_GPIO EPS1_HBridge_EN(EN_HBRIDGE_1); //EPS 1 HBridge HAL GPIO Defn
+HAL_GPIO CHG_EN(EN_CHG_BAT); //Charge Enable HAL GPIO Defn
+HAL_GPIO Deployment_IN(DEP_IN); //Thermal Knife pin HAL GPIO Defn
 
-HAL_GPIO Deployment_IN(DEP_IN);
-
+//Define HAL GPIO for LEDs
 HAL_GPIO LED0(GPIO_048);
 HAL_GPIO LED1(GPIO_049);
 HAL_GPIO LED2(GPIO_050);
@@ -95,6 +95,7 @@ HAL_GPIO LED5(GPIO_053);
 HAL_GPIO LED6(GPIO_054);
 HAL_GPIO LED7(GPIO_055);
 
+//Define HAL GPIO for HBrigdge input pins
 HAL_GPIO  HBridge1_IN1(IN1_1);
 HAL_GPIO  HBridge1_IN2(IN1_2);
 HAL_GPIO  HBridge2_IN1(IN2_1);
@@ -104,15 +105,19 @@ HAL_GPIO  HBridge3_IN2(IN3_2);
 HAL_GPIO  HBridge4_IN1(IN4_1);
 HAL_GPIO  HBridge4_IN2(IN4_2);
 
+//Define HAL PWM for EM PWM
 HAL_PWM EM_PWM1(PWM1);
 HAL_PWM EM_PWM2(PWM2);
 HAL_PWM EM_PWM3(PWM3);
 HAL_PWM EM_PWM4(PWM4);
 
+//Degine HAL UART for the UART communication with Rasp pi
 HAL_UART UART_Pi(UART_IDX3, GPIO_026, GPIO_027);
 
+//Define HAL ADC for EM current measurement
 HAL_ADC EM_ADC(ADC_NO);
 
+//Define HAL ADC for battery measurement
 HAL_ADC BATT_ADC(ADC_NO_BAT_MES);
 
 void setPWM(HAL_PWM pin, float Value)
@@ -151,6 +156,11 @@ void thermalKnifeOON(HAL_GPIO pin,int Time_s)
 		PRINTF("DEP TIME %d \n", (int)(SECONDS_NOW()-initTme));
 		int diffTime=(int)(SECONDS_NOW()-initTme);
 
+		/*
+		 * For the deployment time given,
+		 * Turn it ON for 2s and Turn it OFF for next 2 seconds
+		 * Pulsed Mode
+		 */
 		while(diffTime<=Time_s)
 		{
 
@@ -168,15 +178,8 @@ void thermalKnifeOON(HAL_GPIO pin,int Time_s)
 			{
 				fourSecondsTime=SECONDS_NOW();
 			}
-
-			/*pin.setPins(1);
-
-			*/
 			diffTime=(int)(SECONDS_NOW()-initTme);
 		}
-
-		//pin.setPins(1);
-		//AT(Time_s*SECONDS);
 		pin.setPins(0);
 }
 void setHBridge(int HBrdigeNo, float Value)
@@ -254,13 +257,14 @@ void setHBridge(int HBrdigeNo, float Value)
 void getEMCurrent()
 {
 	/*
-	 *@Output: Current through Electromagnets
+	 *@Prints: Current through Electromagnets
 		*/
+	//Voltage from current measurement pin
 	float adcValOCM1 = ((float(EM_ADC.read(OCC1_CH)))/4096)*3290;
 	float adcValOCM2 = ((float(EM_ADC.read(OCC2_CH)))/4096)*3290;
 	float adcValOCM3 = ((float(EM_ADC.read(OCC3_CH)))/4096)*3290;
 	float adcValOCM4 = ((float(EM_ADC.read(OCC4_CH)))/4096)*3290;
-
+	//Convert the voltage to the current from the relation given in the datasheet
 	float currentEM1=(adcValOCM1/140);
 	float currentEM2=(adcValOCM2/140);
 	float currentEM3=(adcValOCM3/140);
@@ -278,6 +282,9 @@ void getEMCurrent()
 
 void getBATVoltage()
 {
+	/*
+		 *@Prints: Battery voltage
+	*/
 	float adcValBAT = ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
 	PRINTF("adcValBAT= %f V\n",adcValBAT);
 	float battVoltage=(adcValBAT*4.69);
@@ -286,6 +293,9 @@ void getBATVoltage()
 
 uint8_t Decode(uint8_t RxBuffer)
 {
+	/*
+		*Decode the Telecommands
+		*/
 	uint8_t success=0;
 	//PRINTF("Test");
 	switch (ReceiveState){
@@ -524,6 +534,9 @@ uint8_t Decode2(uint8_t RxBuffer)
 
 uint8_t Command(uint8_t TelecommandID)
 {
+	/*
+	 * Execute the telecommands with respect to the telecommand ID
+	 */
 	char string[40];
 	PRINTF("RECEIVED\n");
 	UART_Pi.write("RECEIVED\n",9);
@@ -546,6 +559,7 @@ uint8_t Command(uint8_t TelecommandID)
 		PRINTF("RECEIVED %d \n",HBridgeENStatus);
 		if(HBridgeENStatus==-1)
 		{
+			//Disable the HBridge
 			PRINTF("DISABLING EPS1 \n ");
 			//Set the PWM to 0 before Disabling/Enabling the HBridge, Recommended from the datasheet
 			setHBridge(1,0);
@@ -572,6 +586,7 @@ uint8_t Command(uint8_t TelecommandID)
 			setENStatus(EPS2_EN,1);
 		return 1;
 	case BATCHGEN:
+		//Enable for Disable the Battery charging
 		BatCHGENStatus=int(atof(ReceiveData));
 		PRINTF("RECEIVED %d \n",BatCHGENStatus);
 		if(BatCHGENStatus==1)
@@ -583,31 +598,37 @@ uint8_t Command(uint8_t TelecommandID)
 			setENStatus(CHG_EN,1);
 		return 1;
 	case DeployCMD:
+		//Command to deploy the antenna for given time in seconds
 		DeploymentTime=int(atof(ReceiveData));
 		PRINTF("RECEIVED %d \n",DeploymentTime);
 		thermalKnifeOON(Deployment_IN,DeploymentTime);
 		return 1;
 	case HBridge1PWM:
+		//Sets the PWM for HBridge 1 (EM1)
 		HBridgeValue=float(atof(ReceiveData));
 		setHBridge(1,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge2PWM:
+		//Sets the PWM for HBridge 2 (EM2)
 		HBridgeValue=float(atof(ReceiveData));
 		setHBridge(2,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge3PWM:
+		//Sets the PWM for HBridge 3 (EM3)
 		HBridgeValue=float(atof(ReceiveData));
 		setHBridge(3,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge4PWM:
+		//Sets the PWM for HBridge 3 (EM3)
 		HBridgeValue=float(atof(ReceiveData));
 		setHBridge(4,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case TakeImage:
+		//Sends command to raspberry pi to take an image, just for the testing
 			PRINTF("RECEIVED to Take Image\n");
 			UART_Pi.write("$$TAM,CAM\n",10); ///Send this command to pi to take an image
 			return 1;
@@ -620,6 +641,7 @@ class DockingMain: public Thread {
 public:
 	void init()
 	{
+		//Initialize the LEDs
 		LED0.init(true,1,0);
 		LED1.init(true,1,0);
 		LED2.init(true,1,0);
@@ -636,24 +658,28 @@ public:
 
 		CHG_EN.init(true,1, 0);  //Initially enable the Battery Charging
 
-		EM_ADC.init(OCC1_CH); //Initialize the ADCs for voltage measurement for the current measurement
+		EM_ADC.init(OCC1_CH); //Initialize the ADCs for the current measurement
 		EM_ADC.init(OCC2_CH);
 		EM_ADC.init(OCC3_CH);
 		EM_ADC.init(OCC4_CH);
 
 
-		BATT_ADC.config(ADC_PARAMETER_RESOLUTION,12);
+		BATT_ADC.config(ADC_PARAMETER_RESOLUTION,12); //Config and Initialize the ADC for the battery voltage measurement
 		BATT_ADC.init(BATT_MES_ADC_CH);
+
+		/*
+		 *For old version with 2 units
 		if (UNIT_PRIMARY)
-			EPS2_EN.init(true, 1, 0); //Initially enable the EPS of the unit 1 //Initially enable the EPS of the unit 1
+			EPS2_EN.init(true, 1, 0); //Initially enable the EPS of the unit 1
 		else
 			EPS2_EN.init(true, 1, 1);
+			*/
 
 		//EPS1_HBridge_EN.init(true,1,1); //Initially enable the HBridge of the unit 1
 
-		Deployment_IN.init(true,1,0); //initially disable the deployment pin
+		Deployment_IN.init(true,1,0); //Initialize the thermal knife and turn it off by default
 
-		//Initialize all the Pins
+		//Initialize HBrdige Input Pins
 		HBridge1_IN1.init(true,1,0);
 		HBridge1_IN2.init(true,1,0);
 		HBridge2_IN1.init(true,1,0);
@@ -663,6 +689,7 @@ public:
 		HBridge4_IN1.init(true,1,0);
 		HBridge4_IN2.init(true,1,0);
 
+		//Initialize the PWM pins for the electromagnets
 		EM_PWM1.init(10000,1000);
 		EM_PWM2.init(10000,1000);
 		EM_PWM3.init(10000,1000);
@@ -687,6 +714,8 @@ public:
 		}
 		*/
 		 while(1){
+
+			 /* Testing LEDs Pins*/
 			 	LED0.setPins(1);
 			 	LED1.setPins(1);
 				LED2.setPins(1);
@@ -709,14 +738,15 @@ public:
 				SensorsTelecommandDataBuffer.getOnlyIfNewData(TelecommandDataReceiver);
 				LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
 
-				getEMCurrent();
+				getEMCurrent(); //Get and print the electromagnets current
 				PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
 				PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
 				PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
 				PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
 				PRINTF("D4=%d \n",LidarDataReceiver.lidar4);
 
-				getBATVoltage();
+				getBATVoltage(); //Get amd print the battery voltages
+
 				PRINTF("\n");
 				/*char floatVal[10];
 				memcpy(&floatVal, &TelecommandDataReceiver.DistanceUWB, 10);
