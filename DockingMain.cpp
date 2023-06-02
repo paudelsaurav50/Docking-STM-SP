@@ -2,7 +2,7 @@
  * DockingEPSTestings.cpp
  *
  * Created on: 17.02.2023
- * Ref From: Atheel Redah
+ * Ref From: Atheel Redah, Cedric
  * Created By: Saurav Paudel
  */
 
@@ -32,6 +32,10 @@ uint8_t ReceiveState = 0;
 uint8_t SignFlag = 0;
 uint8_t	DotFlag = 0;
 uint8_t DataIndex = 0;
+int EM_VAL_PWM1=0;
+int EM_VAL_PWM2=0;
+int EM_VAL_PWM3=0;
+int EM_VAL_PWM4=0;
 char TelecommandID;
 char ReceiveData[MaxLength];
 /* Private function prototypes -----------------------------------------------*/
@@ -560,14 +564,26 @@ uint8_t Command(uint8_t TelecommandID)
 		if(HBridgeENStatus==-1)
 		{
 			//Disable the HBridge
-			PRINTF("DISABLING EPS1 \n ");
 			//Set the PWM to 0 before Disabling/Enabling the HBridge, Recommended from the datasheet
+			PRINTF("DISABLING HB1 \n ");
+			PRINTF("PWMW1=%d, PWM2=%d, PWM3=%d, PWM4=%d \n",EM_VAL_PWM1,EM_VAL_PWM2,EM_VAL_PWM3,EM_VAL_PWM4);
+
+			//Decrease the PWM first. Don't directly shut down
+			if(EM_VAL_PWM1>500)	setHBridge(1,200);
+			if(EM_VAL_PWM2>500)	setHBridge(2,200);
+			if(EM_VAL_PWM3>500)	setHBridge(3,200);
+			if(EM_VAL_PWM4>500)	setHBridge(4,200);
+			if(EM_VAL_PWM1<-500)setHBridge(1,-200);
+			if(EM_VAL_PWM2<-500)setHBridge(2,-200);
+			if(EM_VAL_PWM3<-500)setHBridge(3,-200);
+			if(EM_VAL_PWM4<-500)setHBridge(4,-200);
+
 			setHBridge(1,0);
 			setHBridge(2,0);
 			setHBridge(3,0);
 			setHBridge(4,0);
-			//AT(10*SECONDS);
-			setENStatus(EPS1_HBridge_EN,0);
+			//AT(1*SECONDS);
+			//setENStatus(EPS1_HBridge_EN,0);
 		}
 		else
 			setENStatus(EPS1_HBridge_EN,1);
@@ -606,24 +622,28 @@ uint8_t Command(uint8_t TelecommandID)
 	case HBridge1PWM:
 		//Sets the PWM for HBridge 1 (EM1)
 		HBridgeValue=float(atof(ReceiveData));
+		EM_VAL_PWM1=HBridgeValue;
 		setHBridge(1,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge2PWM:
 		//Sets the PWM for HBridge 2 (EM2)
 		HBridgeValue=float(atof(ReceiveData));
+		EM_VAL_PWM2=HBridgeValue;
 		setHBridge(2,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge3PWM:
 		//Sets the PWM for HBridge 3 (EM3)
 		HBridgeValue=float(atof(ReceiveData));
+		EM_VAL_PWM3=HBridgeValue;
 		setHBridge(3,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
 	case HBridge4PWM:
 		//Sets the PWM for HBridge 3 (EM3)
 		HBridgeValue=float(atof(ReceiveData));
+		EM_VAL_PWM4=HBridgeValue;
 		setHBridge(4,HBridgeValue);
 		PRINTF("RECEIVED %f \n",HBridgeValue);
 		return 1;
