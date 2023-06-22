@@ -38,8 +38,8 @@ void DecaWaveDistanceMeasurement::init() {
     }
     */
 
-    redNodeId = 0; //My Node Id is 0
-
+    redNodeId = 1;
+    sendNodeId = 0; //My Node Id is 0
     //redNodeId=1;
    /* ledb.init(1, 1, 0);
     ledr.init(1, 1, 0);
@@ -72,7 +72,7 @@ void DecaWaveDistanceMeasurement::run() {
         }
         */
     	if (nextTime2Measure <= NOW()) {
-    	                start_twr(1); //Send to Node 1
+    	                start_twr(sendNodeId); //Sent by SendNodeID
     	                nextTime2Measure = NOW() + 250 * MILLISECONDS;
     	            }
         // enable receiver

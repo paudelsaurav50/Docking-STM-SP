@@ -31,6 +31,7 @@ class DecaWaveDistanceMeasurement : public Thread, public IOEventReceiver {
     int64_t nextTime2Measure;  // timestamp when the next message should be send (RODOS time)
 
     uint8_t redNodeId;  // unique ID of each node
+    uint8_t sendNodeId;  // MY unique ID
 };
 
 #endif /* VaMEx_DWN_H_ */

@@ -290,7 +290,7 @@ void getBATVoltage()
 		 *@Prints: Battery voltage
 	*/
 	float adcValBAT = ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
-	PRINTF("adcValBAT= %f V\n",adcValBAT);
+	//PRINTF("adcValBAT= %f V\n",adcValBAT);
 	float battVoltage=(adcValBAT*4.69);
 	PRINTF("VBat= %f V\n",battVoltage);
 }
@@ -573,17 +573,20 @@ uint8_t Command(uint8_t TelecommandID)
 			if(EM_VAL_PWM2>500)	setHBridge(2,200);
 			if(EM_VAL_PWM3>500)	setHBridge(3,200);
 			if(EM_VAL_PWM4>500)	setHBridge(4,200);
+
 			if(EM_VAL_PWM1<-500)setHBridge(1,-200);
 			if(EM_VAL_PWM2<-500)setHBridge(2,-200);
 			if(EM_VAL_PWM3<-500)setHBridge(3,-200);
 			if(EM_VAL_PWM4<-500)setHBridge(4,-200);
 
+
 			setHBridge(1,0);
 			setHBridge(2,0);
 			setHBridge(3,0);
 			setHBridge(4,0);
+
 			//AT(1*SECONDS);
-			//setENStatus(EPS1_HBridge_EN,0);
+			setENStatus(EPS1_HBridge_EN,0);
 		}
 		else
 			setENStatus(EPS1_HBridge_EN,1);
@@ -607,7 +610,7 @@ uint8_t Command(uint8_t TelecommandID)
 		PRINTF("RECEIVED %d \n",BatCHGENStatus);
 		if(BatCHGENStatus==1)
 		{
-			PRINTF("DISABLING Battery Charging\n ");
+			PRINTF("Enabling Battery Charging\n ");
 			setENStatus(CHG_EN,0);
 		}
 		else
