@@ -1,19 +1,19 @@
 /*****************************************************************
 topics.h
 
-Original Created by: Atheel Redah @ University of Würzburg
+Original Created by: Atheel Redah @ University of Wï¿½rzburg
 Original Creation Date: March 8, 2015
 
 Development environment specifics:
 	Software Platform: Rodos (Realtime Onboard Dependable Operating System).
-	Hardware Platform: STM32F4 + Würzburg Uni Informatik 8 Discovery AddOn Board Version 2.0.
+	Hardware Platform: STM32F4 + Wï¿½rzburg Uni Informatik 8 Discovery AddOn Board Version 2.0.
 *****************************************************************/
 
 #ifndef __topics_h__
 #define __topics_h_
 
 /* Includes ------------------------------------------------------------------*/
-#include "matlib.h"
+// #include "matlib.h"
 
 /* Exported types ------------------------------------------------------------*/
 

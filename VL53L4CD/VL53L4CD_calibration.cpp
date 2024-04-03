@@ -62,8 +62,8 @@
  */
 
 #include <math.h>
-#include "vl53l4cd_api.h"
-#include "vl53l4cd_calibration.h"
+#include "VL53L4CD_api.h"
+#include "VL53L4CD_calibration.h"
 
 VL53L4CD_Error VL53L4CD_CalibrateOffset(
 		Dev_t dev,

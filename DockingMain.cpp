@@ -12,7 +12,7 @@
 #include "hal.h"
 #include "math.h"
 #include "topics.h"
-#include "telecommand.h"
+#include "Telecommand.h"
 
 CommBuffer<sTelecommandData> SensorsTelecommandDataBuffer;
 Subscriber SensorsTelecommandDataSubscriber(TelecommandDataTopic, SensorsTelecommandDataBuffer);
@@ -39,7 +39,7 @@ int EM_VAL_PWM4=0;
 char TelecommandID;
 char ReceiveData[MaxLength];
 /* Private function prototypes -----------------------------------------------*/
-/* PTRU Components 1570694 Litze LiY 1 x 0.14mm² rotrivate functions ---------------------------------------------------------*/
+/* PTRU Components 1570694 Litze LiY 1 x 0.14mmï¿½ rotrivate functions ---------------------------------------------------------*/
 
 //extern HAL_GPIO TelecommandLED;
 
