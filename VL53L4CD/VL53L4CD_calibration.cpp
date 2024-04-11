@@ -78,7 +78,7 @@ VL53L4CD_Error VL53L4CD_CalibrateOffset(
 	VL53L4CD_ResultsData_t results;
 
 	if(((nb_samples < (int16_t)5) || (nb_samples > (int16_t)255))
-			|| ((TargetDistInMm < (int16_t)50)
+			|| ((TargetDistInMm < (int16_t)10)
 				|| (TargetDistInMm > (int16_t)1000)))
 	{
 		status |= (uint8_t)VL53L4CD_ERROR_INVALID_ARGUMENT;
@@ -175,7 +175,7 @@ VL53L4CD_Error VL53L4CD_CalibrateXtalk(
 
 	*p_measured_xtalk_kcps = 0;
 	if(((nb_samples < (int16_t)5) || (nb_samples > (int16_t)255))
-			|| ((TargetDistInMm < (int16_t)50)
+			|| ((TargetDistInMm < (int16_t)10)
 				|| (TargetDistInMm > (int16_t)5000)))
 	{
 		status |= (uint8_t)VL53L4CD_ERROR_INVALID_ARGUMENT;

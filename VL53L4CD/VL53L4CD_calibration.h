@@ -75,7 +75,7 @@
  * compensation into the device.
  * @param (Dev_t) dev : instance of selected VL53L4CD sensor.
  * @param (int16_t) TargetDistInMm : Real distance between the sensor and the
- * target in millimeters. ST recommend 100mm. Min distance is 50mm and max is
+ * target in millimeters. ST recommend 100mm. Min distance is 10mm and max is
  * 1000mm.
  * @param (int16_t) nb_samples : Number of samples (between 5 and 255). A higher
  * number of samples increases the accuracy, but it also takes more time. ST

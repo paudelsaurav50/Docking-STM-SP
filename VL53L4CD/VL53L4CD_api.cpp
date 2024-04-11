@@ -196,8 +196,7 @@ VL53L4CD_Error VL53L4CD_SetI2CAddress(
 	VL53L4CD_Error status = VL53L4CD_ERROR_NONE;
 
 	status |= VL53L4CD_WrByte(dev, VL53L4CD_I2C_SLAVE__DEVICE_ADDRESS,
-			(uint8_t)(new_address));
-			//(uint8_t)(new_address >> (uint8_t)1));
+			(uint8_t)(new_address >> (uint8_t)1));
 	return status;
 }
 
@@ -218,6 +217,7 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 	uint8_t Addr, tmp;
 	uint8_t continue_loop = 1;
 	uint16_t i = 0;
+
 	do{
 		status |= VL53L4CD_RdByte(dev,
 				VL53L4CD_FIRMWARE__SYSTEM_STATUS, &tmp);
@@ -233,7 +233,6 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 		else /* Timeout 1000ms reached */
 		{
 			continue_loop = (uint8_t)0;
-
 			status |= (uint8_t)VL53L4CD_ERROR_TIMEOUT;
 		}
 		WaitMs(dev, 1);

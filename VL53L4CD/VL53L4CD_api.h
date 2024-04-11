@@ -1,4 +1,4 @@
- /*
+/*
  Copyright (c) 2021, STMicroelectronics - All Rights Reserved
 
  This file : part of VL53L4CD Ultra Lite Driver and : dual licensed, either
@@ -66,8 +66,8 @@
  */
 
 #define VL53L4CD_IMPLEMENTATION_VER_MAJOR       2
-#define VL53L4CD_IMPLEMENTATION_VER_MINOR       0
-#define VL53L4CD_IMPLEMENTATION_VER_BUILD       0
+#define VL53L4CD_IMPLEMENTATION_VER_MINOR       1
+#define VL53L4CD_IMPLEMENTATION_VER_BUILD       1
 #define VL53L4CD_IMPLEMENTATION_VER_REVISION  	0
 
 /**
