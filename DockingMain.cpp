@@ -14,6 +14,9 @@
 #include "topics.h"
 #include "Telecommand.h"
 
+#include <math.h>
+#define R2D 57.2957795131
+
 CommBuffer<sTelecommandData> SensorsTelecommandDataBuffer;
 Subscriber SensorsTelecommandDataSubscriber(TelecommandDataTopic, SensorsTelecommandDataBuffer);
 sTelecommandData TelecommandDataReceiver;
@@ -278,7 +281,7 @@ void getEMCurrent()
 	uint16_t adcValOCM3 = EM_ADC.read(OCC3_CH);
 	uint16_t adcValOCM4 = EM_ADC.read(OCC4_CH);
 	*/
-	PRINTF("I1= %f A,I2= %f A,I3= %f A,I4= %f A \n",currentEM1,currentEM2,currentEM3,currentEM4);
+	// PRINTF("I1= %f A,I2= %f A,I3= %f A,I4= %f A \n",currentEM1,currentEM2,currentEM3,currentEM4);
 	char uart_data[100];
 	sprintf(uart_data,"I1= %f A,I2= %f A,I3= %f A,I4= %f A \n",currentEM1,currentEM2,currentEM3,currentEM4);
 	UART_Pi.write(uart_data,strlen(uart_data));
@@ -292,7 +295,7 @@ void getBATVoltage()
 	float adcValBAT = ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
 	//PRINTF("adcValBAT= %f V\n",adcValBAT);
 	float battVoltage=(adcValBAT*4.69);
-	PRINTF("VBat= %f V\n",battVoltage);
+	// PRINTF("VBat= %f V\n",battVoltage);
 }
 
 uint8_t Decode(uint8_t RxBuffer)
@@ -741,36 +744,44 @@ public:
 			 /* Testing LEDs Pins*/
 			 	LED0.setPins(1);
 			 	LED1.setPins(1);
-				LED2.setPins(1);
-				LED3.setPins(1);
-			 	LED4.setPins(1);
-			 	LED5.setPins(1);
-				LED6.setPins(1);
-				LED7.setPins(1);
-				suspendCallerUntil(NOW()+1000*MILLISECONDS);
-			 	LED0.setPins(0);
-				LED1.setPins(0);
-				LED2.setPins(0);
-				LED3.setPins(0);
-			 	LED4.setPins(0);
-			 	LED5.setPins(0);
-				LED6.setPins(0);
-				LED7.setPins(0);
-				suspendCallerUntil(NOW()+1000*MILLISECONDS);
+				// LED2.setPins(1);
+				// LED3.setPins(1);
+			 	// LED4.setPins(1);
+			 	// LED5.setPins(1);
+				// LED6.setPins(1);
+				// LED7.setPins(1);
+				// suspendCallerUntil(NOW()+1000*MILLISECONDS);
+			 	// LED0.setPins(0);
+				// LED1.setPins(0);
+				// LED2.setPins(0);
+				// LED3.setPins(0);
+			 	// LED4.setPins(0);
+			 	// LED5.setPins(0);
+				// LED6.setPins(0);
+				// LED7.setPins(0);
+				// suspendCallerUntil(NOW()+1000*MILLISECONDS);
 
 				SensorsTelecommandDataBuffer.getOnlyIfNewData(TelecommandDataReceiver);
 				LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
 
 				getEMCurrent(); //Get and print the electromagnets current
-				PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
-				PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
-				PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
-				PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
-				PRINTF("D4=%d \n",LidarDataReceiver.lidar4);
+				// PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
+				// PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
+				// PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
+				// PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
+				// PRINTF("D4=%d ",LidarDataReceiver.lidar4);
+
+				float l1 = LidarDataReceiver.lidar1;
+				float l3 = LidarDataReceiver.lidar3;
+				const float length = 101.5; // mm
+				const float width = 44.95; // mm
+				const float yaw = R2D * atan2(l1-l3, width);
+
+				PRINTF("%d, %d, %f\n", LidarDataReceiver.lidar1, LidarDataReceiver.lidar3, yaw);
 
 				getBATVoltage(); //Get amd print the battery voltages
 
-				PRINTF("\n");
+				// PRINTF("\n");
 				/*char floatVal[10];
 				memcpy(&floatVal, &TelecommandDataReceiver.DistanceUWB, 10);
 				UART_Pi.write("DIST=",10);
