@@ -6,12 +6,12 @@
  */
 
 #include "rodos.h"
-#include "VL53L4CD/VL53L4CD_api.h"
+#include "VL53L4CD_api.h"
 #include "hal.h"
-#include "VL53L4CD/VL53L4CD_calibration.h"
+#include "VL53L4CD_calibration.h"
 #include "topics.h"
-#include "VL53L4CD/MedianFilter.h"
-#include "VL53L4CD/platform_TAMARIW.h"
+#include "MedianFilter.h"
+#include "platform_TAMARIW.h"
 
 HAL_I2C TOF_I2C(I2C_IDX1,GPIO_022,GPIO_023); //TAMARIW, I2C1: SCL:PB6, SDA:PB7
 

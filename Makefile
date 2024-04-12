@@ -26,28 +26,28 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-decadriver/deca_device.c \
-decadriver/deca_params_init.c \
-decadriver/deca_range_tables.c \
-VL53L4CD/MedianFilter.c
+libs/decadriver/deca_device.c \
+libs/decadriver/deca_params_init.c \
+libs/decadriver/deca_range_tables.c \
+libs/VL53L4CD/MedianFilter.c
 
 # ASM sources
 ASM_SOURCES =
 
 # C++ sources
 CXX_SOURCES = \
-DecaWaveDistanceMeasurement.cpp \
-LiDAR_Ranging_Thread.cpp \
-decaWaveModule.cpp \
-DockingMain.cpp \
-topics.cpp \
-wrapper/deca_mutex.cpp \
-wrapper/deca_sleep.cpp \
-wrapper/deca_spi.cpp \
-wrapper/port.cpp \
-VL53L4CD/platform_TAMARIW.cpp \
-VL53L4CD/VL53L4CD_api.cpp \
-VL53L4CD/VL53L4CD_calibration.cpp
+libs/DecaWaveDistanceMeasurement.cpp \
+threads/LiDAR_Ranging_Thread.cpp \
+threads/decaWaveModule.cpp \
+libs/DockingMain.cpp \
+libs/topics.cpp \
+libs/wrapper/deca_mutex.cpp \
+libs/wrapper/deca_sleep.cpp \
+libs/wrapper/deca_spi.cpp \
+libs/wrapper/port.cpp \
+libs/VL53L4CD/platform_TAMARIW.cpp \
+libs/VL53L4CD/VL53L4CD_api.cpp \
+libs/VL53L4CD/VL53L4CD_calibration.cpp
 
 #######################################
 # binaries
@@ -113,9 +113,11 @@ C_INCLUDES =  \
 -I"../rodos/api/hal" \
 -I"../rodos/api" \
 -I"../rodos/default_usr_configs" \
--I"decadriver" \
--I"wrapper" \
--I"VL53L4CD"
+-I"libs/decadriver" \
+-I"libs/wrapper" \
+-I"libs/VL53L4CD" \
+-I"threads" \
+-I"satellite"
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
