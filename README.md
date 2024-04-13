@@ -1,6 +1,13 @@
 # Tamariw Testing Panel
 This Project contains the source code for the testing of different modules of the TAMARIW Panel Board.
 
+# Folder structure
+
+1. [threads](threads) - Implementation of different RODOS thread and topics used in Tamariw.
+2. [libs](libs) - Low-level device drivers for different modules like H-Bridge, time of flight sensor etc.
+3. [satellite](satellite) - Tamariw specific interfaces to access sensors and actuators.
+4. [examples](examples) - Individual test files for different components of Tamariw.
+
 # Module Testings
 - Testing LEDs
 - Testing UART Communication over OBC Port
@@ -18,24 +25,24 @@ Source Code By: Saurav Paudel, Info VIII, Universtiy of Würzburg
 ## Project status
 - Electronics Design and testings
 
-## Lidars
+## Time of Flights
 
 ```
  _____________
 |             |
-|      2      |
+|      1      |
 |      o      |
 |             |
 |             |
-| 1 o     o 3 |
+| 0 o     o 2 |
 |             |
 |             |
 |      o      |
-|      4      |
+|      3      |
 |             |
 |______-______|
 
-length = 101.5 mm
-width = 44.95 mm
+Distance between 1 and 3 = 101.5 mm
+Distance between 0 and 2 = 44.95 mm
 
 ```

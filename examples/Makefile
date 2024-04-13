@@ -36,6 +36,7 @@ CXX_SOURCES = \
 ../libs/VL53L4CD/platform_TAMARIW.cpp \
 ../libs/VL53L4CD/VL53L4CD_api.cpp \
 ../libs/VL53L4CD/VL53L4CD_calibration.cpp \
+../satellite/tof.cpp \
 hello_tof.cpp
 
 #######################################
@@ -103,7 +104,8 @@ C_INCLUDES =  \
 -I"../../rodos/api" \
 -I"../../rodos/default_usr_configs" \
 -I"../libs/VL53L4CD" \
--I"../threads"
+-I"../threads" \
+-I"../satellite"
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
