@@ -4,6 +4,9 @@
 #include "tof.h"
 #include "rodos.h"
 
+#include <math.h>
+#define R2D 57.2957795131
+
 class tof_thread : public Thread
 {
 private:
@@ -38,7 +41,11 @@ void tof_thread::run()
 
     if(tof::get_distance(distance) == TOF_STATUS_OK)
     {
-      PRINTF("%d, %d, %d, %d\n", distance[0], distance[1], distance[2], distance[3]);
+      
+			const float width = 44.95; // mm
+			const float yaw = R2D * atan2(distance[0]-distance[2], width);
+
+      PRINTF("%d, %d, %d, %d, %f\n", distance[0], distance[1], distance[2], distance[3], yaw);
     }
     else
     {
