@@ -27,6 +27,9 @@ namespace tof
   tof_status init(const tof_idx idx);
   tof_status get_distance(int distance[4]);
   tof_status get_single_distance(const tof_idx idx, int *distance);
+
+  void enable_median_filter();
+  void disable_median_filter();
 }
 
 #endif // tof.h

@@ -1,12 +1,25 @@
 #include "tof.h"
 #include "rodos.h"
+#include "MedianFilter.h"
 #include "VL53L4CD_api.h"
 #include "platform_TAMARIW.h"
 
-bool i2c_init_flag = false;
+bool tof_filter_flag = false;
+MedianFilter<int, 20> filter[4];
 
 // VL53L4CD API params
 VL53L4CD_ResultsData_t tof_result;
+bool i2c_init_flag = false;
+
+void tof::enable_median_filter()
+{
+  tof_filter_flag = true;
+}
+
+void tof::disable_median_filter()
+{
+  tof_filter_flag = true;
+}
 
 // Initialize a single sensor
 tof_status init_single(const tof_idx idx)
@@ -79,7 +92,16 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     }
 
     VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result);
-    *distance = tof_result.distance_mm;
+
+    if(tof_filter_flag)
+    {
+      filter[(uint8_t)idx].addSample(tof_result.distance_mm);
+      *distance = filter[(uint8_t)idx].getMedian();
+    }
+    else
+    {
+      *distance = tof_result.distance_mm;
+    }
 
     VL53L4CD_ClearInterrupt(TOF_I2C_ADDRESS);
     VL53L4CD_StopRanging(TOF_I2C_ADDRESS);

@@ -26,7 +26,6 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-../libs/VL53L4CD/MedianFilter.c
 
 # ASM sources
 ASM_SOURCES =

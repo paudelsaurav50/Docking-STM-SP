@@ -26,6 +26,8 @@ void tof_thread::init()
   {
     PRINTF("VL53L4CD error :(\n");
   }
+
+  tof::enable_median_filter();
 }
 
 void tof_thread::run()
@@ -36,12 +38,13 @@ void tof_thread::run()
 
     if(tof::get_distance(distance) == TOF_STATUS_OK)
     {
-      PRINTF("%d, %d, %d, %d mm\n", distance[0], distance[1], distance[2], distance[3]);
+      PRINTF("%d, %d, %d, %d\n", distance[0], distance[1], distance[2], distance[3]);
     }
     else
     {
       PRINTF("ToF ranging error!\n");
     }
+
     suspendCallerUntil(NOW() + period * MILLISECONDS);
   }
 }
