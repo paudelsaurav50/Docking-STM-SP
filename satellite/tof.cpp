@@ -123,6 +123,7 @@ tof_status tof::get_distance(int distance[4])
     if (get_single_distance((tof_idx)i, &temp_dist) == TOF_STATUS_OK)
     {
       distance[i] = temp_dist;
+       AT(5*MILLISECONDS);
     }
     else
     {

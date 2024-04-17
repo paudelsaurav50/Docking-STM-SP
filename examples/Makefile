@@ -182,9 +182,6 @@ $(BUILD_DIR):
 flash: all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
-flash_test:
-	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program tamariw-testing-panel.hex verify reset exit"
-
 #######################################
 # clean up
 #######################################

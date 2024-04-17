@@ -24,7 +24,8 @@ struct sTelecommandData
 };
 
 struct sLidarData{
-	 int16_t lidar1, lidar2, lidar3, lidar4; //Filtered Distance from Lidar1, Lidar2, lidar3, Lidar4
+	 int16_t lidar1, lidar2, lidar3, lidar4; //Filtered Distance from Lidar1, Lidar2, lidar3, Lidar4#
+	 float yaw;
      double deltaTime;
    };
 

@@ -28,8 +28,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 libs/decadriver/deca_device.c \
 libs/decadriver/deca_params_init.c \
-libs/decadriver/deca_range_tables.c \
-libs/VL53L4CD/MedianFilter.c
+libs/decadriver/deca_range_tables.c
 
 # ASM sources
 ASM_SOURCES =
@@ -47,7 +46,8 @@ libs/wrapper/deca_spi.cpp \
 libs/wrapper/port.cpp \
 libs/VL53L4CD/platform_TAMARIW.cpp \
 libs/VL53L4CD/VL53L4CD_api.cpp \
-libs/VL53L4CD/VL53L4CD_calibration.cpp
+libs/VL53L4CD/VL53L4CD_calibration.cpp \
+satellite/tof.cpp
 
 #######################################
 # binaries
@@ -195,26 +195,28 @@ $(BUILD_DIR):
 flash: all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
-flash_test:
-	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program tamariw-testing-panel.hex verify reset exit"
-
 #######################################
 # clean up
 #######################################
-clean:
-	rm -r $(BUILD_DIR)
+clean-windows:
+	if exist build rmdir /s/q build
 
-rodos:
-	rm -r ../rodos/build/CMakeFiles || true
-	rm -r ../rodos/build/test-suite || true
-	rm ../rodos/build/* || true
-	cmake -S../rodos -B../rodos/build -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
-	make -C ../rodos/build
+clean-linux:
+	rm -r $(BUILD_DIR) || true
 
-bluetooth:
-	sudo rfcomm bind 0 00:0E:EA:CF:6C:ED 1
-	python3 BLWSBridge.py
+# Build RODOS for Linux
+rodos-linux:
+	rm -r ../../rodos/build/CMakeFiles || true
+	rm -r ../../rodos/build/test-suite || true
+	rm ../../rodos/build/* || true
+	cmake -S../../rodos -B../rodos/build -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
+	make -C ../../rodos/build
 
+# Build RODOS for Windows
+rodos-windows:
+	if exist "../../rodos/build" rmdir /s/q "../../rodos/build"
+	cmake -S../../rodos -B../../rodos/build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
+	make -C ../../rodos/build
 
 #######################################
 # dependencies

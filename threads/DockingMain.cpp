@@ -766,18 +766,18 @@ public:
 
 				getEMCurrent(); //Get and print the electromagnets current
 				// PRINTF("Distance Main=%f \n",TelecommandDataReceiver.DistanceUWB);
-				// PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
-				// PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
-				// PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
-				// PRINTF("D4=%d ",LidarDataReceiver.lidar4);
+				 //PRINTF("Lidar D1=%d ,",LidarDataReceiver.lidar1);
+				 //PRINTF("D2=%d ,",LidarDataReceiver.lidar2);
+				 //PRINTF("D3=%d ,",LidarDataReceiver.lidar3);
+				 //PRINTF("D4=%d ",LidarDataReceiver.lidar4);
 
-				float l1 = LidarDataReceiver.lidar1;
-				float l3 = LidarDataReceiver.lidar3;
-				const float length = 101.5; // mm
-				const float width = 44.95; // mm
-				const float yaw = R2D * atan2(l1-l3, width);
+				// float l1 = LidarDataReceiver.lidar1;
+				// float l3 = LidarDataReceiver.lidar3;
+				// const float length = 101.5; // mm
+				// const float width = 44.95; // mm
+				// const float yaw = R2D * atan2(l1-l3, width);
 
-				PRINTF("%d, %d, %f\n", LidarDataReceiver.lidar1, LidarDataReceiver.lidar3, yaw);
+				PRINTF("%d, %d, %d, %d, %f\n", LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4, LidarDataReceiver.yaw);
 
 				getBATVoltage(); //Get amd print the battery voltages
 
