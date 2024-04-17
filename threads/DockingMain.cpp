@@ -46,6 +46,11 @@ char ReceiveData[MaxLength];
 
 //extern HAL_GPIO TelecommandLED;
 
+float battVoltage;
+float currentEM1;
+float currentEM2;
+float currentEM3;
+float currentEM4;
 
 namespace RODOS {
 extern HAL_UART uart_stdout;
@@ -272,10 +277,10 @@ void getEMCurrent()
 	float adcValOCM3 = ((float(EM_ADC.read(OCC3_CH)))/4096)*3290;
 	float adcValOCM4 = ((float(EM_ADC.read(OCC4_CH)))/4096)*3290;
 	//Convert the voltage to the current from the relation given in the datasheet
-	float currentEM1=(adcValOCM1/140);
-	float currentEM2=(adcValOCM2/140);
-	float currentEM3=(adcValOCM3/140);
-	float currentEM4=(adcValOCM4/140);
+	currentEM1=(adcValOCM1/140);
+	currentEM2=(adcValOCM2/140);
+	currentEM3=(adcValOCM3/140);
+	currentEM4=(adcValOCM4/140);
 	/*uint16_t adcValOCM1 = EM_ADC.read(OCC1_CH);
 	uint16_t adcValOCM2 = EM_ADC.read(OCC2_CH);
 	uint16_t adcValOCM3 = EM_ADC.read(OCC3_CH);
@@ -292,10 +297,12 @@ void getBATVoltage()
 	/*
 		 *@Prints: Battery voltage
 	*/
-	float adcValBAT = ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
-	//PRINTF("adcValBAT= %f V\n",adcValBAT);
-	float battVoltage=(adcValBAT*4.69);
-	// PRINTF("VBat= %f V\n",battVoltage);
+	float adcValBAT=((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
+	battVoltage=adcValBAT*4;
+	//PRINTF("VBat= %f V\n",battVoltage);
+	char uart_data[100];
+	sprintf(uart_data,"V=%f \n",battVoltage); //Send current separated by commas. Easy to decode at Pi
+	UART_Pi.write(uart_data,strlen(uart_data));
 }
 
 uint8_t Decode(uint8_t RxBuffer)
@@ -777,8 +784,12 @@ public:
 				// const float width = 44.95; // mm
 				// const float yaw = R2D * atan2(l1-l3, width);
 
-				PRINTF("%d, %d, %d, %d, %f\n", LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4, LidarDataReceiver.yaw);
-
+				//PRINTF("%d, %d, %d, %d, %f\n", LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4, LidarDataReceiver.yaw);
+				PRINTF("$DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d #)# \n", battVoltage,currentEM1,currentEM2,currentEM3,currentEM4,LidarDataReceiver.lidar1,LidarDataReceiver.lidar2,LidarDataReceiver.lidar3,LidarDataReceiver.lidar4);
+				suspendCallerUntil(NOW()+500*MILLISECONDS);
+				char uart_data[100];
+				sprintf(uart_data,"DL=%d,%d,%d,%d \n",LidarDataReceiver.lidar1,LidarDataReceiver.lidar2,LidarDataReceiver.lidar3,LidarDataReceiver.lidar4); //Send distances separated by commas. Easy to decode at Pi
+				UART_Pi.write(uart_data,strlen(uart_data));
 				getBATVoltage(); //Get amd print the battery voltages
 
 				// PRINTF("\n");
