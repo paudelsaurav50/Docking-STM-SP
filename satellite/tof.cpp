@@ -3,6 +3,7 @@
 #include "MedianFilter.h"
 #include "VL53L4CD_api.h"
 #include "platform_TAMARIW.h"
+#include "VL53L4CD_calibration.h"
 
 bool tof_filter_flag = false;
 MedianFilter<int, 25> filter[4];
@@ -11,14 +12,14 @@ MedianFilter<int, 25> filter[4];
 VL53L4CD_ResultsData_t tof_result;
 bool i2c_init_flag = false;
 
-void tof::enable_median_filter()
+void tof::enable_median_filter(void)
 {
   tof_filter_flag = true;
 }
 
-void tof::disable_median_filter()
+void tof::disable_median_filter(void)
 {
-  tof_filter_flag = true;
+  tof_filter_flag = false;
 }
 
 // Initialize a single sensor
@@ -127,6 +128,39 @@ tof_status tof::get_distance(int distance[4])
     {
       return TOF_STATUS_ERROR;
     }
+  }
+
+  return TOF_STATUS_OK;
+}
+
+/*
+  Calibrates four ToFs for input target distance using n samples.
+  The offsets are written to VL53L4CD_RANGE_OFFSET_MM register of ToF.
+
+  ST's recommendation:
+     _____________________________
+    | setting   | min |  ST | max |
+    |-----------|-----|-----|-----|
+    | target_mm | 10  | 100 | 255 |
+    |     n     |  5  | 20  | 255 |
+    |___________|_____|_____|_____|
+*/
+tof_status tof::calibrate(const int16_t target_mm, const int16_t n)
+{
+  for (uint8_t i = TOF_IDX_0; i <= TOF_IDX_3; i++)
+  {
+    PCA9546_SelPort(i, TOF_I2C_MUX_ADDRESS);
+
+    int16_t offset, old_offset;
+    VL53L4CD_GetOffset(TOF_I2C_ADDRESS, &old_offset);
+    VL53L4CD_SetOffset(TOF_I2C_ADDRESS, 0);
+
+    // if (VL53L4CD_CalibrateOffset(TOF_I2C_ADDRESS, target_mm, &offset, n) != VL53L4CD_ERROR_NONE)
+    // {
+    //   return TOF_STATUS_ERROR;
+    // }
+
+    PRINTF("ToF %d: Offset changed from %d to %d.\n", (uint8_t)i, old_offset, offset);
   }
 
   return TOF_STATUS_OK;

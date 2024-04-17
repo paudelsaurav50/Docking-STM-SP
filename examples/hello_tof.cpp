@@ -41,7 +41,6 @@ void tof_thread::run()
 
     if(tof::get_distance(distance) == TOF_STATUS_OK)
     {
-      
 			const float width = 44.95; // mm
 			const float yaw = R2D * atan2(distance[0]-distance[2], width);
 

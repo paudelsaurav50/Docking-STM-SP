@@ -10,5 +10,7 @@
 #define TOF_I2C_HAL_GPIO_SDA GPIO_023
 #define TOF_I2C_ADDRESS 0x29
 #define TOF_I2C_MUX_ADDRESS 0x70
+#define TOF_CALIBRATE_TARGET_MM 100
+#define TOF_CALIBRATE_SAMPLES 20
 
 #endif // satellite_config.h

@@ -5,6 +5,7 @@
 #define _TAMARIW_TOF_H_
 
 #include "satellite_config.h"
+#include <inttypes.h>
 
 // Indices to access individual sensor
 enum tof_idx
@@ -27,9 +28,10 @@ namespace tof
   tof_status init(const tof_idx idx);
   tof_status get_distance(int distance[4]);
   tof_status get_single_distance(const tof_idx idx, int *distance);
+  tof_status calibrate(const int16_t target_mm, const int16_t n);
 
-  void enable_median_filter();
-  void disable_median_filter();
+  void enable_median_filter(void);
+  void disable_median_filter(void);
 }
 
 #endif // tof.h
