@@ -5,7 +5,7 @@
 #include "platform_TAMARIW.h"
 
 bool tof_filter_flag = false;
-MedianFilter<int, 20> filter[4];
+MedianFilter<int, 25> filter[4];
 
 // VL53L4CD API params
 VL53L4CD_ResultsData_t tof_result;
