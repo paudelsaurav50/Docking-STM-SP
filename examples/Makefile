@@ -36,7 +36,8 @@ CXX_SOURCES = \
 ../libs/VL53L4CD/VL53L4CD_api.cpp \
 ../libs/VL53L4CD/VL53L4CD_calibration.cpp \
 ../satellite/tof.cpp \
-hello_tof.cpp
+../libs/hbridge/hbridge.cpp \
+hello_magnets.cpp
 
 #######################################
 # binaries
@@ -103,6 +104,7 @@ C_INCLUDES =  \
 -I"../../rodos/api" \
 -I"../../rodos/default_usr_configs" \
 -I"../libs/VL53L4CD" \
+-I"../libs/hbridge" \
 -I"../threads" \
 -I"../satellite"
 
