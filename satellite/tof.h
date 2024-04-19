@@ -30,6 +30,9 @@ namespace tof
   tof_status get_single_distance(const tof_idx idx, int *distance);
   tof_status calibrate(const int16_t target_mm, const int16_t n);
 
+  tof_status get_yaw(float *yaw);
+  tof_status get_velocity(float velocity[4]);
+
   void enable_median_filter(void);
   void disable_median_filter(void);
 }

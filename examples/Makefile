@@ -36,8 +36,9 @@ CXX_SOURCES = \
 ../libs/VL53L4CD/VL53L4CD_api.cpp \
 ../libs/VL53L4CD/VL53L4CD_calibration.cpp \
 ../satellite/tof.cpp \
+../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-hello_magnets.cpp
+hello_tof.cpp
 
 #######################################
 # binaries

@@ -13,8 +13,14 @@
 #define TOF_CALIBRATE_TARGET_MM 100
 #define TOF_CALIBRATE_SAMPLES 20
 
+// ToF dimensions
+#define TOF_DIMENSION_WIDTH_MM 44.95
+#define TOF_DIMENSION_LENGTH_MM 101.5
+
 // Electromagnet enable pin
 #define EM_ENABLE_PIN GPIO_056
+#define EM_SAFETY_THRESHOLD 50
+#define EM_SAFETY_INTERMEDIATE 20
 
 // PWMs for electromagnets
 #define EM_PWM_FREQUENCY 15000
@@ -39,5 +45,9 @@
 #define EM2_ADC_CH ADC_CH_011
 #define EM3_ADC_CH ADC_CH_012
 #define EM4_ADC_CH ADC_CH_013
+
+// Periods of threads
+#define PERIOD_TOF_MILLIS 100
+#define PERIOD_CONTROL_MILLIS 100
 
 #endif // satellite_config.h

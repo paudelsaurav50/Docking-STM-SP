@@ -1,5 +1,9 @@
+
+#include <math.h>
+
 #include "tof.h"
 #include "rodos.h"
+#include "utils.h"
 #include "MedianFilter.h"
 #include "VL53L4CD_api.h"
 #include "platform_TAMARIW.h"
@@ -7,6 +11,7 @@
 
 bool tof_filter_flag = false;
 MedianFilter<int, 25> filter[4];
+float last_distance[4];
 
 // VL53L4CD API params
 VL53L4CD_ResultsData_t tof_result;
@@ -86,7 +91,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
       uint8_t data_ready = 0;
       VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
 
-      if(data_ready)
+      if (data_ready)
       {
         break;
       }
@@ -94,7 +99,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 
     VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result);
 
-    if(tof_filter_flag)
+    if (tof_filter_flag)
     {
       filter[(uint8_t)idx].addSample(tof_result.distance_mm);
       *distance = filter[(uint8_t)idx].getMedian();
@@ -123,7 +128,7 @@ tof_status tof::get_distance(int distance[4])
     if (get_single_distance((tof_idx)i, &temp_dist) == TOF_STATUS_OK)
     {
       distance[i] = temp_dist;
-       AT(5*MILLISECONDS);
+      AT(5 * MILLISECONDS);
     }
     else
     {
@@ -154,15 +159,48 @@ tof_status tof::calibrate(const int16_t target_mm, const int16_t n)
 
     int16_t offset, old_offset;
     VL53L4CD_GetOffset(TOF_I2C_ADDRESS, &old_offset);
-    VL53L4CD_SetOffset(TOF_I2C_ADDRESS, 0);
 
-    // if (VL53L4CD_CalibrateOffset(TOF_I2C_ADDRESS, target_mm, &offset, n) != VL53L4CD_ERROR_NONE)
-    // {
-    //   return TOF_STATUS_ERROR;
-    // }
+    if (VL53L4CD_CalibrateOffset(TOF_I2C_ADDRESS, target_mm, &offset, n) != VL53L4CD_ERROR_NONE)
+    {
+      return TOF_STATUS_ERROR;
+    }
 
     PRINTF("ToF %d: Offset changed from %d to %d.\n", (uint8_t)i, old_offset, offset);
   }
 
   return TOF_STATUS_OK;
+}
+
+// Relative yaw between suspended spacecrafts
+tof_status get_yaw(float *yaw)
+{
+  int distance[4];
+
+  if (tof::get_distance(distance) == TOF_STATUS_OK)
+  {
+    *yaw =  R2D * atan2(distance[0] - distance[2], TOF_DIMENSION_WIDTH_MM);
+
+    return TOF_STATUS_OK;
+  }
+
+  return TOF_STATUS_ERROR;
+}
+
+// Relative velocity wrt. to the satellite
+tof_status get_velocity(float velocity[4])
+{
+  int distance[4];
+
+  if (tof::get_distance(distance) == TOF_STATUS_OK)
+  {
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      velocity[i] = (distance[i] - last_distance[i]) / PERIOD_TOF_MILLIS;
+      last_distance[i] = distance[i];
+    }
+
+    return TOF_STATUS_OK;
+  }
+
+  return TOF_STATUS_ERROR;
 }
