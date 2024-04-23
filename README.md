@@ -60,3 +60,8 @@ This Project contains the source code for the testing of different modules of th
 ## authors
 
 Saurav Paudel, Info VIII, Universtiy of Würzburg
+
+## todos
+
+1. Soft colision position PID control
+2. Relative orientation control (yaw = 0)

@@ -34,12 +34,16 @@ libs/decadriver/deca_range_tables.c
 ASM_SOURCES =
 
 # C++ sources
+# libs/DockingMain.cpp \
+
 CXX_SOURCES = \
 libs/DecaWaveDistanceMeasurement.cpp \
 threads/LiDAR_Ranging_Thread.cpp \
+threads/control_thread.cpp \
 threads/decaWaveModule.cpp \
-libs/DockingMain.cpp \
+libs/pid/pid.cpp \
 libs/topics.cpp \
+libs/hbridge/hbridge.cpp \
 libs/wrapper/deca_mutex.cpp \
 libs/wrapper/deca_sleep.cpp \
 libs/wrapper/deca_spi.cpp \
@@ -47,7 +51,8 @@ libs/wrapper/port.cpp \
 libs/VL53L4CD/platform_TAMARIW.cpp \
 libs/VL53L4CD/VL53L4CD_api.cpp \
 libs/VL53L4CD/VL53L4CD_calibration.cpp \
-satellite/tof.cpp
+satellite/tof.cpp \
+satellite/magnet.cpp
 
 #######################################
 # binaries
@@ -117,7 +122,9 @@ C_INCLUDES =  \
 -I"libs/wrapper" \
 -I"libs/VL53L4CD" \
 -I"threads" \
--I"satellite"
+-I"satellite" \
+-I"libs/pid" \
+-I"libs/hbridge"
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

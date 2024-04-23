@@ -48,6 +48,12 @@
 
 // Periods of threads
 #define PERIOD_TOF_MILLIS 100
-#define PERIOD_CONTROL_MILLIS 100
+#define PERIOD_CONTROL_MILLIS 50
+
+// Control params
+#define PID_VELOCITY_UMAX 90
+#define PID_VELOCITY_UMIN -90
+#define PID_DISTANCE_KP 0.0
+#define PID_DISTANCE_KI 0.0
 
 #endif // satellite_config.h
