@@ -38,7 +38,7 @@ CXX_SOURCES = \
 ../satellite/tof.cpp \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-hello_tof.cpp
+hello_magnets.cpp
 
 #######################################
 # binaries
@@ -84,7 +84,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
--DSTM32F40_41xxx
+-DSTM32F40_41xxx \
+-D$(satellite)_SAT
 
 # AS includes
 AS_INCLUDES = \

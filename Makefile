@@ -52,6 +52,7 @@ libs/VL53L4CD/platform_TAMARIW.cpp \
 libs/VL53L4CD/VL53L4CD_api.cpp \
 libs/VL53L4CD/VL53L4CD_calibration.cpp \
 satellite/tof.cpp \
+satellite/utils.cpp \
 satellite/magnet.cpp
 
 #######################################
@@ -98,7 +99,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
--DSTM32F40_41xxx
+-DSTM32F40_41xxx \
+-D$(satellite)_SAT
 
 # AS includes
 AS_INCLUDES = \

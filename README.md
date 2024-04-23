@@ -59,7 +59,8 @@ This Project contains the source code for the testing of different modules of th
 
 ## authors
 
-Saurav Paudel, Info VIII, Universtiy of Würzburg
+1. Saurav Paudel, Info VIII, University of Würzburg
+2. Rishav Sharma, Masters in SatTech, University of Würzburg
 
 ## todos
 

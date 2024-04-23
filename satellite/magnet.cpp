@@ -5,10 +5,10 @@
 #include "hbridge.h"
 #include "satellite_config.h"
 
-hbridge em1(EM1_PWM_IDX, EM1_PIN_IN1, EM1_PIN_IN2);
-hbridge em2(EM2_PWM_IDX, EM2_PIN_IN1, EM2_PIN_IN2);
-hbridge em3(EM3_PWM_IDX, EM3_PIN_IN1, EM3_PIN_IN2);
-hbridge em4(EM4_PWM_IDX, EM4_PIN_IN1, EM4_PIN_IN2);
+hbridge em1(EM0_PWM_IDX, EM0_PIN_IN1, EM0_PIN_IN2);
+hbridge em2(EM1_PWM_IDX, EM1_PIN_IN1, EM1_PIN_IN2);
+hbridge em3(EM2_PWM_IDX, EM2_PIN_IN1, EM2_PIN_IN2);
+hbridge em4(EM3_PWM_IDX, EM3_PIN_IN1, EM3_PIN_IN2);
 
 hbridge *magnets[4] = {&em1, &em2, &em3, &em4}; // Array to access with indices
 HAL_GPIO hbridge_enable(EM_ENABLE_PIN); // Hbridge should be enabled before use
@@ -44,7 +44,8 @@ void magnet::stop(const magnet_idx idx)
       last_dc[i] = 0.0;
     }
 
-    hbridge_enable.setPins(0);
+    // Saurav's discovery
+    // hbridge_enable.setPins(0);
     return;
   }
 

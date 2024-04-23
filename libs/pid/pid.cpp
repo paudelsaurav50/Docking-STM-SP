@@ -15,17 +15,30 @@ void pid::reset_memory(void)
   dz = 0.0;
 }
 
+// Sign of input number
+static int sign(float in)
+{
+  if(in < 0)
+  {
+    return -1;
+  }
+  else
+  {
+    return 1;
+  }
+}
+
 float pid::saturate_control(const float in)
 {
   float out = in;
 
-  if (in < u_min)
+  if (abs(in) < u_min)
   {
-    out = u_min;
+    out = sign(in) * u_min;
   }
-  else if (in > u_max)
+  else if (abs(in) > u_max)
   {
-    out = u_max;
+    out = sign(in) * u_max;
   }
 
   return out;

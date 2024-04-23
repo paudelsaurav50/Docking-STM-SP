@@ -8,8 +8,8 @@ CommBuffer<sLidarData> LidarDataBuffer;
 Subscriber LidarDataSubscriber(LidarDataTopic, LidarDataBuffer);
 sLidarData LidarDataReceiver;
 
-pid pid_distance[4];
-float distance_sp[4] = {20, 20, 20, 20}; // setpoint, mm
+pid pid_distance;
+float dist_sp = 25; // setpoint, mm
 
 class control_thread : public Thread
 {
@@ -23,12 +23,9 @@ public:
   {
     magnet::init();
 
-    for (uint8_t i = 0; i < 4; i++)
-    {
-      pid_distance[i].set_kp(PID_DISTANCE_KP);
-      pid_distance[i].set_ki(PID_DISTANCE_KI);
-      pid_distance[i].set_control_limits(PID_VELOCITY_UMIN, PID_VELOCITY_UMAX);
-    }
+    pid_distance.set_kp(PID_DISTANCE_KP);
+    pid_distance.set_ki(PID_DISTANCE_KI);
+    pid_distance.set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
   }
 
   void run()
@@ -39,13 +36,25 @@ public:
       LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
       int d[4] = {LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4};
 
+      float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
+
       // Perform position control
+      float error = dist_sp - mean_dist;
+      float pwm = pid_distance.update(error, period / 1000.0);
+
       for (uint8_t i = 0; i < 4; i++)
       {
-        float error = 0 - d[i];
-        float pwm = pid_distance[i].update(error, period / 1000.0);
-        magnet::actuate((magnet_idx)i, pwm);
+        if(mean_dist < 30)
+        {
+          magnet::actuate((magnet_idx)i, 50);
+        }
+        else
+        {
+          magnet::actuate((magnet_idx)i, pwm);
+        }
       }
+
+      PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, pwm);
 
       suspendCallerUntil(NOW() + period * MILLISECONDS);
     }
