@@ -38,7 +38,7 @@ CXX_SOURCES = \
 ../satellite/tof.cpp \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-hello_magnets.cpp
+hello_em_current.cpp
 
 #######################################
 # binaries

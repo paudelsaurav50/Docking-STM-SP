@@ -28,7 +28,7 @@ This Project contains the source code for the testing of different modules of th
 
 1. [hello_tof](examples/hello_tof.cpp) - Test file for ToF sensors.
 2. [hello_magnets](examples/hello_tof.cpp) - Test file for electromagnets.
-3. [hello_tof](examples/hello_tofcal.cpp) - Performs ToF calibration.
+3. [hello_tofcal](examples/hello_tofcal.cpp) - Performs ToF calibration.
 
 ## schematics of indices
 
@@ -66,3 +66,4 @@ This Project contains the source code for the testing of different modules of th
 
 1. Soft colision position PID control
 2. Relative orientation control (yaw = 0)
+3. Current control inner loop for magnets

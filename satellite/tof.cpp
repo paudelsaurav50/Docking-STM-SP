@@ -45,10 +45,8 @@ tof_status init_single(const tof_idx idx)
   {
     return TOF_STATUS_OK;
   }
-  else
-  {
-    return TOF_STATUS_ERROR;
-  }
+
+  return TOF_STATUS_ERROR;
 }
 
 // Initialize either single or all sensors

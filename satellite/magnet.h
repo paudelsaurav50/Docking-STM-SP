@@ -15,6 +15,8 @@ namespace magnet
   void init(void);
   void stop(const magnet_idx idx);
   void actuate(const magnet_idx idx, const float dc);
+  float get_current(const magnet_idx);
+  void get_current(float current[4]);
 }
 
 #endif // magnet.h
