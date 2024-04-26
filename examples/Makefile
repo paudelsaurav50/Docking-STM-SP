@@ -35,10 +35,12 @@ CXX_SOURCES = \
 ../libs/VL53L4CD/platform_TAMARIW.cpp \
 ../libs/VL53L4CD/VL53L4CD_api.cpp \
 ../libs/VL53L4CD/VL53L4CD_calibration.cpp \
+../libs/pid/pid.cpp \
 ../satellite/tof.cpp \
+../satellite/utils.cpp \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-hello_em_current.cpp
+hello_current_control.cpp
 
 #######################################
 # binaries
@@ -107,6 +109,7 @@ C_INCLUDES =  \
 -I"../../rodos/default_usr_configs" \
 -I"../libs/VL53L4CD" \
 -I"../libs/hbridge" \
+-I"../libs/pid" \
 -I"../threads" \
 -I"../satellite"
 

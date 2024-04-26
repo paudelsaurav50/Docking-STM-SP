@@ -123,7 +123,7 @@ float magnet::get_current(const magnet_idx idx)
     }
   }
 
-  float voltage = ((float)adc / 4096.0f) * 3290.0f;
+  float voltage = ((float)adc / 4095.0f) * 3290.0f;
   float current = voltage / 140.0f;
 
   return current;
