@@ -1,6 +1,8 @@
 #ifndef _SATELLITE_CONFIG_H_
 #define _SATELLITE_CONFIG_H_
 
+extern float desired_current[4];
+
 #ifdef BLACK_SAT
 #include "config_black.h"
 #endif

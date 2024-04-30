@@ -29,6 +29,7 @@ void magnet::init(void)
   {
     magnets[i]->set_frequency(EM_PWM_FREQUENCY);
     magnets[i]->set_increments(EM_PWM_INCREMENTS);
+    magnets[i]->brake();
   }
 }
 
@@ -85,7 +86,7 @@ void magnet::actuate(const magnet_idx idx, const float dc)
   last_dc[(uint8_t)idx] = dc;
 }
 
-// Current through 'single' electromagnet
+// Current through 'single' electromagnet in miliamps
 // Returns -111.0 for MAGNET_IDX_ALL (invalid)
 float magnet::get_current(const magnet_idx idx)
 {
@@ -124,12 +125,12 @@ float magnet::get_current(const magnet_idx idx)
   }
 
   float voltage = ((float)adc / 4095.0f) * 3290.0f;
-  float current = voltage / 140.0f;
+  float current = (voltage / 140.0f) * 1000.0f;
 
   return current;
 }
 
-// Overloaded to return current through all ems
+// Currents through all magnets in milliamps
 void magnet::get_current(float current[4])
 {
   for(uint8_t i = 0; i < 4; i++)

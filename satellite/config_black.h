@@ -24,11 +24,11 @@
 
 // PWMs for electromagnets
 #define EM_PWM_FREQUENCY 15000
-#define EM_PWM_INCREMENTS 1000
-#define EM0_PWM_IDX PWM_IDX04
-#define EM1_PWM_IDX PWM_IDX05
-#define EM2_PWM_IDX PWM_IDX06
-#define EM3_PWM_IDX PWM_IDX07
+#define EM_PWM_INCREMENTS 5000
+#define EM0_PWM_IDX PWM_IDX06
+#define EM1_PWM_IDX PWM_IDX07
+#define EM2_PWM_IDX PWM_IDX05
+#define EM3_PWM_IDX PWM_IDX04
 
 // Direction pins for electromagnets
 #define EM0_PIN_IN1 GPIO_062
@@ -41,10 +41,11 @@
 #define EM3_PIN_IN2 GPIO_073
 
 // ADC channels for electromagnets
-#define EM0_ADC_CH ADC_CH_010
-#define EM1_ADC_CH ADC_CH_011
-#define EM2_ADC_CH ADC_CH_012
-#define EM3_ADC_CH ADC_CH_013
+#define EM_ADC_IDX ADC_IDX3
+#define EM0_ADC_CH ADC_CH_012
+#define EM1_ADC_CH ADC_CH_013
+#define EM2_ADC_CH ADC_CH_011
+#define EM3_ADC_CH ADC_CH_010
 
 // Periods of threads
 #define PERIOD_TOF_MILLIS 100

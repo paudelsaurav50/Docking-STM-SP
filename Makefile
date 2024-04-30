@@ -40,6 +40,7 @@ CXX_SOURCES = \
 libs/DecaWaveDistanceMeasurement.cpp \
 threads/LiDAR_Ranging_Thread.cpp \
 threads/control_thread.cpp \
+threads/current_control_thread.cpp \
 threads/decaWaveModule.cpp \
 libs/pid/pid.cpp \
 libs/topics.cpp \

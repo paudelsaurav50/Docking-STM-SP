@@ -8,6 +8,7 @@ CommBuffer<sLidarData> LidarDataBuffer;
 Subscriber LidarDataSubscriber(LidarDataTopic, LidarDataBuffer);
 sLidarData LidarDataReceiver;
 
+float desired_current[4] = {0.0};
 pid pid_distance;
 float dist_sp = 25; // setpoint, mm
 
@@ -40,21 +41,14 @@ public:
 
       // Perform position control
       float error = dist_sp - mean_dist;
-      float pwm = pid_distance.update(error, period / 1000.0);
+      float current = pid_distance.update(error, period / 1000.0);
 
-      for (uint8_t i = 0; i < 4; i++)
-      {
-        if(mean_dist < 30)
-        {
-          magnet::actuate((magnet_idx)i, 50);
-        }
-        else
-        {
-          magnet::actuate((magnet_idx)i, pwm);
-        }
-      }
+      desired_current[0] = current;
+      desired_current[1] = current;
+      desired_current[2] = current;
+      desired_current[3] = current;
 
-      PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, pwm);
+      PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
 
       suspendCallerUntil(NOW() + period * MILLISECONDS);
     }
