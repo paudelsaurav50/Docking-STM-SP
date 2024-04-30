@@ -40,7 +40,7 @@ CXX_SOURCES = \
 ../satellite/utils.cpp \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-hello_current_control.cpp
+$(main)
 
 #######################################
 # binaries

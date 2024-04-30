@@ -13,16 +13,16 @@
   1: regulation
   2: tracking
 */
-int control_mode = 1;
+int control_mode = 0;
 double time = 0.0;
 
-// Set points for regulation problem
-float dcurr[4] = {-2, -1, 1, 2};
+// Set points for regulation problem, milliamps
+float dcurr[4] = {-2000, -1000, 1000, 2000};
 
 // Set point for tracking problem
 // amplitude * cos(omega * t)
-float amplitude = 2; // amp
-float omega = 2; // angular rate
+float amplitude = 2000; // milliamp
+float omega = 1; // angular rate
 
 float curr[4] = {0.0};
 int last_sign[4] = {0};
@@ -46,8 +46,8 @@ void magnet_thread::init()
 
   for(uint8_t i = 0; i < 4; i++)
   {
-    ctrl[i].set_kp(40);
-    ctrl[i].set_ki(300);
+    ctrl[i].set_kp(0.065);
+    ctrl[i].set_ki(0.3);
     ctrl[i].set_control_limits(-90, 90);
   }
 }
