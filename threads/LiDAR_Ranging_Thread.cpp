@@ -19,6 +19,7 @@ static Application module01("V_LIDAR", 2001);
 
 sLidarData LidarData = {
     0, 0, 0, 0, // Lidar1 Lidar2 Lidar3 Lidar4
+    0.0, 0.0, 0.0, 0.0,
     0.0,
     0};
 
@@ -51,17 +52,27 @@ public:
 
       if (tof::get_distance(distance) == TOF_STATUS_OK)
       {
-        const float width = 44.95; // mm
-        const float yaw_temp = R2D * atan2(distance[0] - distance[2], width);
-
         LidarData.lidar1 = distance[0];
         LidarData.lidar2 = distance[1];
         LidarData.lidar3 = distance[2];
         LidarData.lidar4 = distance[3];
+
+        const float width = 44.95; // mm
+        const float yaw_temp = R2D * atan2(distance[0] - distance[2], width);
         LidarData.yaw = yaw_temp;
+
+        float velocity[4] = {0.0};
+        tof::get_velocity(velocity);
+
+        LidarData.vel1 = velocity[0];
+        LidarData.vel2 = velocity[1];
+        LidarData.vel3 = velocity[2];
+        LidarData.vel4 = velocity[3];
+
         LidarDataTopic.publish(LidarData);
 
         // PRINTF("%d, %d, %d, %d, %f\n", distance[0], distance[1], distance[2], distance[3], yaw_temp);
+        // PRINTF("%f, %f, %f, %f\n", velocity[0], velocity[1], velocity[2], velocity[3]);
       }
       else
       {

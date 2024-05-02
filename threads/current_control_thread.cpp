@@ -47,8 +47,8 @@ void current_control_thread::run(void)
       magnet::actuate((magnet_idx)i, pwm[i]); // actuation
       last_sign[i] = sign(pwm[i]); // store the sign
 
-    //   PRINTF("%f, %f", desired_current[i], curr[i]);
-    //   if(i != 3) PRINTF(", ");
+      // PRINTF("%f, %f", desired_current[i], curr[i]);
+      // if(i != 3) PRINTF(", ");
     }
     // PRINTF("\n");
 

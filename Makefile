@@ -228,6 +228,14 @@ rodos-windows:
 	cmake -S../../rodos -B../../rodos/build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
 	make -C ../../rodos/build
 
+bluetooth-black:
+	sudo rfcomm bind 0 00:0E:EA:CF:6D:70 1
+	python3 BLWSBridge.py
+
+bluetooth-white:
+	sudo rfcomm bind 0 00:0E:EA:CF:6C:ED 1
+	python3 BLWSBridge.py
+
 #######################################
 # dependencies
 #######################################

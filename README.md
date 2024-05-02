@@ -33,25 +33,25 @@ This Project contains the source code for the testing of different modules of th
 ## schematics of indices
 
 ```
-     _____________
-    |             |
-    |  0       1  |
-    | (O)     (O) |
-    |             |
-    |      1      |
-    |      o      |
-    |             |
-    |             |
-    | 0 o     o 2 |
-    |             |
-    |             |
-    |      o      |
-    |      3      |
-    |             |
-    |             |
-    |  3       2  |
-    | (O)     (O) |
-    |______-______|
+     _____________       ______ ______
+    |             |     |      -      |
+    |  1       0  |     |  3       2  |
+    | (O)     (O) |     | (O)     (O) |
+    |             |     |             |
+    |      1      |     |      3      |
+    |      o      |     |      o      |
+    |             |     |             |
+    |             |     |             |
+    | 0 o     o 2 |     | 2 o     o 0 |
+    |             |     |             |
+    |             |     |             |
+    |      o      |     |      o      |
+    |      3      |     |      1      |
+    |             |     |             |
+    |             |     |             |
+    |  2       3  |     |  0       1  |
+    | (O)     (O) |     | (O)     (O) |
+    |______-______|     |_____________|
 
 (O) - electromagnet
  o  - time of flight sensor

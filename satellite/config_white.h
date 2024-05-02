@@ -54,7 +54,7 @@
 // Control params
 #define PID_DISTANCE_UMAX 2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 1.0
+#define PID_DISTANCE_KP 100.0
 #define PID_DISTANCE_KI 0.0
 
 #endif // config_white.h

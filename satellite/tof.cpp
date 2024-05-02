@@ -170,7 +170,7 @@ tof_status tof::calibrate(const int16_t target_mm, const int16_t n)
 }
 
 // Relative yaw between suspended spacecrafts
-tof_status get_yaw(float *yaw)
+tof_status tof::get_yaw(float *yaw)
 {
   int distance[4];
 
@@ -185,7 +185,7 @@ tof_status get_yaw(float *yaw)
 }
 
 // Relative velocity wrt. to the satellite
-tof_status get_velocity(float velocity[4])
+tof_status tof::get_velocity(float velocity[4])
 {
   int distance[4];
 

@@ -36,6 +36,7 @@ public:
       // Read relative distance
       LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
       int d[4] = {LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4};
+      int v[4] = {LidarDataReceiver.vel1, LidarDataReceiver.vel2, LidarDataReceiver.vel3, LidarDataReceiver.vel4};
 
       float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
 
@@ -43,12 +44,13 @@ public:
       float error = dist_sp - mean_dist;
       float current = pid_distance.update(error, period / 1000.0);
 
-      desired_current[0] = current;
-      desired_current[1] = current;
-      desired_current[2] = current;
-      desired_current[3] = current;
+      desired_current[0] = current * 0;
+      desired_current[1] = current * 0;
+      desired_current[2] = current * 0;
+      desired_current[3] = current * 0;
 
-      PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
+      PRINTF("%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);
+      // PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
 
       suspendCallerUntil(NOW() + period * MILLISECONDS);
     }

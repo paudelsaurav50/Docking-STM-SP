@@ -6,10 +6,10 @@
 #include "magnet.h"
 #include "satellite_config.h"
 
-float pwm = 0;  // Start pwm
-float delta_pwm = 2; // PWM increments
+float pwm = 20;  // Start pwm
+float delta_pwm = 10; // PWM increments
 float max_pwm = 100; // End PWM
-int max_count = 10; // Current samples for each PWM
+int max_count = 5; // Current samples for each PWM
 
 int count = 0;
 float current[4] = {0.0};
