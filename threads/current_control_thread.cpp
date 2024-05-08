@@ -2,10 +2,13 @@
 #include "utils.h"
 #include "rodos.h"
 #include "magnet.h"
+#include "topics.h"
 #include "satellite_config.h"
 
 int last_sign[4] = {0};
 pid ctrl[4];
+
+sCurrentData current_data = {0.0, 0.0, 0.0, 0.0};
 
 class current_control_thread : public Thread
 {
@@ -39,12 +42,18 @@ void current_control_thread::run(void)
 
     magnet::get_current(curr); // measurement
 
+    current_data.i0 = curr[0];
+    current_data.i1 = curr[1];
+    current_data.i2 = curr[2];
+    current_data.i3 = curr[3];
+    CurrentDataTopic.publish(current_data);
+
     for(uint8_t i = 0; i < 4; i++)
     {
       curr[i] = last_sign[i] * curr[i]; // assign sign to curr
       error[i] = desired_current[i] - curr[i]; // error
       pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
-      magnet::actuate((magnet_idx)i, pwm[i]); // actuation
+      // magnet::actuate((magnet_idx)i, pwm[i]); // actuation
       last_sign[i] = sign(pwm[i]); // store the sign
 
       // PRINTF("%f, %f", desired_current[i], curr[i]);
