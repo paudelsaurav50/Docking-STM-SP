@@ -17,11 +17,13 @@
 
 static Application module01("V_LIDAR", 2001);
 
-sLidarData LidarData = {
-    0, 0, 0, 0, // Lidar1 Lidar2 Lidar3 Lidar4
-    0.0, 0.0, 0.0, 0.0,
-    0.0,
-    0};
+sLidarData LidarData =
+{
+  0, 0, 0, 0,
+  0.0, 0.0, 0.0, 0.0,
+  0.0,
+  0
+};
 
 class LIDAR : public Thread
 {

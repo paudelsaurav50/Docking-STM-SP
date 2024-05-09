@@ -37,11 +37,10 @@ ASM_SOURCES =
 # libs/DockingMain.cpp \
 
 CXX_SOURCES = \
-libs/DecaWaveDistanceMeasurement.cpp \
 threads/LiDAR_Ranging_Thread.cpp \
-threads/control_thread.cpp \
+threads/telecommand.cpp \
+threads/telemetry.cpp \
 threads/current_control_thread.cpp \
-threads/decaWaveModule.cpp \
 libs/pid/pid.cpp \
 libs/topics.cpp \
 libs/hbridge/hbridge.cpp \

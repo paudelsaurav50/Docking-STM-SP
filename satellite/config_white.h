@@ -4,6 +4,10 @@
 #ifndef _CONFIG_WHITE_H_
 #define _CONFIG_WHITE_H_
 
+#define EN_CHG_BAT GPIO_038 //PC6, Charging Enable Pin
+#define BATT_MES_ADC_CH ADC_CH_014 // ADC3_CH14, PC4, Battery Voltage Monitor
+#define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
+
 // ToF sensor
 #define TOF_I2C_HAL_IDX I2C_IDX1
 #define TOF_I2C_HAL_GPIO_SCL GPIO_022
