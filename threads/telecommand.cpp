@@ -103,32 +103,24 @@ uint8_t execute_command(uint8_t telecommand_id)
 {
   switch (telecommand_id)
   {
-  case HBridgeUnit1EN:
-  {
-    if(int(atof(ReceiveData))==-1)
-    {
-      magnet::actuate(MAGNET_IDX_ALL, 0);
-    }
-    break;
-  }
   case HBridge1PWM:
   {
-    magnet::actuate(MAGNET_IDX_0, 50);
+    magnet::actuate(MAGNET_IDX_0, float(atof(ReceiveData)));
     break;
   }
   case HBridge2PWM:
   {
-    magnet::actuate(MAGNET_IDX_1, 50);
+    magnet::actuate(MAGNET_IDX_1, float(atof(ReceiveData)));
     break;
   }
   case HBridge3PWM:
   {
-    magnet::actuate(MAGNET_IDX_2, 50);
+    magnet::actuate(MAGNET_IDX_2, float(atof(ReceiveData)));
     break;
   }
   case HBridge4PWM:
   {
-    magnet::actuate(MAGNET_IDX_3, 50);
+    magnet::actuate(MAGNET_IDX_3, float(atof(ReceiveData)));
     break;
   }
   default:

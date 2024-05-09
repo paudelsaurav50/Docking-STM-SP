@@ -20,25 +20,17 @@ Development environment specifics:
 #define TelecommandStop  '#'
 #define TelecommandAck   '&'
 
-#define TelemetryID               'T'
-#define SystemModeID              'M'
-#define AHRSModeID                'A'
-#define VelocityID                'V'
-#define PositionID                'P'
-#define MotorSpeedID              'S'
-#define ControllerID              'C'
-#define ControllerParameterID     'p'
-#define ControllerParameterGainID 'g'
+#define HBridge1PWM 'i'
+#define HBridge2PWM 'j'
+#define HBridge3PWM 'k'
+#define HBridge4PWM 'l'
 
-#define HBridgeUnit1EN 'H'
-#define Unit2EN        'h'
-#define BATCHGEN       'B'
-#define DeployCMD      'D'
-#define HBridge1PWM    'i'
-#define HBridge2PWM    'j'
-#define HBridge3PWM    'k'
-#define HBridge4PWM    'l'
-#define TakeImage      'c'
+#define PI_POS_GAIN_KP 'm'
+#define PI_POS_GAIN_KI 'n'
+#define PI_VEL_GAIN_KP 'o'
+#define PI_VEL_GAIN_KI 'p'
+
+#define ENABLE_CONTROL 'q'
 
 uint8_t decode_command(uint8_t rx_buffer);
 uint8_t execute_command(uint8_t telecommand_id);
