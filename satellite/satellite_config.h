@@ -1,6 +1,7 @@
 #ifndef _SATELLITE_CONFIG_H_
 #define _SATELLITE_CONFIG_H_
 
+// Global variable declarations
 extern float desired_current[4];
 
 #ifdef BLACK_SAT

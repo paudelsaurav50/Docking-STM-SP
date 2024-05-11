@@ -37,23 +37,24 @@ ASM_SOURCES =
 # libs/DockingMain.cpp \
 
 CXX_SOURCES = \
-threads/LiDAR_Ranging_Thread.cpp \
-threads/telecommand.cpp \
-threads/telemetry.cpp \
-threads/current_control_thread.cpp \
 libs/pid/pid.cpp \
 libs/topics.cpp \
 libs/hbridge/hbridge.cpp \
-libs/wrapper/deca_mutex.cpp \
-libs/wrapper/deca_sleep.cpp \
-libs/wrapper/deca_spi.cpp \
-libs/wrapper/port.cpp \
 libs/VL53L4CD/platform_TAMARIW.cpp \
 libs/VL53L4CD/VL53L4CD_api.cpp \
 libs/VL53L4CD/VL53L4CD_calibration.cpp \
+\
 satellite/tof.cpp \
 satellite/utils.cpp \
-satellite/magnet.cpp
+satellite/magnet.cpp \
+satellite/satellite_config.cpp \
+\
+threads/telemetry.cpp \
+threads/tof_range.cpp \
+threads/telecommand.cpp \
+\
+threads/current_control.cpp \
+threads/collision_control.cpp
 
 #######################################
 # binaries

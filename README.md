@@ -30,6 +30,16 @@ This Project contains the source code for the testing of different modules of th
 2. [hello_magnets](examples/hello_tof.cpp) - Test file for electromagnets.
 3. [hello_tofcal](examples/hello_tofcal.cpp) - Performs ToF calibration.
 
+### threads
+
+1. [topics](threads/topics.cpp) - Contains the declaration and definitation of all the topics for inter-thread communications. Not exactly a thread.
+2. [collision_control](threads/collision_control.cpp) - Handles collision control using distance and velocity feedback.
+3. [current_control](threads/current_control.cpp) - Controls the current through each electromagnet. Its Sample rate is higher compared to <code>collision_control</code>.
+4. [telecommand](threads/telecommand.cpp) - Handles the telecommands from ground station.
+5. [telemetry](threads/telemetry.cpp) - Transmits data to groundstation.
+6. [tof_range](threads/tof_range.cpp) - Performs ToF measurements and publishes to topic for other threads.
+
+
 ## schematics of indices
 
 ```
@@ -59,15 +69,14 @@ This Project contains the source code for the testing of different modules of th
 
 ## authors
 
-1. Saurav Paudel, Info VIII, University of Würzburg
-2. Rishav Sharma, Masters in SatTech, University of Würzburg
+- Saurav Paudel, Info VIII, University of Würzburg
+- Atheel Redah, Info VIII, University of Würzburg
+- Rishav Sharma, Masters in SatTech, University of Würzburg
 
 ## todos
 
 1. Soft colision position PID control
 2. Relative orientation control (yaw = 0)
-3. <del>Current control inner loop for magnets</del>
-4. Open-loop current versus temperature graph
-5. Closed-loop current versus temperature graph
-6. Atheel: Formulate everything in millamps
-7. Atheel: Filter current measurements
+3. Open-loop current versus temperature graph
+4. Closed-loop current versus temperature graph
+5. Atheel: Filter current measurements

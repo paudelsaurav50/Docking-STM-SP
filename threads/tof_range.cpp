@@ -1,9 +1,4 @@
-/*
- * Ranging.cpp
- *
- *  Created on: Nov 16, 2022
- *      Author: patha
- */
+// Performs ToF range measurement and publishes to LidarDataTopic
 
 #include "rodos.h"
 #include "hal.h"
@@ -15,8 +10,6 @@
 #include <math.h>
 #define R2D 57.2957795131
 
-static Application module01("V_LIDAR", 2001);
-
 sLidarData LidarData =
 {
   0, 0, 0, 0,
@@ -25,13 +18,13 @@ sLidarData LidarData =
   0
 };
 
-class LIDAR : public Thread
+class tof_range_thread : public Thread
 {
 public:
   int period = 100; // millis
 
 public:
-  LIDAR(const char *name) : Thread(name) {} // @suppress("Class members should be properly initialized")
+  tof_range_thread(const char *name) : Thread(name) {}
 
   void init()
   {
@@ -86,4 +79,4 @@ public:
   }
 };
 
-LIDAR LIDAR("LIDAR");
+tof_range_thread tamariw_tof_range_thread("tof_range_thread");

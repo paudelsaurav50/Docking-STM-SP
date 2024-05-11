@@ -3,8 +3,7 @@
 #include "magnet.h"
 #include "telecommand.h"
 #include "satellite_config.h"
-
-float desired_current[4] = {0.0};
+#include "collision_control.h"
 
 namespace RODOS
 {
@@ -18,7 +17,7 @@ uint8_t SignFlag = 0;
 uint8_t  DotFlag = 0;
 uint8_t DataIndex = 0;
 char telecommand_id;
-char ReceiveData[MaxLength];
+char ReceiveData[TELECOMMAND_MAX_LEN];
 
 uint8_t decode_command(uint8_t rx_buffer)
 {
@@ -30,7 +29,7 @@ uint8_t decode_command(uint8_t rx_buffer)
     SignFlag=0;
     DotFlag=0;
     DataIndex=0;
-    if (rx_buffer==TelecommandStart)
+    if (rx_buffer==TELECOMMAND_START)
     {
       ReceiveState=1;
     }
@@ -40,7 +39,7 @@ uint8_t decode_command(uint8_t rx_buffer)
     SignFlag=0;
     DotFlag=0;
     DataIndex=0;
-    if (rx_buffer==TelecommandStart)
+    if (rx_buffer==TELECOMMAND_START)
     {
       ReceiveState=1;
     }
@@ -77,14 +76,14 @@ uint8_t decode_command(uint8_t rx_buffer)
     {
         ReceiveData[DataIndex]=rx_buffer;
         DataIndex++;
-      if (DataIndex > MaxLength) {ReceiveState = 0;}
+      if (DataIndex > TELECOMMAND_MAX_LEN) {ReceiveState = 0;}
       else {ReceiveState = 2;}
     }
-    else if (rx_buffer==TelecommandStart)
+    else if (rx_buffer==TELECOMMAND_START)
     {
       ReceiveState=1;
     }
-    else if (rx_buffer==TelecommandStop)
+    else if (rx_buffer==TELECOMMAND_STOP)
     {
       ReceiveData[DataIndex]= 0x00;
       success=execute_command(telecommand_id);
@@ -103,24 +102,37 @@ uint8_t execute_command(uint8_t telecommand_id)
 {
   switch (telecommand_id)
   {
-  case HBridge1PWM:
+  case ENABLE_CONTROL:
   {
-    magnet::actuate(MAGNET_IDX_0, float(atof(ReceiveData)));
+    if(int(atof(ReceiveData))== 1)
+    {
+      tamariw_collision_control_thread.stop_thread = true;
+    }
+    else
+    {
+      tamariw_collision_control_thread.stop_thread = false;
+      tamariw_collision_control_thread.resume();
+    }
     break;
   }
-  case HBridge2PWM:
+  case PI_POS_GAIN_KP:
   {
-    magnet::actuate(MAGNET_IDX_1, float(atof(ReceiveData)));
+    pid_distance.kp = float(atof(ReceiveData));
     break;
   }
-  case HBridge3PWM:
+  case PI_POS_GAIN_KI:
   {
-    magnet::actuate(MAGNET_IDX_2, float(atof(ReceiveData)));
+    pid_distance.ki = float(atof(ReceiveData));
     break;
   }
-  case HBridge4PWM:
+  case PI_VEL_GAIN_KP:
   {
-    magnet::actuate(MAGNET_IDX_3, float(atof(ReceiveData)));
+    pid_distance.kp = float(atof(ReceiveData));
+    break;
+  }
+  case PI_VEL_GAIN_KI:
+  {
+    pid_distance.kp = float(atof(ReceiveData));
     break;
   }
   default:
@@ -149,4 +161,4 @@ void telecommand_thread::run()
   }
 }
 
-telecommand_thread tamariw_telecommand_thread;
+telecommand_thread tamariw_telecommand_thread("telecommand_thread");

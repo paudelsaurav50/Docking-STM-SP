@@ -10,7 +10,6 @@ class pid
 {
 private:
   bool is_p = false, is_i = false, is_d = false; // Enable flags
-  float kp, ki, kd; // PID gains
   float ez = 0.0, iz = 0.0, dz = 0.0; // Past variables
   float u_min = 0.0, u_max = 0.0; // Output limits
 
@@ -19,6 +18,8 @@ private:
 public:
   pid();
   ~pid();
+
+  float kp, ki, kd; // PID gains
 
   void set_kp(const float p);
   void set_ki(const float i);

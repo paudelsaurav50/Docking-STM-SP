@@ -1,36 +1,25 @@
-/*****************************************************************
-Telecommand.h
-
-Original Created by: Atheel Redah @ University of W�rzburg
-Original Creation Date: March 8, 2015
-
-Development environment specifics:
-	Software Platform: Rodos (Realtime Onboard Dependable Operating System).
-	Hardware Platform: STM32F4 + W�rzburg Uni Informatik 8 Discovery AddOn Board Version 2.0.
-*****************************************************************/
+// TAMARIW telecommands only consists of (character, number) pair.
+// The intended numbers for each characters are in the comments below.
 
 #ifndef __TELECOMMAND_H__
 #define __TELECOMMAND_H_
 
 #include "rodos.h"
 
-#define MaxLength  12
+#define TELECOMMAND_MAX_LEN  12
 
-#define TelecommandStart '$'
-#define TelecommandStop  '#'
-#define TelecommandAck   '&'
+// Frame markers
+#define TELECOMMAND_START '$'
+#define TELECOMMAND_STOP '#'
 
-#define HBridge1PWM 'i'
-#define HBridge2PWM 'j'
-#define HBridge3PWM 'k'
-#define HBridge4PWM 'l'
-
+// Control gains
 #define PI_POS_GAIN_KP 'm'
 #define PI_POS_GAIN_KI 'n'
 #define PI_VEL_GAIN_KP 'o'
 #define PI_VEL_GAIN_KI 'p'
 
-#define ENABLE_CONTROL 'q'
+#define ENABLE_CONTROL 'q' // 0 enable, 1 disable
+#define TEST_MAGNETS 'r' // dutycycle for each magnets in [-90. 90]
 
 uint8_t decode_command(uint8_t rx_buffer);
 uint8_t execute_command(uint8_t telecommand_id);
@@ -38,6 +27,8 @@ uint8_t execute_command(uint8_t telecommand_id);
 class telecommand_thread: public Thread
 {
 public:
+  telecommand_thread(const char *thread_name) : Thread(thread_name) {}
+
   void init();
   void run();
 };

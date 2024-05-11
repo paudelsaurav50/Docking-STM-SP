@@ -1,3 +1,6 @@
+// Controls the current through each electromagnet to match desired_current[4].
+// Current control forms high frequency inner loop to the collision control thread.
+
 #include "pid.h"
 #include "utils.h"
 #include "rodos.h"
@@ -53,7 +56,7 @@ void current_control_thread::run(void)
       curr[i] = last_sign[i] * curr[i]; // assign sign to curr
       error[i] = desired_current[i] - curr[i]; // error
       pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
-      // magnet::actuate((magnet_idx)i, pwm[i]); // actuation
+      magnet::actuate((magnet_idx)i, pwm[i]); // actuation
       last_sign[i] = sign(pwm[i]); // store the sign
 
       // PRINTF("%f, %f", desired_current[i], curr[i]);
@@ -65,4 +68,4 @@ void current_control_thread::run(void)
   }
 }
 
-current_control_thread test_current_control_thread("current_control_thread");
+current_control_thread tamariw_current_control_thread("current_control_thread");
