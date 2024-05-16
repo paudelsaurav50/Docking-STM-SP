@@ -10,7 +10,7 @@
 class tof_thread : public Thread
 {
 private:
-  int period = 100; // millis
+  int period = 20; // millis
 
 public:
   tof_thread(const char* thread_name) : Thread(thread_name){}
