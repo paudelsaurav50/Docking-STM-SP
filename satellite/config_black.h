@@ -52,13 +52,18 @@
 #define EM3_ADC_CH ADC_CH_010
 
 // Periods of threads
-#define PERIOD_TOF_MILLIS 100
+#define PERIOD_TOF_MILLIS 10
 #define PERIOD_CONTROL_MILLIS 50
 
 // Control params
 #define PID_DISTANCE_UMAX 2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 22.0
-#define PID_DISTANCE_KI 33.0
+#define PID_DISTANCE_KP 5.0
+#define PID_DISTANCE_KI 0.5
+
+#define PID_VELOCITY_UMAX 2500
+#define PID_VELOCITY_UMIN 0
+#define PID_VELOCITY_KP 0.0
+#define PID_VELOCITY_KI 0.0
 
 #endif // config_black.h

@@ -80,3 +80,5 @@ This Project contains the source code for the testing of different modules of th
 3. Open-loop current versus temperature graph
 4. Closed-loop current versus temperature graph
 5. Atheel: Filter current measurements
+6. Sometimes satellite needs to be reconnected to battery for ToF to run.
+7. FSM for satellite states (least priority) after control is tested.

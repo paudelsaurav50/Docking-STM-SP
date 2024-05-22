@@ -6,6 +6,7 @@
 #include "satellite_config.h"
 
 extern pid pid_distance;
+extern pid pid_velocity;
 
 class collision_control_thread : public Thread
 {

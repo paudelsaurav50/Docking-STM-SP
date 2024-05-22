@@ -10,7 +10,7 @@
 class tof_thread : public Thread
 {
 private:
-  int period = 20; // millis
+  int period = 10; // millis
 
 public:
   tof_thread(const char* thread_name) : Thread(thread_name){}
@@ -41,7 +41,7 @@ void tof_thread::run()
 
     if(tof::get_distance(distance) == TOF_STATUS_OK)
     {
-      PRINTF("%d, %d, %d, %d mm\n", distance[0], distance[1], distance[2], distance[3]);
+      PRINTF("%d, %d, %d, %d\n", distance[0], distance[1], distance[2], distance[3]);
     }
     else
     {

@@ -18,7 +18,7 @@
 #define PI_VEL_GAIN_KP 'o'
 #define PI_VEL_GAIN_KI 'p'
 
-#define ENABLE_CONTROL 'q' // 0 enable, 1 disable
+#define ENABLE_CONTROL 'q' // 0 enable, 1 idle mode
 #define TEST_MAGNETS 'r' // dutycycle for each magnets in [-90. 90]
 
 uint8_t decode_command(uint8_t rx_buffer);

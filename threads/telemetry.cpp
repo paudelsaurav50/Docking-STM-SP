@@ -42,12 +42,15 @@ void telemetry_thread::run()
 
     const float i[4] = {CurrentDataReceiver.i0, CurrentDataReceiver.i1, CurrentDataReceiver.i2, CurrentDataReceiver.i3};
     const int16_t tof[4] = {LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4};
+    float v[4] = {LidarDataReceiver.vel1, LidarDataReceiver.vel2, LidarDataReceiver.vel3, LidarDataReceiver.vel4};
 
-    // PRINTF("$DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f #)# \r\n",
-    // get_voltage(), i[0], i[1], i[2], i[3], tof[0], tof[1], tof[2], tof[3], LidarDataReceiver.yaw);
+    float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
-    PRINTF("$DAT= %f,%f,%f,%f,%f,%f,%f,%d,%d,%f #)# \r\n",
-    get_voltage(), i[0], i[1], i[2], i[3], pid_distance.kp, pid_distance.ki, tof[2], tof[3], LidarDataReceiver.yaw);
+    PRINTF("DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f\r\n",
+    get_voltage(), i[0], i[1], i[2], i[3],
+    tof[0], tof[1], tof[2], tof[3], mean_vel,
+    pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
+    LidarDataReceiver.yaw);
 
     suspendCallerUntil(NOW() + 250 * MILLISECONDS);
   }

@@ -65,7 +65,9 @@ tof_status tof::init(const tof_idx idx)
       return TOF_STATUS_ERROR;
     }
   }
-   VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
+
+  // Enable high frequency sampling
+  VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
 
   return TOF_STATUS_OK;
 }

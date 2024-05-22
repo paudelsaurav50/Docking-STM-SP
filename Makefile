@@ -202,7 +202,7 @@ $(BUILD_DIR):
 #######################################
 # flash
 #######################################
-flash: all
+flash: clean-windows all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
 #######################################

@@ -21,7 +21,7 @@ sLidarData LidarData =
 class tof_range_thread : public Thread
 {
 public:
-  int period = 100; // millis
+  int period = PERIOD_TOF_MILLIS; // millis
 
 public:
   tof_range_thread(const char *name) : Thread(name) {}

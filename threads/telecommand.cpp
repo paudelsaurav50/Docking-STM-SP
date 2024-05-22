@@ -104,15 +104,28 @@ uint8_t execute_command(uint8_t telecommand_id)
   {
   case ENABLE_CONTROL:
   {
-    if(int(atof(ReceiveData))== 1)
+    if(int(atof(ReceiveData))== 1) // Idle mode
     {
+      // Magnets off and disable magnet thread
+      desired_current[0] = 0;
+      desired_current[1] = 0;
+      desired_current[2] = 0;
+      desired_current[3] = 0;
       tamariw_collision_control_thread.stop_thread = true;
     }
-    else
+    else // Resume control thread
     {
       tamariw_collision_control_thread.stop_thread = false;
       tamariw_collision_control_thread.resume();
     }
+    break;
+  }
+  case TEST_MAGNETS:
+  {
+    desired_current[0] = 1000;
+    desired_current[1] = 1000;
+    desired_current[2] = 1000;
+    desired_current[3] = 1000;
     break;
   }
   case PI_POS_GAIN_KP:
@@ -127,12 +140,12 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case PI_VEL_GAIN_KP:
   {
-    pid_distance.kp = float(atof(ReceiveData));
+    pid_velocity.kp = float(atof(ReceiveData));
     break;
   }
   case PI_VEL_GAIN_KI:
   {
-    pid_distance.kp = float(atof(ReceiveData));
+    pid_velocity.ki = float(atof(ReceiveData));
     break;
   }
   default:

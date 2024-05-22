@@ -4,7 +4,7 @@
 #include "tof.h"
 #include "rodos.h"
 
-int16_t calibration_distance_mm = 100;
+int16_t calibration_distance_mm = 162;
 int16_t calibration_samples = 20;
 
 
