@@ -56,14 +56,14 @@
 #define PERIOD_CONTROL_MILLIS 50
 
 // Control params
-#define PID_DISTANCE_UMAX 2500
+#define PID_DISTANCE_UMAX 2500*2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 5.0
-#define PID_DISTANCE_KI 0.5
+#define PID_DISTANCE_KP 4000
+#define PID_DISTANCE_KI 100
 
 #define PID_VELOCITY_UMAX 2500
 #define PID_VELOCITY_UMIN 0
-#define PID_VELOCITY_KP 0.0
+#define PID_VELOCITY_KP 50.0
 #define PID_VELOCITY_KI 0.0
 
 #endif // config_black.h

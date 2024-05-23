@@ -10,21 +10,21 @@ static sLidarData LidarDataReceiver;
 pid pid_distance;
 pid pid_velocity;
 
-float dist_sp = 50; // setpoint, mm
+float dist_sp = 10; // setpoint, mm
 float vel_sp = 0.5; // setpoint, mm
 
-  void collision_control_thread::init()
-  {
-    magnet::init();
+void collision_control_thread::init()
+{
+  magnet::init();
 
-    pid_distance.set_kp(PID_DISTANCE_KP);
-    pid_distance.set_ki(PID_DISTANCE_KI);
-    pid_distance.set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
+  pid_distance.set_kp(PID_DISTANCE_KP);
+  pid_distance.set_ki(PID_DISTANCE_KI);
+  pid_distance.set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
 
-    pid_velocity.set_kp(PID_VELOCITY_KP);
-    pid_velocity.set_ki(PID_VELOCITY_KI);
-    pid_velocity.set_control_limits(PID_VELOCITY_UMIN, PID_VELOCITY_UMAX);
-  }
+  pid_velocity.set_kp(PID_VELOCITY_KP);
+  pid_velocity.set_ki(PID_VELOCITY_KI);
+  pid_velocity.set_control_limits(PID_VELOCITY_UMIN, PID_VELOCITY_UMAX);
+}
 
 void collision_control_thread::run()
 {
@@ -45,27 +45,22 @@ void collision_control_thread::run()
     float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
     float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
+
+    if(mean_dist <50)
+    {
+      pid_distance.reset_memory();
+    }
+
     float dist_err = dist_sp - mean_dist;
     float currsq = pid_distance.update(dist_err, period / 1000.0);
-    float current = sqrt(fabs(1 / currsq));
-    // float current = currsq;
-
-// #ifdef WHITE_SAT
-//     current = sign(currsq) * current;
-// #endif
-//     pid_velocity.kp = current;
-
-    // if(do_velocity_pid)
-    // {
-    //   float vel_err = vel_sp - mean_vel;
-    //   pid_curr += pid_velocity.update(vel_err, period / 1000.0);
-    // }
+    float current = sign(currsq) * sqrt(fabs(currsq));
 
     desired_current[0] = current;
     desired_current[1] = current;
     desired_current[2] = current;
     desired_current[3] = current;
 
+    // PRINTF("%f, %f, %f\n", mean_dist, dist_err, curr);
     // PRINTF("%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);
     // PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
 

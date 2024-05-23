@@ -19,6 +19,8 @@ uint8_t DataIndex = 0;
 char telecommand_id;
 char ReceiveData[TELECOMMAND_MAX_LEN];
 
+HAL_GPIO power_reset_pin(GPIO_058);
+
 uint8_t decode_command(uint8_t rx_buffer)
 {
   uint8_t success=0;
@@ -122,6 +124,7 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case TEST_MAGNETS:
   {
+    power_reset_pin.setPins(0);
     desired_current[0] = 1000;
     desired_current[1] = 1000;
     desired_current[2] = 1000;
@@ -157,9 +160,11 @@ uint8_t execute_command(uint8_t telecommand_id)
   return 1;
 }
 
+
 void telecommand_thread::init()
 {
   magnet::init();
+  power_reset_pin.init(true, 1, 1);
 }
 
 void telecommand_thread::run()
