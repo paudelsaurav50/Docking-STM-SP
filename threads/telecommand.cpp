@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "magnet.h"
 #include "telecommand.h"
+#include "current_control.h"
 #include "satellite_config.h"
 #include "collision_control.h"
 
@@ -109,14 +110,13 @@ uint8_t execute_command(uint8_t telecommand_id)
     if(int(atof(ReceiveData))== 1) // Idle mode
     {
       // Magnets off and disable magnet thread
-      desired_current[0] = 0;
-      desired_current[1] = 0;
-      desired_current[2] = 0;
-      desired_current[3] = 0;
+      tamariw_current_control_thread.stop_control = true;
       tamariw_collision_control_thread.stop_thread = true;
+      magnet::stop(MAGNET_IDX_ALL);
     }
     else // Resume control thread
     {
+      tamariw_current_control_thread.stop_control = false;
       tamariw_collision_control_thread.stop_thread = false;
       tamariw_collision_control_thread.resume();
     }
@@ -124,11 +124,7 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case TEST_MAGNETS:
   {
-    power_reset_pin.setPins(0);
-    desired_current[0] = 1000;
-    desired_current[1] = 1000;
-    desired_current[2] = 1000;
-    desired_current[3] = 1000;
+    magnet::actuate(MAGNET_IDX_ALL, 20);
     break;
   }
   case PI_POS_GAIN_KP:
@@ -164,7 +160,6 @@ uint8_t execute_command(uint8_t telecommand_id)
 void telecommand_thread::init()
 {
   magnet::init();
-  power_reset_pin.init(true, 1, 1);
 }
 
 void telecommand_thread::run()

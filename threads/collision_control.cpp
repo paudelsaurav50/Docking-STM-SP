@@ -10,8 +10,8 @@ static sLidarData LidarDataReceiver;
 pid pid_distance;
 pid pid_velocity;
 
-float dist_sp = 10; // setpoint, mm
-float vel_sp = 0.5; // setpoint, mm
+float dist_sp = 100.0; // setpoint, mm
+float vel_sp = 0.0; // setpoint, mm
 
 void collision_control_thread::init()
 {
@@ -45,15 +45,22 @@ void collision_control_thread::run()
     float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
     float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
-
-    if(mean_dist <50)
-    {
-      pid_distance.reset_memory();
-    }
+    // if(mean_dist < 10)
+    // {
+    //   pid_distance.reset_memory();
+    // }
 
     float dist_err = dist_sp - mean_dist;
-    float currsq = pid_distance.update(dist_err, period / 1000.0);
+    float vel_err = vel_sp - mean_vel;
+    float currsq = pid_distance.update(dist_err, period / 1000.0) + pid_velocity.update(vel_err, period / 1000.0);
     float current = sign(currsq) * sqrt(fabs(currsq));
+
+#ifdef WHITE
+  if (current < 0.0)
+  {
+    current = -current;
+  }
+#endif
 
     desired_current[0] = current;
     desired_current[1] = current;

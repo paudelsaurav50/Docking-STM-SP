@@ -6,24 +6,13 @@
 #include "rodos.h"
 #include "magnet.h"
 #include "topics.h"
+#include "current_control.h"
 #include "satellite_config.h"
 
-int last_sign[4] = {0};
+int last_sign[4] = {1,1,1,1};
 pid ctrl[4];
 
 sCurrentData current_data = {0.0, 0.0, 0.0, 0.0};
-
-class current_control_thread : public Thread
-{
-private:
-  int period = 10; // millis
-
-public:
-  current_control_thread(const char* thread_name) : Thread(thread_name){}
-
-  void init(void);
-  void run(void);
-};
 
 void current_control_thread::init()
 {
@@ -39,30 +28,41 @@ void current_control_thread::run(void)
 {
   while(1)
   {
+  
     float error[4];
     float pwm[4];
     float curr[4];
 
     magnet::get_current(curr); // measurement
 
+    if(stop_control)
+    {
+      for(uint8_t i = 0; i < 4; i++)
+      {
+        ctrl[i].reset_memory();
+      }
+    }
+    else
+    {
+      for(uint8_t i = 0; i < 4; i++)
+      {
+        curr[i] = last_sign[i] * curr[i]; // assign sign to curr
+        error[i] = desired_current[i] - curr[i]; // error
+        pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
+        magnet::actuate((magnet_idx)i, pwm[i]); // actuation
+        last_sign[i] = sign(pwm[i]); // store the sign
+      
+        // PRINTF("%f, %f", desired_current[i], curr[i]);
+        // if(i != 3) PRINTF(", ");
+      }
+      // PRINTF("\n");
+    }
+
     current_data.i0 = curr[0];
     current_data.i1 = curr[1];
     current_data.i2 = curr[2];
     current_data.i3 = curr[3];
     CurrentDataTopic.publish(current_data);
-
-    for(uint8_t i = 0; i < 4; i++)
-    {
-      curr[i] = last_sign[i] * curr[i]; // assign sign to curr
-      error[i] = desired_current[i] - curr[i]; // error
-      pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
-      magnet::actuate((magnet_idx)i, pwm[i]); // actuation
-      last_sign[i] = sign(pwm[i]); // store the sign
-
-      // PRINTF("%f, %f", desired_current[i], curr[i]);
-      // if(i != 3) PRINTF(", ");
-    }
-    // PRINTF("\n");
 
     suspendCallerUntil(NOW() + period * MILLISECONDS);
   }
