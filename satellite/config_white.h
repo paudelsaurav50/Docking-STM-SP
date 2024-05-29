@@ -52,7 +52,7 @@
 #define EM3_ADC_CH ADC_CH_010
 
 // Periods of threads
-#define PERIOD_TOF_MILLIS 10
+#define PERIOD_TOF_MILLIS 60
 #define PERIOD_CONTROL_MILLIS 50
 
 // Control params
