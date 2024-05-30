@@ -56,10 +56,7 @@ void collision_control_thread::run()
     float current = sign(currsq) * sqrt(fabs(currsq));
 
 #ifdef WHITE
-  if (current < 0.0)
-  {
-    current = -current;
-  }
+  current = abs(current);
 #endif
 
     desired_current[0] = current;
