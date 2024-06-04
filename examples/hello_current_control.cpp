@@ -13,7 +13,7 @@
   1: regulation
   2: tracking
 */
-int control_mode = 0;
+int control_mode = 1;
 double time = 0.0;
 
 // Set points for regulation problem, milliamps

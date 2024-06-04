@@ -40,6 +40,7 @@ void current_control_thread::run(void)
       for(uint8_t i = 0; i < 4; i++)
       {
         ctrl[i].reset_memory();
+        magnet::stop(MAGNET_IDX_ALL);
       }
     }
     else
@@ -51,7 +52,6 @@ void current_control_thread::run(void)
         pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
         magnet::actuate((magnet_idx)i, pwm[i]); // actuation
         last_sign[i] = sign(pwm[i]); // store the sign
-      
         // PRINTF("%f, %f", desired_current[i], curr[i]);
         // if(i != 3) PRINTF(", ");
       }

@@ -10,7 +10,8 @@ static sLidarData LidarDataReceiver;
 pid pid_distance;
 pid pid_velocity;
 
-float dist_sp = 100.0; // setpoint, mm
+float last_error  = 0.0;
+float dist_sp = 0.0; // setpoint, mm
 float vel_sp = 0.0; // setpoint, mm
 
 void collision_control_thread::init()
@@ -51,12 +52,19 @@ void collision_control_thread::run()
     // }
 
     float dist_err = dist_sp - mean_dist;
+
+    // if(sign(last_error) != sign(dist_err))
+    // {
+    //   pid_distance.reset_memory();
+    // }
+    // last_error = dist_err;
+
     float vel_err = vel_sp - mean_vel;
     float currsq = pid_distance.update(dist_err, period / 1000.0) + pid_velocity.update(vel_err, period / 1000.0);
     float current = sign(currsq) * sqrt(fabs(currsq));
-
-#ifdef WHITE
-  current = abs(current);
+  
+#ifdef WHITE_SAT
+  current = fabs(current);
 #endif
 
     desired_current[0] = current;
@@ -73,3 +81,4 @@ void collision_control_thread::run()
 }
 
 collision_control_thread tamariw_collision_control_thread("collision_control_thread");
+// 15000, 20, 150

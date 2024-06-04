@@ -86,6 +86,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
   if (VL53L4CD_StartRanging(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
   {
 
+#if TOF_PERFORM_DATA_READY_CHECK == 1
     // Wait for data ready
     while (1)
     {
@@ -97,6 +98,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
         break;
       }
     }
+#endif
 
     VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result);
 
@@ -196,7 +198,7 @@ tof_status tof::get_velocity(float velocity[4])
   {
     for(uint8_t i = 0; i < 4; i++)
     {
-      velocity[i] = (distance[i] - last_distance[i]) / PERIOD_TOF_MILLIS;
+      velocity[i] = (distance[i] - last_distance[i]) * 100.0  / PERIOD_TOF_MILLIS;
       last_distance[i] = distance[i];
     }
 

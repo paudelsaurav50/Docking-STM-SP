@@ -47,6 +47,14 @@ public:
 
       if (tof::get_distance(distance) == TOF_STATUS_OK)
       {
+        for(uint8_t i = 0; i < 4; i++)
+        {
+          if(distance[i] > TOF_MAX_LENGTH_MM)
+          {
+            distance[i] = TOF_MAX_LENGTH_MM;
+          }
+        }
+    
         LidarData.lidar1 = distance[0];
         LidarData.lidar2 = distance[1];
         LidarData.lidar3 = distance[2];
@@ -72,6 +80,7 @@ public:
       else
       {
         PRINTF("ToF ranging error!\n");
+        init();
       }
 
       suspendCallerUntil(NOW() + period * MILLISECONDS);

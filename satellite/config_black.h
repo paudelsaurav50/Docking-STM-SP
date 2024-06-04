@@ -9,6 +9,7 @@
 #define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
 
 // ToF sensor
+#define TOF_MAX_LENGTH_MM 750
 #define TOF_I2C_HAL_IDX I2C_IDX1
 #define TOF_I2C_HAL_GPIO_SCL GPIO_022
 #define TOF_I2C_HAL_GPIO_SDA GPIO_023
@@ -58,12 +59,12 @@
 // Control params
 #define PID_DISTANCE_UMAX 2500*2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 3000
-#define PID_DISTANCE_KI 80
+#define PID_DISTANCE_KP 15000
+#define PID_DISTANCE_KI 20
 
 #define PID_VELOCITY_UMAX 2500
 #define PID_VELOCITY_UMIN 0
-#define PID_VELOCITY_KP 10.0
+#define PID_VELOCITY_KP 150.0
 #define PID_VELOCITY_KI 0.0
 
 #endif // config_black.h
