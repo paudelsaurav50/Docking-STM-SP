@@ -1,13 +1,15 @@
 #ifndef _CURRENT_CONTROL_H_
 #define _CURRENT_CONTROL_H_
 
+#include "satellite_config.h"
+
 class current_control_thread : public Thread
 {
 private:
-  int period = 10; // millis
+  int period = PERIOD_CURRENT_CONTROL; // millis
 
 public:
-  current_control_thread(const char* thread_name) : Thread(thread_name){}
+  current_control_thread(const char* thread_name, int priority) : Thread(thread_name, priority){}
 
   bool stop_control = true;
 

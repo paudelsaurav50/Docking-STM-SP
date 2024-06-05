@@ -26,9 +26,8 @@ void current_control_thread::init()
 
 void current_control_thread::run(void)
 {
-  while(1)
+  TIME_LOOP(1 * MILLISECONDS, period * MILLISECONDS)
   {
-  
     float error[4];
     float pwm[4];
     float curr[4];
@@ -63,9 +62,7 @@ void current_control_thread::run(void)
     current_data.i2 = curr[2];
     current_data.i3 = curr[3];
     CurrentDataTopic.publish(current_data);
-
-    suspendCallerUntil(NOW() + period * MILLISECONDS);
   }
 }
 
-current_control_thread tamariw_current_control_thread("current_control_thread");
+current_control_thread tamariw_current_control_thread("current_control_thread", 10);

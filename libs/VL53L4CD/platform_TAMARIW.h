@@ -78,13 +78,15 @@ typedef uint8_t VL53L4CD_Error;
  * with I2C Fast Mode Plus (up to 1MHz). Otherwise, default max value is 400kHz.
  */
 
-//#define VL53L4CD_I2C_FAST_MODE_PLUS
+#define VL53L4CD_I2C_FAST_MODE_PLUS
+
+void i2c_reset(void);
 
 
 /**
  * @brief Read 32 bits through I2C.
  */
-void init4cd();
+void tof_i2c_init();
 uint8_t PCA9546_SelPort(uint8_t i,uint16_t PCA9546_addr);
 uint8_t VL53L4CD_RdDWord(Dev_t dev, uint16_t registerAddr, uint32_t *value);
 /**

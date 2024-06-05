@@ -4,6 +4,8 @@
 // Global variable declarations
 extern float desired_current[4];
 
+#define WHITE_SAT
+
 #ifdef BLACK_SAT
 #include "config_black.h"
 #endif

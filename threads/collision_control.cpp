@@ -67,10 +67,15 @@ void collision_control_thread::run()
   current = fabs(current);
 #endif
 
-    desired_current[0] = current;
-    desired_current[1] = current;
-    desired_current[2] = current;
-    desired_current[3] = current;
+    // desired_current[0] = current;
+    // desired_current[1] = current;
+    // desired_current[2] = current;
+    // desired_current[3] = current;
+
+    desired_current[0] = 1500;
+    desired_current[1] = 1500;
+    desired_current[2] = 1500;
+    desired_current[3] = 1500;
 
     // PRINTF("%f, %f, %f\n", mean_dist, dist_err, curr);
     // PRINTF("%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);

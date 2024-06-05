@@ -50,7 +50,7 @@ void telemetry_thread::run()
     get_voltage(), i[0], i[1], i[2], i[3],
     tof[0], tof[1], tof[2], tof[3], mean_vel,
     pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
-    LidarDataReceiver.yaw);
+    LidarDataReceiver.deltaTime);
 
     suspendCallerUntil(NOW() + 250 * MILLISECONDS);
   }

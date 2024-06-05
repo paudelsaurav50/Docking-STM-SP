@@ -57,12 +57,15 @@
 */
 
 #include "platform_TAMARIW.h"
+#include "satellite_config.h"
 
 #include "rodos.h"
-//HAL_I2C I2C(I2C_IDX2);
-HAL_I2C I2C(I2C_IDX1,GPIO_022,GPIO_023); //TAMARIW, I2C1: SCL:PB6, SDA:PB7
-void init4cd(){
-	I2C.init();
+
+HAL_I2C I2C(TOF_I2C_HAL_IDX, TOF_I2C_HAL_GPIO_SCL, TOF_I2C_HAL_GPIO_SDA);
+
+void tof_i2c_init()
+{
+  I2C.init(TOF_I2C_HAL_FREQUENCY_HZ);
 }
 
 uint8_t PCA9546_SelPort(uint8_t i,uint16_t PCA9546_addr)

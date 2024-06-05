@@ -33,7 +33,7 @@ tof_status init_single(const tof_idx idx)
   // One I2C init sufficies
   if (!i2c_init_flag)
   {
-    init4cd();
+    tof_i2c_init();
     i2c_init_flag = true;
   }
 
@@ -118,6 +118,9 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     return TOF_STATUS_OK;
   }
 
+  tof_i2c_init();
+  *distance = -123;
+
   return TOF_STATUS_ERROR;
 }
 
@@ -125,21 +128,15 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 tof_status tof::get_distance(int distance[4])
 {
   int temp_dist;
+  tof_status status = TOF_STATUS_OK;
 
   for (uint8_t i = TOF_IDX_0; i <= TOF_IDX_3; i++)
   {
-    if (get_single_distance((tof_idx)i, &temp_dist) == TOF_STATUS_OK)
-    {
-      distance[i] = temp_dist;
-      AT(5 * MILLISECONDS);
-    }
-    else
-    {
-      return TOF_STATUS_ERROR;
-    }
+    status = get_single_distance((tof_idx)i, &temp_dist);
+    distance[i] = temp_dist;
   }
 
-  return TOF_STATUS_OK;
+  return status;
 }
 
 /*
