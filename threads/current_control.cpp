@@ -65,4 +65,4 @@ void current_control_thread::run(void)
   }
 }
 
-current_control_thread tamariw_current_control_thread("current_control_thread", 10);
+current_control_thread tamariw_current_control_thread("current_control_thread", 100);

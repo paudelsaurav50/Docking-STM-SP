@@ -35,7 +35,7 @@ void telemetry_thread::init()
 
 void telemetry_thread::run()
 {
-  while(1)
+  TIME_LOOP (10 * MILLISECONDS, period * MILLISECONDS)
   {
     LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
     CurrentDataBuffer.getOnlyIfNewData(CurrentDataReceiver);
@@ -51,8 +51,6 @@ void telemetry_thread::run()
     tof[0], tof[1], tof[2], tof[3], mean_vel,
     pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
     LidarDataReceiver.deltaTime);
-
-    suspendCallerUntil(NOW() + 250 * MILLISECONDS);
   }
 }
 

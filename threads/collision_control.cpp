@@ -29,7 +29,7 @@ void collision_control_thread::init()
 
 void collision_control_thread::run()
 {
-  while (1)
+  TIME_LOOP (1 * SECONDS, period * MILLISECONDS)
   {
     if(stop_thread)
     {
@@ -80,10 +80,7 @@ void collision_control_thread::run()
     // PRINTF("%f, %f, %f\n", mean_dist, dist_err, curr);
     // PRINTF("%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);
     // PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
-
-    suspendCallerUntil(NOW() + period * MILLISECONDS);
   }
 }
 
 collision_control_thread tamariw_collision_control_thread("collision_control_thread");
-// 15000, 20, 150
