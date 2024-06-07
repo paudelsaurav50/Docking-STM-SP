@@ -3,7 +3,6 @@
 
 #include "pid.h"
 #include "rodos.h"
-#include "satellite_config.h"
 
 extern pid pid_distance;
 extern pid pid_velocity;
@@ -11,10 +10,10 @@ extern pid pid_velocity;
 class collision_control_thread : public Thread
 {
 private:
-  int period = PERIOD_CONTROL_MILLIS; // millis
+  int period = THREAD_PERIOD_COLLISION_CTRL_MILLIS; // millis
 
 public:
-  collision_control_thread(const char *thread_name) : Thread(thread_name) {}
+  collision_control_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
 
   bool stop_thread = true;
 

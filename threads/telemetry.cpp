@@ -54,4 +54,4 @@ void telemetry_thread::run()
   }
 }
 
-telemetry_thread tamariw_telemetry_thread("telemetry_thread");
+telemetry_thread tamariw_telemetry_thread("telemetry_thread", THREAD_PRIO_TELEMETRY);

@@ -195,7 +195,7 @@ tof_status tof::get_velocity(float velocity[4])
   {
     for(uint8_t i = 0; i < 4; i++)
     {
-      velocity[i] = (distance[i] - last_distance[i]) * 100.0  / PERIOD_TOF_MILLIS;
+      velocity[i] = (distance[i] - last_distance[i]) * 100.0  / THREAD_PERIOD_TOF_MILLIS;
       last_distance[i] = distance[i];
     }
 

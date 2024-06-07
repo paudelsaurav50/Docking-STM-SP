@@ -51,6 +51,7 @@ void current_control_thread::run(void)
         pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
         magnet::actuate((magnet_idx)i, pwm[i]); // actuation
         last_sign[i] = sign(pwm[i]); // store the sign
+
         // PRINTF("%f, %f", desired_current[i], curr[i]);
         // if(i != 3) PRINTF(", ");
       }
@@ -65,4 +66,4 @@ void current_control_thread::run(void)
   }
 }
 
-current_control_thread tamariw_current_control_thread("current_control_thread", 100);
+current_control_thread tamariw_current_control_thread("current_control_thread", THREAD_PRIO_CURRENT_CTRL);

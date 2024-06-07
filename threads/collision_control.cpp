@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "topics.h"
 #include "magnet.h"
+#include "satellite_config.h"
 #include "collision_control.h"
 
 static CommBuffer<sLidarData> LidarDataBuffer;
@@ -83,4 +84,4 @@ void collision_control_thread::run()
   }
 }
 
-collision_control_thread tamariw_collision_control_thread("collision_control_thread");
+collision_control_thread tamariw_collision_control_thread("collision_control_thread", THREAD_PRIO_COLLISION_CTRL);

@@ -27,10 +27,12 @@ uint8_t execute_command(uint8_t telecommand_id);
 class telecommand_thread: public Thread
 {
 public:
-  telecommand_thread(const char *thread_name) : Thread(thread_name) {}
+  telecommand_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
 
   void init();
   void run();
 };
+
+extern telecommand_thread tamariw_telecommand_thread;
 
 #endif /* telecommand.h */

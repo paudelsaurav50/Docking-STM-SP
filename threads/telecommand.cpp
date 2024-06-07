@@ -179,4 +179,4 @@ void telecommand_thread::run()
   }
 }
 
-telecommand_thread tamariw_telecommand_thread("telecommand_thread");
+telecommand_thread tamariw_telecommand_thread("telecommand_thread", THREAD_PRIO_TELECOMMAND);

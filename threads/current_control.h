@@ -6,7 +6,7 @@
 class current_control_thread : public Thread
 {
 private:
-  int period = PERIOD_CURRENT_CONTROL; // millis
+  int period = THREAD_PERIOD_CURRENT_CTRL_MILLIS; // millis
 
 public:
   current_control_thread(const char* thread_name, int priority) : Thread(thread_name, priority){}
