@@ -41,8 +41,8 @@ void collision_control_thread::run()
 
     // Read relative distance
     LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
-    int d[4] = {LidarDataReceiver.lidar1, LidarDataReceiver.lidar2, LidarDataReceiver.lidar3, LidarDataReceiver.lidar4};
-    float v[4] = {LidarDataReceiver.vel1, LidarDataReceiver.vel2, LidarDataReceiver.vel3, LidarDataReceiver.vel4};
+    const int d[4] = {LidarDataReceiver.d[0], LidarDataReceiver.d[1], LidarDataReceiver.d[2], LidarDataReceiver.d[3]};
+    float v[4] = {LidarDataReceiver.v[0], LidarDataReceiver.v[1], LidarDataReceiver.v[2], LidarDataReceiver.v[3]};
 
     float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
     float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
