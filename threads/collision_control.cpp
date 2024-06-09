@@ -4,9 +4,12 @@
 #include "satellite_config.h"
 #include "collision_control.h"
 
-static CommBuffer<sLidarData> LidarDataBuffer;
-static Subscriber LidarDataSubscriber(LidarDataTopic, LidarDataBuffer);
-static sLidarData LidarDataReceiver;
+static CommBuffer<data_tof_range> cb_tof;
+static Subscriber subs_tof(topic_tof_range, cb_tof);
+static data_tof_range rx_tof;
+
+static data_collision_ctrl tx_tof;
+static data_desired_current tx_current;
 
 pid pid_distance;
 pid pid_velocity;
@@ -14,6 +17,7 @@ pid pid_velocity;
 float last_error  = 0.0;
 float dist_sp = 0.0; // setpoint, mm
 float vel_sp = 0.0; // setpoint, mm
+static double time = 0;
 
 void collision_control_thread::init()
 {
@@ -30,19 +34,22 @@ void collision_control_thread::init()
 
 void collision_control_thread::run()
 {
-  TIME_LOOP (1 * SECONDS, period * MILLISECONDS)
+  TIME_LOOP (THREAD_START_COLLISION_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
     if(stop_thread)
     {
       pid_velocity.reset_memory();
       pid_distance.reset_memory();
+      
+      tx_tof.dt = 0.0;
+      topic_collision_ctrl.publish(tx_tof);
       suspendCallerUntil(END_OF_TIME);
     }
 
     // Read relative distance
-    LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
-    const int d[4] = {LidarDataReceiver.d[0], LidarDataReceiver.d[1], LidarDataReceiver.d[2], LidarDataReceiver.d[3]};
-    float v[4] = {LidarDataReceiver.v[0], LidarDataReceiver.v[1], LidarDataReceiver.v[2], LidarDataReceiver.v[3]};
+    cb_tof.getOnlyIfNewData(rx_tof);
+    const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
+    float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
 
     float mean_dist = (d[0] + d[1] + d[2] + d[3]) / 4.0;
     float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
@@ -68,19 +75,24 @@ void collision_control_thread::run()
   current = fabs(current);
 #endif
 
-    // desired_current[0] = current;
-    // desired_current[1] = current;
-    // desired_current[2] = current;
-    // desired_current[3] = current;
-
-    desired_current[0] = 1500;
-    desired_current[1] = 1500;
-    desired_current[2] = 1500;
-    desired_current[3] = 1500;
+    tx_current.i[0] = 1500;
+    tx_current.i[1] = 1500;
+    tx_current.i[2] = 1500;
+    tx_current.i[3] = 1500;
+    topic_desired_current.publish(tx_current);
 
     // PRINTF("%f, %f, %f\n", mean_dist, dist_err, curr);
     // PRINTF("%f, %f, %f, %f\n", v[0], v[1], v[2], v[3]);
     // PRINTF("%d, %d, %d, %d, %f, %f\n", d[0], d[1], d[2], d[3], mean_dist, current);
+
+    // Publish data
+    tx_tof.dk[0] = pid_distance.kp,
+    tx_tof.dk[1] = pid_distance.ki,
+    tx_tof.vk[0] = pid_velocity.kp,
+    tx_tof.vk[1] = pid_velocity.ki,
+    tx_tof.dt = (NOW() - time) / MILLISECONDS;
+    topic_collision_ctrl.publish(tx_tof);
+    time = NOW();
   }
 }
 

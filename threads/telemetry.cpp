@@ -3,16 +3,23 @@
 #include "telemetry.h"
 #include "satellite_config.h"
 
-static CommBuffer<sLidarData> LidarDataBuffer;
-static Subscriber LidarDataSubscriber(LidarDataTopic, LidarDataBuffer);
-static sLidarData LidarDataReceiver;
+static CommBuffer<data_tof_range> cb_tof;
+static CommBuffer<data_current_ctrl> cb_current;
+static CommBuffer<data_collision_ctrl> cb_collision;
 
-static CommBuffer<sCurrentData> CurrentDataBuffer;
-static Subscriber CurrentDataSubscriber(CurrentDataTopic, CurrentDataBuffer);
-static sCurrentData CurrentDataReceiver;
+static Subscriber subs_tof(topic_tof_range, cb_tof);
+static Subscriber subs_current(topic_current_ctrl, cb_current);
+static Subscriber subs_collision(topic_collision_ctrl, cb_collision);
+
+static data_tof_range rx_tof;
+static data_current_ctrl rx_current;
+static data_collision_ctrl rx_collision;
 
 HAL_GPIO CHG_EN(EN_CHG_BAT); //Charge Enable HAL GPIO Defn
 HAL_ADC BATT_ADC(ADC_NO_BAT_MES);
+
+static double time = NOW();
+static float dt = 0;
 
 void init_multimeter(void)
 {
@@ -31,26 +38,28 @@ void telemetry_thread::init()
   init_multimeter();
 }
 
-#include "collision_control.h"
-
 void telemetry_thread::run()
 {
-  TIME_LOOP (10 * MILLISECONDS, period * MILLISECONDS)
+  TIME_LOOP (THREAD_START_TELEMETRY_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
-    LidarDataBuffer.getOnlyIfNewData(LidarDataReceiver);
-    CurrentDataBuffer.getOnlyIfNewData(CurrentDataReceiver);
+    cb_tof.getOnlyIfNewData(rx_tof);
+    cb_current.getOnlyIfNewData(rx_current);
+    cb_collision.getOnlyIfNewData(rx_collision);
 
-    const float i[4] = {CurrentDataReceiver.i[0], CurrentDataReceiver.i[1], CurrentDataReceiver.i[2], CurrentDataReceiver.i[3]};
-    const int d[4] = {LidarDataReceiver.d[0], LidarDataReceiver.d[1], LidarDataReceiver.d[2], LidarDataReceiver.d[3]};
-    float v[4] = {LidarDataReceiver.v[0], LidarDataReceiver.v[1], LidarDataReceiver.v[2], LidarDataReceiver.v[3]};
-
-    float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
+    const float i[4] = {rx_current.i[0], rx_current.i[1], rx_current.i[2], rx_current.i[3]};
+    const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
+    const float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
+    const float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
     PRINTF("DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f\r\n",
     get_voltage(), i[0], i[1], i[2], i[3],
     d[0], d[1], d[2], d[3], mean_vel,
-    pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
-    LidarDataReceiver.dt);
+    // pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
+    111.1f, rx_current.dt, rx_collision.dt, dt,
+    rx_tof.dt);
+
+    dt =  (NOW() - time) / MILLISECONDS;
+    time = NOW();
   }
 }
 

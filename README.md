@@ -82,3 +82,6 @@ This Project contains the source code for the testing of different modules of th
 5. Atheel: Filter current measurements
 6. Sometimes satellite needs to be reconnected to battery for ToF to run.
 7. FSM for satellite states (least priority) after control is tested.
+8. <del>Remove all the global variables and use topics instead.</del>
+9. <del>Transmit all the thread periods to the telemetry</del> and update ground station.
+

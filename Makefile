@@ -26,9 +26,6 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-libs/decadriver/deca_device.c \
-libs/decadriver/deca_params_init.c \
-libs/decadriver/deca_range_tables.c
 
 # ASM sources
 ASM_SOURCES =
@@ -40,19 +37,18 @@ CXX_SOURCES = \
 libs/pid/pid.cpp \
 libs/topics.cpp \
 libs/hbridge/hbridge.cpp \
-libs/VL53L4CD/platform_TAMARIW.cpp \
-libs/VL53L4CD/VL53L4CD_api.cpp \
-libs/VL53L4CD/VL53L4CD_calibration.cpp \
+\
+libs/vl53l4cd/platform_TAMARIW.cpp \
+libs/vl53l4cd/VL53L4CD_api.cpp \
+libs/vl53l4cd/VL53L4CD_calibration.cpp \
 \
 satellite/tof.cpp \
 satellite/utils.cpp \
 satellite/magnet.cpp \
-satellite/satellite_config.cpp \
 \
 threads/telemetry.cpp \
 threads/tof_range.cpp \
 threads/telecommand.cpp \
-\
 threads/current_control.cpp \
 threads/collision_control.cpp
 
@@ -121,9 +117,7 @@ C_INCLUDES =  \
 -I"../rodos/api/hal" \
 -I"../rodos/api" \
 -I"../rodos/default_usr_configs" \
--I"libs/decadriver" \
--I"libs/wrapper" \
--I"libs/VL53L4CD" \
+-I"libs/vl53l4cd" \
 -I"threads" \
 -I"satellite" \
 -I"libs/pid" \

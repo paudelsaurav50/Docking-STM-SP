@@ -124,12 +124,7 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case TEST_MAGNETS:
   {
-    // magnet::actuate(MAGNET_IDX_ALL, 20);
-    desired_current[0] = 1500;
-    desired_current[1] = 1500;
-    desired_current[2] = 1500;
-    desired_current[3] = 1500;
-    tamariw_current_control_thread.stop_control = false;
+    // tamariw_current_control_thread.stop_control = false;
     break;
   }
   case PI_POS_GAIN_KP:

@@ -1,4 +1,4 @@
-// Performs ToF range measurement and publishes to LidarDataTopic
+// Performs ToF range measurement and publishes to topic_tof_range
 
 #include "hal.h"
 #include "tof.h"
@@ -7,7 +7,7 @@
 #include "tof_range.h"
 #include "platform_TAMARIW.h"
 
-sLidarData LidarData;
+data_tof_range LidarData;
 static double time = NOW();
 
 void tof_range_thread::init()
@@ -25,7 +25,7 @@ void tof_range_thread::init()
 
 void tof_range_thread::run()
 {
-  TIME_LOOP (1 * SECONDS, period * MILLISECONDS)
+  TIME_LOOP (THREAD_START_TOF_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
     tof_status status = tof::get_distance(LidarData.d);
     
@@ -44,8 +44,8 @@ void tof_range_thread::run()
       PRINTF("ToF ranging error!\n");
     }
 
+    topic_tof_range.publish(LidarData);
     LidarData.dt = (NOW() - time) / MILLISECONDS;
-    LidarDataTopic.publish(LidarData);
     time = NOW();
   }
 }

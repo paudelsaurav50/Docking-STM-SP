@@ -5,6 +5,7 @@
 #define __TELECOMMAND_H_
 
 #include "rodos.h"
+#include "satellite_config.h"
 
 #define TELECOMMAND_MAX_LEN  12
 
@@ -26,6 +27,9 @@ uint8_t execute_command(uint8_t telecommand_id);
 
 class telecommand_thread: public Thread
 {
+private:
+  int period = THREAD_PERIOD_TELECOMMAND_MILLIS;
+
 public:
   telecommand_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
 

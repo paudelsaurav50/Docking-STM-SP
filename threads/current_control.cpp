@@ -12,7 +12,12 @@
 int last_sign[4] = {1,1,1,1};
 pid ctrl[4];
 
-sCurrentData cd;
+static CommBuffer<data_desired_current> cb_desired_current;
+static Subscriber subs_desired_current(topic_desired_current, cb_desired_current);
+static data_desired_current rx_desired;
+
+data_current_ctrl cd;
+static double time = NOW();
 
 void current_control_thread::init()
 {
@@ -26,7 +31,7 @@ void current_control_thread::init()
 
 void current_control_thread::run(void)
 {
-  TIME_LOOP(1 * MILLISECONDS, period * MILLISECONDS)
+  TIME_LOOP(THREAD_START_CURRENT_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
     float error[4];
     float pwm[4];
@@ -38,26 +43,33 @@ void current_control_thread::run(void)
       {
         ctrl[i].reset_memory();
         magnet::stop(MAGNET_IDX_ALL);
+        
+        cd.dt =  0.0;
+        topic_current_ctrl.publish(cd);
       }
     }
     else
     {
+      cb_desired_current.getOnlyIfNewData(rx_desired);
+
       for(uint8_t i = 0; i < 4; i++)
       {
         cd.i[i] = last_sign[i] * cd.i[i]; // assign sign
-        error[i] = desired_current[i] - cd.i[i]; // error
+        error[i] = rx_desired.i[i] - cd.i[i]; // error
         pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
         magnet::actuate((magnet_idx)i, pwm[i]); // actuation
         last_sign[i] = sign(pwm[i]); // store the sign
         cd.i[i] = cd.i[i];
 
-        // PRINTF("%f, %f", desired_current[i], cd.i[i]);
+        // PRINTF("%f, %f", rx_desired.i[i], cd.i[i]);
         // if(i != 3) PRINTF(", ");
       }
       // PRINTF("\n");
     }
 
-    CurrentDataTopic.publish(cd);
+    cd.dt =  (NOW() - time) / MILLISECONDS;
+    topic_current_ctrl.publish(cd);
+    time = NOW();
   }
 }
 
