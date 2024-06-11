@@ -137,6 +137,6 @@ void magnet::get_current(float current[4])
   for(uint8_t i = 0; i < 4; i++)
   {
     current[i] = get_current((magnet_idx(i)));
-    AT(1 * MILLISECONDS);
+    // AT(NOW() + 0.1 * MILLISECONDS);
   }
 }

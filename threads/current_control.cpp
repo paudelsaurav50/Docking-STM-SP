@@ -21,6 +21,8 @@ static double time = NOW();
 
 void current_control_thread::init()
 {
+  magnet::init();
+
   for(uint8_t i = 0; i < 4; i++)
   {
     ctrl[i].set_kp(0.065);
@@ -42,7 +44,7 @@ void current_control_thread::run(void)
       for(uint8_t i = 0; i < 4; i++)
       {
         ctrl[i].reset_memory();
-        magnet::stop(MAGNET_IDX_ALL);
+        // magnet::stop(MAGNET_IDX_ALL);
         
         cd.dt =  0.0;
         topic_current_ctrl.publish(cd);
@@ -59,7 +61,6 @@ void current_control_thread::run(void)
         pwm[i] = ctrl[i].update(error[i], period / 1000.0); // control
         magnet::actuate((magnet_idx)i, pwm[i]); // actuation
         last_sign[i] = sign(pwm[i]); // store the sign
-        cd.i[i] = cd.i[i];
 
         // PRINTF("%f, %f", rx_desired.i[i], cd.i[i]);
         // if(i != 3) PRINTF(", ");

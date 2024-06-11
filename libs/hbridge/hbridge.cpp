@@ -22,7 +22,7 @@ void hbridge::set_increments(uint32_t i)
 
 void hbridge::set_duty_cycle(float duty_cycle)
 {
-  uint32_t pw_increments = abs(duty_cycle * (increments / 100.0f));
+  unsigned int pw_increments = (int)abs(duty_cycle * (increments / 100.0f));
 
   if (duty_cycle < 0)
   {

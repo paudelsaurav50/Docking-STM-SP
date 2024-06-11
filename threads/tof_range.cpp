@@ -8,7 +8,7 @@
 #include "platform_TAMARIW.h"
 
 data_tof_range LidarData;
-static double time = NOW();
+static double time = 0.0;
 
 void tof_range_thread::init()
 {

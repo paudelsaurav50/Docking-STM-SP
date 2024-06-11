@@ -21,8 +21,6 @@ static double time = 0;
 
 void collision_control_thread::init()
 {
-  magnet::init();
-
   pid_distance.set_kp(PID_DISTANCE_KP);
   pid_distance.set_ki(PID_DISTANCE_KI);
   pid_distance.set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
