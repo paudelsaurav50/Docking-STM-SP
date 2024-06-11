@@ -207,6 +207,8 @@ clean-windows:
 
 clean-linux:
 	rm -r $(BUILD_DIR) || true
+flash-sftp:all
+	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=sftp-script.txt
 
 # Build RODOS for Linux
 rodos-linux:
