@@ -29,6 +29,9 @@ This Project contains the source code for the testing of different modules of th
 1. [hello_tof](examples/hello_tof.cpp) - Test file for ToF sensors.
 2. [hello_magnets](examples/hello_tof.cpp) - Test file for electromagnets.
 3. [hello_tofcal](examples/hello_tofcal.cpp) - Performs ToF calibration.
+4. [hello_em_current](examples/hello_tofcal.cpp) - Displays the current versus PWM for wide, configurable, range of PWM. Intended to be used to study how temperature affects the electromagnet's current for same PWM.
+5. [hello_current_contro](examples/hello_tofcal.cpp) - Test file for current control of electromagnets for PID tuning. It has two modes; regulation and trajectory tracking.
+
 
 ### threads
 
