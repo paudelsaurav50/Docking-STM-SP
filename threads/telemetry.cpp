@@ -42,6 +42,7 @@ void telemetry_thread::run()
 {
   TIME_LOOP (THREAD_START_TELEMETRY_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
+    time = NOW();
     cb_tof.getOnlyIfNewData(rx_tof);
     cb_current.getOnlyIfNewData(rx_current);
     cb_collision.getOnlyIfNewData(rx_collision);
@@ -59,7 +60,6 @@ void telemetry_thread::run()
     rx_tof.dt);
 
     dt =  (NOW() - time) / MILLISECONDS;
-    time = NOW();
   }
 }
 

@@ -27,6 +27,7 @@ void tof_range_thread::run()
 {
   TIME_LOOP (THREAD_START_TOF_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
+    time = NOW();
     tof_status status = tof::get_distance(LidarData.d);
     
     // Remove crazy data
@@ -46,7 +47,6 @@ void tof_range_thread::run()
 
     topic_tof_range.publish(LidarData);
     LidarData.dt = (NOW() - time) / MILLISECONDS;
-    time = NOW();
   }
 }
 

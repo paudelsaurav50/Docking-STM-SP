@@ -35,6 +35,7 @@ void current_control_thread::run(void)
 {
   TIME_LOOP(THREAD_START_CURRENT_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
+    time = NOW();
     float error[4];
     float pwm[4];
     magnet::get_current(cd.i);
@@ -70,7 +71,6 @@ void current_control_thread::run(void)
 
     cd.dt =  (NOW() - time) / MILLISECONDS;
     topic_current_ctrl.publish(cd);
-    time = NOW();
   }
 }
 

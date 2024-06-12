@@ -34,6 +34,8 @@ void collision_control_thread::run()
 {
   TIME_LOOP (THREAD_START_COLLISION_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
+    time = NOW();
+  
     if(stop_thread)
     {
       pid_velocity.reset_memory();
@@ -90,7 +92,6 @@ void collision_control_thread::run()
     tx_tof.vk[1] = pid_velocity.ki,
     tx_tof.dt = (NOW() - time) / MILLISECONDS;
     topic_collision_ctrl.publish(tx_tof);
-    time = NOW();
   }
 }
 
