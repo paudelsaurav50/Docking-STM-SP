@@ -1,7 +1,11 @@
 #ifndef _SATELLITE_CONFIG_H_
 #define _SATELLITE_CONFIG_H_
 
-#define WHITE_SAT
+#define GOLD_SAT
+
+#ifdef GOLD_SAT
+#include "config_gold.h"
+#endif
 
 #ifdef BLACK_SAT
 #include "config_black.h"

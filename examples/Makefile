@@ -189,6 +189,9 @@ $(BUILD_DIR):
 flash: clean-windows all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
+flash-sftp: clean-windows all
+	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=../sftp-script.txt
+
 #######################################
 # clean up
 #######################################
