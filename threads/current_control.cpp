@@ -25,9 +25,9 @@ void current_control_thread::init()
 
   for(uint8_t i = 0; i < 4; i++)
   {
-    ctrl[i].set_kp(0.065);
-    ctrl[i].set_ki(0.3);
-    ctrl[i].set_control_limits(-90, 90);
+    ctrl[i].set_kp(PID_CURRENT_KP);
+    ctrl[i].set_ki(PID_CURRENT_KI);
+    ctrl[i].set_control_limits(PID_CURRENT_UMIN, PID_CURRENT_UMAX);
   }
 }
 

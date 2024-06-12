@@ -10,9 +10,6 @@
 
 // ToF sensor
 #define TOF_MAX_LENGTH_MM 750
-// #define TOF_I2C_HAL_IDX I2C_IDX3
-// #define TOF_I2C_HAL_GPIO_SCL GPIO_008 // PA8
-// #define TOF_I2C_HAL_GPIO_SDA GPIO_041 // PC9
 #define TOF_I2C_HAL_IDX I2C_IDX1
 #define TOF_I2C_HAL_GPIO_SCL GPIO_022 // PB6
 #define TOF_I2C_HAL_GPIO_SDA GPIO_023 // PB7
@@ -77,15 +74,22 @@
 #define THREAD_START_CURRENT_CTRL_MILLIS 400
 #define THREAD_START_COLLISION_CTRL_MILLIS 500
 
-// Control params
+// Distance control params
 #define PID_DISTANCE_UMAX 2500 * 2500
 #define PID_DISTANCE_UMIN 0
 #define PID_DISTANCE_KP 15000
 #define PID_DISTANCE_KI 20.0
 
+// Velocity control params
 #define PID_VELOCITY_UMAX 2500
 #define PID_VELOCITY_UMIN 0
 #define PID_VELOCITY_KP 150.0
 #define PID_VELOCITY_KI 0.0
+
+// Current control params
+#define PID_CURRENT_UMAX 90
+#define PID_CURRENT_UMIN 0
+#define PID_CURRENT_KP 0.065
+#define PID_CURRENT_KI 0.3
 
 #endif // config_white.h

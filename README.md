@@ -30,7 +30,8 @@ This Project contains the source code for the testing of different modules of th
 2. [hello_magnets](examples/hello_tof.cpp) - Test file for electromagnets.
 3. [hello_tofcal](examples/hello_tofcal.cpp) - Performs ToF calibration.
 4. [hello_em_current](examples/hello_tofcal.cpp) - Displays the current versus PWM for wide, configurable, range of PWM. Intended to be used to study how temperature affects the electromagnet's current for same PWM.
-5. [hello_current_contro](examples/hello_tofcal.cpp) - Test file for current control of electromagnets for PID tuning. It has two modes; regulation and trajectory tracking.
+5. [hello_current_control](examples/hello_tofcal.cpp) - Test file for current control of electromagnets for PID tuning. It has two modes; regulation and trajectory tracking.
+6. [hello_tof_single](examples/hello_tof.cpp) - To test single ToF sensor module independent of Tamariw boards.
 
 
 ### threads
@@ -78,13 +79,11 @@ This Project contains the source code for the testing of different modules of th
 
 ## todos
 
-1. Soft colision position PID control
-2. Relative orientation control (yaw = 0)
-3. Open-loop current versus temperature graph
-4. Closed-loop current versus temperature graph
-5. Atheel: Filter current measurements
-6. Sometimes satellite needs to be reconnected to battery for ToF to run.
-7. FSM for satellite states (least priority) after control is tested.
-8. <del>Remove all the global variables and use topics instead.</del>
-9. <del>Transmit all the thread periods to the telemetry</del> and update ground station.
-
+1. Soft colision between two satellites.
+2. Open-loop current versus temperature graph.
+3. Closed-loop current versus temperature graph.
+4. Filter current measurements (?).
+5. How to handle hard freeze of I2C bus (one which requires power restart)?
+6. FSM for satellite states (least priority) after control is tested.
+7. Handle all the sensor anomalies.
+8. Proper error status flags and handlers.
