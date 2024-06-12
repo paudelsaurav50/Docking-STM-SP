@@ -75,10 +75,10 @@ void collision_control_thread::run()
   current = fabs(current);
 #endif
 
-    tx_current.i[0] = 2200;
-    tx_current.i[1] = 2200;
-    tx_current.i[2] = 2200;
-    tx_current.i[3] = 2200;
+    tx_current.i[0] = 1500;
+    tx_current.i[1] = 1500;
+    tx_current.i[2] = 1500;
+    tx_current.i[3] = 1500;
     topic_desired_current.publish(tx_current);
 
     // PRINTF("%f, %f, %f\n", mean_dist, dist_err, curr);

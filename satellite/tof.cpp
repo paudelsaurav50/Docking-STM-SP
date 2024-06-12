@@ -43,6 +43,9 @@ tof_status init_single(const tof_idx idx)
   // Initialize and return status
   if (VL53L4CD_SensorInit(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
   {
+    // Enable high frequency sampling
+    VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
+  
     return TOF_STATUS_OK;
   }
 
@@ -66,9 +69,6 @@ tof_status tof::init(const tof_idx idx)
     }
   }
 
-  // Enable high frequency sampling
-  VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
-
   return TOF_STATUS_OK;
 }
 
@@ -82,6 +82,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
   }
 
   PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS);
+  AT(NOW() + 0.5 * MILLISECONDS);
 
   if (VL53L4CD_StartRanging(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
   {
