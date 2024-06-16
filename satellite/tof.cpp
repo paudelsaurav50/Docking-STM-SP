@@ -13,6 +13,9 @@ bool tof_filter_flag = false;
 MedianFilter<int, 25> filter[4];
 float last_distance[4];
 
+HAL_GPIO tof_xshut_a(TOF_A_PIN_XSHUT);
+HAL_GPIO tof_xshut_b(TOF_B_PIN_XSHUT);
+
 // VL53L4CD API params
 VL53L4CD_ResultsData_t tof_result;
 bool i2c_init_flag = false;
@@ -204,4 +207,18 @@ tof_status tof::get_velocity(float velocity[4])
   }
 
   return TOF_STATUS_ERROR;
+}
+
+void tof::shut_down(void)
+{
+  tof_xshut_a.init(false, 1, 0);
+  tof_xshut_b.init(false, 1, 0);
+}
+
+// Wakeup and wait for sensor to boot
+void tof::wakeup(void)
+{
+  tof_xshut_a.init(false, 1, 1);
+  tof_xshut_b.init(false, 1, 1);
+  AT(NOW() + TOF_TBOOT_MILLIS * MILLISECONDS);
 }

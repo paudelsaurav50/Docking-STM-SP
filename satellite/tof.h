@@ -32,6 +32,9 @@ namespace tof
   tof_status get_single_distance(const tof_idx idx, int *distance);
   tof_status calibrate(const int16_t target_mm, const int16_t n);
 
+  void shut_down(void);
+  void wakeup(void);
+
   tof_status get_yaw(float *yaw);
   tof_status get_velocity(float velocity[4]);
 

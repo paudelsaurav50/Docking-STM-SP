@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include "tof.h"
 #include "magnet.h"
 #include "telecommand.h"
 #include "current_control.h"
@@ -125,6 +126,8 @@ uint8_t execute_command(uint8_t telecommand_id)
   case TEST_MAGNETS:
   {
     // tamariw_current_control_thread.stop_control = false;
+    tof::shut_down();
+    tof::wakeup();
     break;
   }
   case PI_POS_GAIN_KP:
