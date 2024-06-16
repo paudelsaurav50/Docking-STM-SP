@@ -46,9 +46,10 @@ tof_status init_single(const tof_idx idx)
   // Initialize and return status
   if (VL53L4CD_SensorInit(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
   {
-    // Enable high frequency sampling
+    // Enable 10 ms sampling and start sampling
     VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
-  
+    VL53L4CD_StartRanging(TOF_I2C_ADDRESS);
+
     return TOF_STATUS_OK;
   }
 
@@ -83,12 +84,15 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
   {
     return TOF_STATUS_ERROR;
   }
-
+  
+  /*
+    It seems like that the delay is not really necessary.
+    Wait till data ready seems to do the trick. However,
+    I have not removed the line alltogether for the remainder
+    that if something goes wrong, I need to uncomment it.
+  */
   PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS);
-  AT(NOW() + 0.5 * MILLISECONDS);
-
-  if (VL53L4CD_StartRanging(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
-  {
+  // AT(NOW() + 0.5 * MILLISECONDS);
 
 #if TOF_PERFORM_DATA_READY_CHECK == 1
     // Wait for data ready
@@ -104,8 +108,8 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     }
 #endif
 
-    VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result);
-
+  if (VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4CD_ERROR_NONE)
+  {
     if (tof_filter_flag)
     {
       filter[(uint8_t)idx].addSample(tof_result.distance_mm);
@@ -117,7 +121,6 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     }
 
     VL53L4CD_ClearInterrupt(TOF_I2C_ADDRESS);
-    VL53L4CD_StopRanging(TOF_I2C_ADDRESS);
 
     return TOF_STATUS_OK;
   }

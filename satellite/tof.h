@@ -7,7 +7,7 @@
 #include "satellite_config.h"
 #include <inttypes.h>
 
-#define TOF_PERFORM_DATA_READY_CHECK 0
+#define TOF_PERFORM_DATA_READY_CHECK 1
 
 // Indices to access individual sensor
 enum tof_idx
