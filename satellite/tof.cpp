@@ -59,6 +59,7 @@ tof_status init_single(const tof_idx idx)
 // Initialize either single or all sensors
 tof_status tof::init(const tof_idx idx)
 {
+  
   if (idx != TOF_IDX_ALL)
   {
     return init_single(idx);
@@ -134,6 +135,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 // Range in mm for 'all' sensors
 tof_status tof::get_distance(int distance[4])
 {
+
   int temp_dist;
   tof_status status = TOF_STATUS_OK;
 
@@ -214,14 +216,25 @@ tof_status tof::get_velocity(float velocity[4])
 
 void tof::shut_down(void)
 {
-  tof_xshut_a.init(false, 1, 0);
-  tof_xshut_b.init(false, 1, 0);
+  tof_xshut_a.setPins(0);
+  tof_xshut_b.setPins(0);
+}
+
+void tof::int_xshunt(void)
+{
+  tof_xshut_a.init(true,1,0);
+  tof_xshut_b.init(true,1,0);
 }
 
 // Wakeup and wait for sensor to boot
 void tof::wakeup(void)
 {
-  tof_xshut_a.init(false, 1, 1);
-  tof_xshut_b.init(false, 1, 1);
-  AT(NOW() + TOF_TBOOT_MILLIS * MILLISECONDS);
+  tof_xshut_a.setPins(1);
+  tof_xshut_b.setPins(1);
+}
+
+void tof::i2c_reset()
+{
+  i2c_init_flag=false;
+  tof_i2c_restart();
 }

@@ -12,7 +12,7 @@ public:
 
 public:
   tof_range_thread(const char *name, int priority) : Thread(name, priority) {}
-
+  void init_params();
   void init();
   void run();
 };

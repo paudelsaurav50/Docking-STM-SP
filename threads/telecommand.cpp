@@ -127,7 +127,20 @@ uint8_t execute_command(uint8_t telecommand_id)
   {
     // tamariw_current_control_thread.stop_control = false;
     tof::shut_down();
+    AT(NOW()+3*MILLISECONDS);
     tof::wakeup();
+    AT(NOW()+3*MILLISECONDS);
+    tof::i2c_reset();
+    AT(NOW()+3*MILLISECONDS);
+      if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
+    {
+      PRINTF("VL53L4CD initialized!\n");
+    }
+    else
+    {
+      PRINTF("VL53L4CD error :(\n");
+    }
+    tof::enable_median_filter();
     break;
   }
   case PI_POS_GAIN_KP:

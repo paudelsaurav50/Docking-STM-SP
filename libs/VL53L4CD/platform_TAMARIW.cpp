@@ -71,6 +71,11 @@ void tof_i2c_init()
   I2C.init(TOF_I2C_HAL_FREQUENCY_HZ);
 }
 
+void tof_i2c_restart()
+{
+	I2C.reset();
+}
+
 uint8_t PCA9546_SelPort(uint8_t i,uint16_t PCA9546_addr)
 {
 	/*
