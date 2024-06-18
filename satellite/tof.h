@@ -22,7 +22,8 @@ enum tof_idx
 enum tof_status
 {
   TOF_STATUS_ERROR,
-  TOF_STATUS_OK
+  TOF_STATUS_OK,
+  TOF_STATUS_TIMEOUT
 };
 
 namespace tof

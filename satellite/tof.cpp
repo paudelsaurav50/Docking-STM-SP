@@ -59,7 +59,6 @@ tof_status init_single(const tof_idx idx)
 // Initialize either single or all sensors
 tof_status tof::init(const tof_idx idx)
 {
-  
   if (idx != TOF_IDX_ALL)
   {
     return init_single(idx);
@@ -86,27 +85,39 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     return TOF_STATUS_ERROR;
   }
   
-  /*
-    It seems like that the delay is not really necessary.
-    Wait till data ready seems to do the trick. However,
-    I have not removed the line alltogether for the remainder
-    that if something goes wrong, I need to uncomment it.
-  */
-  PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS);
-  // AT(NOW() + 0.5 * MILLISECONDS);
+ double time_now = NOW();
+
+ while(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
+ {
+  time_now = NOW();
+  
+  if((NOW() - time_now) / MILLISECONDS >= 2)
+  {
+    PRINTF("MUX timeout :(\n");
+    return TOF_STATUS_TIMEOUT;
+  }
+ }
 
 #if TOF_PERFORM_DATA_READY_CHECK == 1
-    // Wait for data ready
-    while (1)
-    {
-      uint8_t data_ready = 0;
-      VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
+  time_now = NOW();
+  
+  // Wait for data ready
+  while (1)
+  {    
+    uint8_t data_ready = 0;
+    VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
 
-      if (data_ready)
-      {
-        break;
-      }
+    if((NOW() - time_now) / MILLISECONDS >= 2)
+    {
+      PRINTF("ToF timeout :(\n");
+      return TOF_STATUS_TIMEOUT;
     }
+    
+    if (data_ready)
+    {
+      break;
+    }
+  }
 #endif
 
   if (VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4CD_ERROR_NONE)

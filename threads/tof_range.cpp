@@ -12,18 +12,17 @@ static double time = 0.0;
 
 void tof_range_thread::init()
 {
-  /*/
-  if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
-  {
-    PRINTF("VL53L4CD initialized!\n");
-  }
-  else
-  {
-    PRINTF("VL53L4CD error :(\n");
-  }
-  tof::enable_median_filter();
-  */
+  // if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
+  // {
+  //   PRINTF("VL53L4CD initialized!\n");
+  // }
+  // else
+  // {
+  //   PRINTF("VL53L4CD error :(\n");
+  // }
+  // tof::enable_median_filter();
 }
+
 void tof_range_thread::init_params()
 {
   if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
@@ -36,6 +35,7 @@ void tof_range_thread::init_params()
   }
   tof::enable_median_filter();
 }
+
 void tof_range_thread::run()
 {
   tof::int_xshunt();

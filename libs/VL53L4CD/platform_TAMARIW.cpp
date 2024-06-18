@@ -90,7 +90,7 @@ uint8_t PCA9546_SelPort(uint8_t i,uint16_t PCA9546_addr)
 	uint8_t dev8=(uint8_t)(PCA9546_addr & 0x00FF);
 	if(i>3)return 255;
 	uint8_t portVal[1]={(uint8_t)((1<<i) & (0x00FF))};
-	status=I2C.write(dev8,portVal,1)==1?0:255;
+	status=I2C.write(dev8,portVal,1);
 #endif
 
 	return status;
