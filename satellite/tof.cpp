@@ -133,7 +133,6 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     return TOF_STATUS_OK;
   }
 
-  tof_i2c_init();
   *distance = -123;
 
   return TOF_STATUS_ERROR;
