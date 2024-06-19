@@ -85,7 +85,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     return TOF_STATUS_ERROR;
   }
   
-
+   AT(NOW()+2*MILLISECONDS);
  // Check timeout for port selection
  double time_now = NOW();
  while(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
