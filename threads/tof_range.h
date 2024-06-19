@@ -7,6 +7,7 @@ class tof_range_thread : public Thread
 {
 public:
   int period = THREAD_PERIOD_TOF_MILLIS; // millis
+  bool restart_tof = false;
   double time = NOW();
 
 

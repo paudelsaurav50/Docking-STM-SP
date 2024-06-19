@@ -85,32 +85,29 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
     return TOF_STATUS_ERROR;
   }
   
- double time_now = NOW();
 
+ // Check timeout for port selection
+ double time_now = NOW();
  while(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
  {
   time_now = NOW();
   
-  if((NOW() - time_now) / MILLISECONDS >= 2)
+  if((NOW() - time_now) / MILLISECONDS >= TOF_MUX_TIMEOUT_MILLIS)
   {
-    PRINTF("MUX timeout :(\n");
-    return TOF_STATUS_TIMEOUT;
+    return TOF_STATUS_MUX_TIMEOUT;
   }
  }
-
-#if TOF_PERFORM_DATA_READY_CHECK == 1
-  time_now = NOW();
   
-  // Wait for data ready
+  // Check timeout for data ready
+  time_now = NOW();
   while (1)
   {    
     uint8_t data_ready = 0;
     VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
 
-    if((NOW() - time_now) / MILLISECONDS >= 2)
+    if((NOW() - time_now) / MILLISECONDS >= TOF_RANGE_TIMEOUT_MILLIS)
     {
-      PRINTF("ToF timeout :(\n");
-      return TOF_STATUS_TIMEOUT;
+      return TOF_STATUS_TOF_TIMEOUT;
     }
     
     if (data_ready)
@@ -118,7 +115,6 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
       break;
     }
   }
-#endif
 
   if (VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4CD_ERROR_NONE)
   {
@@ -229,6 +225,7 @@ void tof::shut_down(void)
 {
   tof_xshut_a.setPins(0);
   tof_xshut_b.setPins(0);
+  AT(NOW() + 3 * MILLISECONDS);
 }
 
 void tof::int_xshunt(void)
@@ -242,10 +239,19 @@ void tof::wakeup(void)
 {
   tof_xshut_a.setPins(1);
   tof_xshut_b.setPins(1);
+  AT(NOW() + 3 * MILLISECONDS);
 }
 
-void tof::i2c_reset()
+void tof::i2c_reset(void)
 {
-  i2c_init_flag=false;
+  i2c_init_flag = false;
   tof_i2c_restart();
+  AT(NOW() + 3 * MILLISECONDS);
+}
+
+void tof::restart(void)
+{
+  tof::shut_down();
+  tof::wakeup();
+  tof::i2c_reset();
 }

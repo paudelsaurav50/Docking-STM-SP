@@ -8,6 +8,10 @@
 #define BATT_MES_ADC_CH ADC_CH_014 // ADC3_CH14, PC4, Battery Voltage Monitor
 #define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
 
+// Timeouts
+#define TOF_MUX_TIMEOUT_MILLIS 2
+#define TOF_RANGE_TIMEOUT_MILLIS 2
+
 // ToF sensor
 #define TOF_MAX_LENGTH_MM 750
 #define TOF_I2C_HAL_IDX I2C_IDX1

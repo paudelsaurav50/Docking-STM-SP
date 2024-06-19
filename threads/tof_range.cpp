@@ -12,15 +12,7 @@ static double time = 0.0;
 
 void tof_range_thread::init()
 {
-  // if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
-  // {
-  //   PRINTF("VL53L4CD initialized!\n");
-  // }
-  // else
-  // {
-  //   PRINTF("VL53L4CD error :(\n");
-  // }
-  // tof::enable_median_filter();
+  tof::int_xshunt();
 }
 
 void tof_range_thread::init_params()
@@ -38,34 +30,41 @@ void tof_range_thread::init_params()
 
 void tof_range_thread::run()
 {
-  tof::int_xshunt();
-  AT(NOW()+3*MILLISECONDS);
   tof::wakeup();
-  AT(NOW()+3*MILLISECONDS);
   init_params();
 
   TIME_LOOP (THREAD_START_TOF_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
-    time = NOW();
-    tof_status status = tof::get_distance(LidarData.d);
-    
-    // Remove crazy data
-    for(uint8_t i = 0; i < 4; i++)
+    if(restart_tof)
     {
-      if(LidarData.d[i] > TOF_MAX_LENGTH_MM)
+      tof::restart();
+      init_params();
+      restart_tof = false;
+    }
+    else
+    {
+      time = NOW();
+      tof_status status = tof::get_distance(LidarData.d);
+      
+      // Remove crazy data
+      for(uint8_t i = 0; i < 4; i++)
       {
-        LidarData.d[i] = TOF_MAX_LENGTH_MM;
+        if(LidarData.d[i] > TOF_MAX_LENGTH_MM)
+        {
+          LidarData.d[i] = TOF_MAX_LENGTH_MM;
+        }
+      }
+      tof::get_velocity(LidarData.v);
+      
+      LidarData.status = status;
+      topic_tof_range.publish(LidarData);
+      LidarData.dt = (NOW() - time) / MILLISECONDS;
+
+      if(status != TOF_STATUS_OK)
+      {
+        restart_tof = true;
       }
     }
-    tof::get_velocity(LidarData.v);
-
-    if(status == TOF_STATUS_ERROR)
-    {
-      PRINTF("ToF ranging error!\n");
-    }
-
-    topic_tof_range.publish(LidarData);
-    LidarData.dt = (NOW() - time) / MILLISECONDS;
   }
 }
 

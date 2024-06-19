@@ -8,6 +8,7 @@ struct data_tof_range
   int d[4] = {0, 0, 0, 0}; // Distance, mm
   float v[4] = {0, 0, 0, 0}; // Velocity, cm/s
   float dt = 0; // Thread period, millis
+  int status = 0;
 };
 
 struct data_current_ctrl

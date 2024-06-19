@@ -7,8 +7,6 @@
 #include "satellite_config.h"
 #include <inttypes.h>
 
-#define TOF_PERFORM_DATA_READY_CHECK 1
-
 // Indices to access individual sensor
 enum tof_idx
 {
@@ -23,7 +21,8 @@ enum tof_status
 {
   TOF_STATUS_ERROR,
   TOF_STATUS_OK,
-  TOF_STATUS_TIMEOUT
+  TOF_STATUS_TOF_TIMEOUT,
+  TOF_STATUS_MUX_TIMEOUT
 };
 
 namespace tof
@@ -33,11 +32,12 @@ namespace tof
   tof_status get_single_distance(const tof_idx idx, int *distance);
   tof_status calibrate(const int16_t target_mm, const int16_t n);
 
-  void int_xshunt(void);
-  void shut_down(void);
   void wakeup(void);
+  void restart(void);
+  void shut_down(void);
   void i2c_reset(void);
-
+  void int_xshunt(void);
+  
   tof_status get_yaw(float *yaw);
   tof_status get_velocity(float velocity[4]);
 
