@@ -64,7 +64,7 @@
 #include <string.h>
 #include <math.h>
 #include "VL53L4CD_api.h"
-
+#include "rodos.h"
 static const uint8_t VL53L4CD_DEFAULT_CONFIGURATION[] = {
 	#ifdef VL53L4CD_I2C_FAST_MODE_PLUS
 	0x12, /* 0x2d : set bit 2 and 5 to 1 for fast plus mode (1MHz I2C),
@@ -226,7 +226,7 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 		{
 			continue_loop = (uint8_t)0;
 		}
-		else if(i < (uint16_t)1000)       /* Wait for boot */
+		else if(i < (uint16_t)50)       /* Wait for boot */
 		{
 			i++;
 		}
@@ -234,6 +234,7 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 		{
 			continue_loop = (uint8_t)0;
 			status |= (uint8_t)VL53L4CD_ERROR_TIMEOUT;
+			return status;
 		}
 		WaitMs(dev, 1);
 	}while(continue_loop == (uint8_t)1);
@@ -256,7 +257,7 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 		{
 			continue_loop = (uint8_t)0;
 		}
-		else if(i < (uint16_t)1000)       /* Wait for answer */
+		else if(i < (uint16_t)50)       /* Wait for answer */
 		{
 			i++;
 		}
@@ -264,6 +265,7 @@ VL53L4CD_Error VL53L4CD_SensorInit(
 		{
 			continue_loop = (uint8_t)0;
 			status |= (uint8_t)VL53L4CD_ERROR_TIMEOUT;
+			return status;
 		}
 		WaitMs(dev, 1);
 	}while(continue_loop == (uint8_t)1);
@@ -731,6 +733,7 @@ VL53L4CD_Error VL53L4CD_StartTemperatureUpdate(
 			{
 					continue_loop = (uint8_t)0;
 					status = (uint8_t)VL53L4CD_ERROR_TIMEOUT;
+					return status;
 			}
 			WaitMs(dev, 1);
 	}while(continue_loop == (uint8_t)1);

@@ -175,6 +175,7 @@ uint8_t VL53L4CD_WrDWord(Dev_t dev, uint16_t RegisterAdress, uint32_t value)
 uint8_t WaitMs(Dev_t dev, uint32_t TimeMs)
 {
 	uint8_t status = 0;
+	AT(NOW()+1*MILLISECONDS);
 	/* To be filled by customer */
 	return status;
 }
