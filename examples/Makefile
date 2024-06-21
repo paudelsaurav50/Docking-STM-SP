@@ -36,6 +36,7 @@ CXX_SOURCES = \
 ../libs/vl53l4ed/VL53L4ED_api.cpp \
 ../libs/vl53l4ed/VL53L4ED_calibration.cpp \
 ../libs/pid/pid.cpp \
+../satellite/led.cpp \
 ../satellite/tof.cpp \
 ../satellite/utils.cpp \
 ../satellite/magnet.cpp \

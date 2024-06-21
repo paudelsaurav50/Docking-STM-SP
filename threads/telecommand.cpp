@@ -1,11 +1,14 @@
 
 #include <stdlib.h>
+#include "led.h"
 #include "tof.h"
 #include "magnet.h"
 #include "telecommand.h"
 #include "current_control.h"
 #include "satellite_config.h"
 #include "collision_control.h"
+
+bool led_switch = false;
 
 namespace RODOS
 {
@@ -136,7 +139,7 @@ uint8_t execute_command(uint8_t telecommand_id)
     {
       PRINTF("VL53L4CD error :(\n");
     }
-  
+
     tof::enable_median_filter();
     break;
   }
@@ -169,10 +172,11 @@ uint8_t execute_command(uint8_t telecommand_id)
   return 1;
 }
 
-
 void telecommand_thread::init()
 {
   magnet::init();
+  led::init_far();
+  led::init_near();
 }
 
 void telecommand_thread::run()

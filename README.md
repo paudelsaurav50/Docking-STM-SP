@@ -16,6 +16,7 @@ This Project contains the source code for the testing of different modules of th
 2. [utils](satellite/utils.h) - Utility functions, and macros that are generally useful.
 3. [magnet](satellite/magnet.h) - Interface to control electromagnets.
 4. [tof](satellite/tof.h) - Interface to access ToF measurements and relative position/velocity/orientation (state) estimates.
+5. [led](satellite/led.h) - Interface for switching LEDs in TAMARIW.
 
 ### libs
 

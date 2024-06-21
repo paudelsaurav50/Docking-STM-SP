@@ -99,4 +99,8 @@
 #define PID_CURRENT_KP 0.065
 #define PID_CURRENT_KI 0.3
 
+// LEDs
+#define LED_FAR_COUNTS 8
+#define LED_NEAR_COUNTS 6
+
 #endif // config_black.h
