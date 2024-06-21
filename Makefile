@@ -38,9 +38,9 @@ libs/pid/pid.cpp \
 libs/topics.cpp \
 libs/hbridge/hbridge.cpp \
 \
-libs/vl53l4cd/platform_TAMARIW.cpp \
-libs/vl53l4cd/VL53L4CD_api.cpp \
-libs/vl53l4cd/VL53L4CD_calibration.cpp \
+libs/vl53l4ed/platform.cpp \
+libs/vl53l4ed/VL53L4ED_api.cpp \
+libs/vl53l4ed/VL53L4ED_calibration.cpp \
 \
 satellite/tof.cpp \
 satellite/utils.cpp \
@@ -117,7 +117,7 @@ C_INCLUDES =  \
 -I"../rodos/api/hal" \
 -I"../rodos/api" \
 -I"../rodos/default_usr_configs" \
--I"libs/vl53l4cd" \
+-I"libs/vl53l4ed" \
 -I"threads" \
 -I"satellite" \
 -I"libs/pid" \

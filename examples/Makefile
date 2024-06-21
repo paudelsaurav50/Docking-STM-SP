@@ -32,9 +32,9 @@ ASM_SOURCES =
 
 # C++ sources
 CXX_SOURCES = \
-../libs/VL53L4CD/platform_TAMARIW.cpp \
-../libs/VL53L4CD/VL53L4CD_api.cpp \
-../libs/VL53L4CD/VL53L4CD_calibration.cpp \
+../libs/vl53l4ed/platform.cpp \
+../libs/vl53l4ed/VL53L4ED_api.cpp \
+../libs/vl53l4ed/VL53L4ED_calibration.cpp \
 ../libs/pid/pid.cpp \
 ../satellite/tof.cpp \
 ../satellite/utils.cpp \
@@ -107,7 +107,7 @@ C_INCLUDES =  \
 -I"../../rodos/api/hal" \
 -I"../../rodos/api" \
 -I"../../rodos/default_usr_configs" \
--I"../libs/VL53L4CD" \
+-I"../libs/vl53l4ed" \
 -I"../libs/hbridge" \
 -I"../libs/pid" \
 -I"../threads" \

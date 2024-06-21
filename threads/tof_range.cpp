@@ -5,7 +5,7 @@
 #include "rodos.h"
 #include "topics.h"
 #include "tof_range.h"
-#include "platform_TAMARIW.h"
+#include "platform.h"
 
 data_tof_range LidarData;
 static double time = 0.0;
@@ -45,7 +45,7 @@ void tof_range_thread::run()
     {
       time = NOW();
       tof_status status = tof::get_distance(LidarData.d);
-      
+
       // Remove crazy data
       for(uint8_t i = 0; i < 4; i++)
       {
@@ -55,7 +55,7 @@ void tof_range_thread::run()
         }
       }
       tof::get_velocity(LidarData.v);
-      
+
       LidarData.status = status;
       topic_tof_range.publish(LidarData);
       LidarData.dt = (NOW() - time) / MILLISECONDS;

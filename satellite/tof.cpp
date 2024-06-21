@@ -2,12 +2,12 @@
 #include <math.h>
 
 #include "tof.h"
-#include "rodos.h"
 #include "utils.h"
+#include "rodos.h"
+#include "platform.h"
 #include "MedianFilter.h"
-#include "VL53L4CD_api.h"
-#include "platform_TAMARIW.h"
-#include "VL53L4CD_calibration.h"
+#include "VL53L4ED_api.h"
+#include "VL53L4ED_calibration.h"
 
 bool tof_filter_flag = false;
 MedianFilter<int, 25> filter[4];
@@ -16,8 +16,8 @@ float last_distance[4];
 HAL_GPIO tof_xshut_a(TOF_A_PIN_XSHUT);
 HAL_GPIO tof_xshut_b(TOF_B_PIN_XSHUT);
 
-// VL53L4CD API params
-VL53L4CD_ResultsData_t tof_result;
+// VL53L4ED API params
+VL53L4ED_ResultsData_t tof_result;
 bool i2c_init_flag = false;
 
 void tof::enable_median_filter(void)
@@ -41,21 +41,20 @@ tof_status init_single(const tof_idx idx)
   }
 
   // Select sensor using MUX
-  if(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
+  if (!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
   {
     PRINTF("TRY 1 \r\n");
-    AT(NOW()+2*MILLISECONDS);
-    if(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
+    AT(NOW() + 2 * MILLISECONDS);
+    if (!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
       return TOF_STATUS_ERROR;
   }
 
-  
   // Initialize and return status
-  if (VL53L4CD_SensorInit(TOF_I2C_ADDRESS) == VL53L4CD_ERROR_NONE)
+  if (VL53L4ED_SensorInit(TOF_I2C_ADDRESS) == VL53L4ED_ERROR_NONE)
   {
     // Enable 10 ms sampling and start sampling
-    VL53L4CD_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
-    VL53L4CD_StartRanging(TOF_I2C_ADDRESS);
+    VL53L4ED_SetRangeTiming(TOF_I2C_ADDRESS, 10, 0);
+    VL53L4ED_StartRanging(TOF_I2C_ADDRESS);
 
     return TOF_STATUS_OK;
   }
@@ -91,56 +90,32 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
   {
     return TOF_STATUS_ERROR;
   }
-  
-   AT(NOW()+2*MILLISECONDS);
-   if(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
+
+  AT(NOW() + 2 * MILLISECONDS);
+  if (!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
   {
     PRINTF("TRY 1 port range \r\n");
-    AT(NOW()+2*MILLISECONDS);
-    if(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
+    AT(NOW() + 2 * MILLISECONDS);
+    if (!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
       return TOF_STATUS_ERROR;
   }
- // Check timeout for port selection
-//  double time_now = NOW();
-//  while(!PCA9546_SelPort((uint8_t)idx, TOF_I2C_MUX_ADDRESS))
-//  {
-//   time_now = NOW();
-  
-//   if((NOW() - time_now) / MILLISECONDS >= TOF_MUX_TIMEOUT_MILLIS)
-//   {
-//     return TOF_STATUS_MUX_TIMEOUT;
-//   }
-//  }
-  
-  // Check timeout for data ready
-    uint8_t data_ready = 0;
-    VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
-    if(data_ready != (uint8_t)1)
+
+  // Wait for data ready if it not
+  uint8_t data_ready = 0;
+  VL53L4ED_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
+
+  if (data_ready != (uint8_t)1)
+  {
+    AT(NOW() + 2 * MILLISECONDS);
+    VL53L4ED_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
+
+    if (data_ready != (uint8_t)1)
     {
-      AT(NOW()+2*MILLISECONDS);
-      VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
-      if(data_ready != (uint8_t)1)
-        return TOF_STATUS_ERROR;
+      return TOF_STATUS_ERROR;
     }
+  }
 
-  // time_now = NOW();
-  // while (1)
-  // {    
-  //   uint8_t data_ready = 0;
-  //   VL53L4CD_CheckForDataReady(TOF_I2C_ADDRESS, &data_ready);
-
-  //   if((NOW() - time_now) / MILLISECONDS >= TOF_RANGE_TIMEOUT_MILLIS)
-  //   {
-  //     return TOF_STATUS_TOF_TIMEOUT;
-  //   }
-    
-  //   if (data_ready)
-  //   {
-  //     break;
-  //   }
-  // }
-
-  if (VL53L4CD_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4CD_ERROR_NONE)
+  if (VL53L4ED_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4ED_ERROR_NONE)
   {
     if (tof_filter_flag)
     {
@@ -152,7 +127,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
       *distance = tof_result.distance_mm;
     }
 
-    VL53L4CD_ClearInterrupt(TOF_I2C_ADDRESS);
+    VL53L4ED_ClearInterrupt(TOF_I2C_ADDRESS);
 
     return TOF_STATUS_OK;
   }
@@ -172,10 +147,10 @@ tof_status tof::get_distance(int distance[4])
   for (uint8_t i = TOF_IDX_0; i <= TOF_IDX_3; i++)
   {
     status = get_single_distance((tof_idx)i, &temp_dist);
-    
-    if(status!=TOF_STATUS_OK)
+
+    if (status != TOF_STATUS_OK)
       return TOF_STATUS_ERROR;
-    
+
     distance[i] = temp_dist;
   }
 
@@ -184,7 +159,7 @@ tof_status tof::get_distance(int distance[4])
 
 /*
   Calibrates four ToFs for input target distance using n samples.
-  The offsets are written to VL53L4CD_RANGE_OFFSET_MM register of ToF.
+  The offsets are written to VL53L4ED_RANGE_OFFSET_MM register of ToF.
 
   ST's recommendation:
      _____________________________
@@ -201,9 +176,9 @@ tof_status tof::calibrate(const int16_t target_mm, const int16_t n)
     PCA9546_SelPort(i, TOF_I2C_MUX_ADDRESS);
 
     int16_t offset, old_offset;
-    VL53L4CD_GetOffset(TOF_I2C_ADDRESS, &old_offset);
+    VL53L4ED_GetOffset(TOF_I2C_ADDRESS, &old_offset);
 
-    if (VL53L4CD_CalibrateOffset(TOF_I2C_ADDRESS, target_mm, &offset, n) != VL53L4CD_ERROR_NONE)
+    if (VL53L4ED_CalibrateOffset(TOF_I2C_ADDRESS, target_mm, &offset, n) != VL53L4ED_ERROR_NONE)
     {
       return TOF_STATUS_ERROR;
     }
@@ -221,7 +196,7 @@ tof_status tof::get_yaw(float *yaw)
 
   if (tof::get_distance(distance) == TOF_STATUS_OK)
   {
-    *yaw =  R2D * atan2(distance[0] - distance[2], TOF_DIMENSION_WIDTH_MM);
+    *yaw = R2D * atan2(distance[0] - distance[2], TOF_DIMENSION_WIDTH_MM);
 
     return TOF_STATUS_OK;
   }
@@ -236,9 +211,9 @@ tof_status tof::get_velocity(float velocity[4])
 
   if (tof::get_distance(distance) == TOF_STATUS_OK)
   {
-    for(uint8_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
-      velocity[i] = (distance[i] - last_distance[i]) * 100.0  / THREAD_PERIOD_TOF_MILLIS;
+      velocity[i] = (distance[i] - last_distance[i]) * 100.0 / THREAD_PERIOD_TOF_MILLIS;
       last_distance[i] = distance[i];
     }
 
@@ -257,8 +232,8 @@ void tof::shut_down(void)
 
 void tof::int_xshunt(void)
 {
-  tof_xshut_a.init(true,1,0);
-  tof_xshut_b.init(true,1,0);
+  tof_xshut_a.init(true, 1, 0);
+  tof_xshut_b.init(true, 1, 0);
   AT(NOW() + 5 * MILLISECONDS);
 }
 

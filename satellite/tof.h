@@ -37,7 +37,7 @@ namespace tof
   void shut_down(void);
   void i2c_reset(void);
   void int_xshunt(void);
-  
+
   tof_status get_yaw(float *yaw);
   tof_status get_velocity(float velocity[4]);
 
