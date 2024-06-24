@@ -18,6 +18,7 @@ static HAL_GPIO fled4(GPIO_052);
 static HAL_GPIO fled5(GPIO_053);
 
 // Array to access LEDs using indices
+// Danger! Do not set value of count more than the array size.
 static HAL_GPIO *far_led[LED_FAR_COUNTS] = {&fled0, &fled1, &fled2, &fled3, &fled4, &fled5};
 static HAL_GPIO *near_led[LED_NEAR_COUNTS] = {&nled0, &nled1, &nled2, &nled3, &nled4, &nled5};
 

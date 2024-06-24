@@ -1,5 +1,5 @@
 // Tamariw configuration file
-// 2024-04-13
+// 2024-06-12
 
 #ifndef _CONFIG_WHITE_H_
 #define _CONFIG_WHITE_H_
@@ -7,10 +7,6 @@
 #define EN_CHG_BAT GPIO_038 //PC6, Charging Enable Pin
 #define BATT_MES_ADC_CH ADC_CH_014 // ADC3_CH14, PC4, Battery Voltage Monitor
 #define ADC_NO_BAT_MES ADC_IDX1 //Using ADC 1 for PC4
-
-#define TOF_A_PIN_XSHUT GPIO_077 // PE13
-#define TOF_B_PIN_XSHUT GPIO_078 // PE14
-#define TOF_TBOOT_MILLIS 2
 
 // Timeouts
 #define TOF_MUX_TIMEOUT_MILLIS 2
@@ -29,6 +25,9 @@
 #define TOF_I2C_MUX_ADDRESS 0x70
 #define TOF_CALIBRATE_TARGET_MM 100
 #define TOF_CALIBRATE_SAMPLES 20
+#define TOF_A_PIN_XSHUT GPIO_077 // PE13
+#define TOF_B_PIN_XSHUT GPIO_078 // PE14
+#define TOF_TBOOT_MILLIS 2
 
 // ToF dimensions
 #define TOF_DIMENSION_WIDTH_MM 44.95
@@ -65,7 +64,7 @@
 #define EM3_ADC_CH ADC_CH_010
 
 // Periods of threads
-#define THREAD_PERIOD_TOF_MILLIS 50
+#define THREAD_PERIOD_TOF_MILLIS 35
 #define THREAD_PERIOD_TELEMETRY_MILLIS 300
 #define THREAD_PERIOD_TELECOMMAND_MILLIS 100
 #define THREAD_PERIOD_CURRENT_CTRL_MILLIS 6
@@ -103,7 +102,7 @@
 #define PID_CURRENT_KP 0.065
 #define PID_CURRENT_KI 0.3
 
-// LEDs
+// LEDs (see: led.cpp)
 #define LED_FAR_COUNTS 6
 #define LED_NEAR_COUNTS 6
 

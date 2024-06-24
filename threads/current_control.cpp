@@ -45,8 +45,8 @@ void current_control_thread::run(void)
       for(uint8_t i = 0; i < 4; i++)
       {
         ctrl[i].reset_memory();
-        // magnet::stop(MAGNET_IDX_ALL);
-        
+        magnet::stop(MAGNET_IDX_ALL);
+
         cd.dt =  0.0;
         topic_current_ctrl.publish(cd);
       }

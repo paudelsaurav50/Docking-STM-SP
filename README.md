@@ -84,10 +84,5 @@ This Project contains the source code for the testing of different modules of th
 2. Open-loop current versus temperature graph.
 3. Closed-loop current versus temperature graph.
 4. Filter current measurements (?).
-5. How to handle hard freeze of I2C bus (one which requires power restart)?
-6. FSM for satellite states (least priority) after control is tested.
-7. Handle all the sensor anomalies.
-8. Proper error status flags and handlers.
-9. Should we do stop ranging each time?
-10. Setting XSHUT high does not work.
-
+5. FSM for satellite states (least priority) after control is tested.
+6. Handle the sensor anomalies.
