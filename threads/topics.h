@@ -19,8 +19,8 @@ struct data_current_ctrl
 
 struct data_collision_ctrl
 {
-  float dk[2]; // Distance gains: {kp, ki} 
-  float vk[2]; // Velocity gains: {kp, ki} 
+  float dk[2]; // Distance gains: {kp, ki}
+  float vk[2]; // Velocity gains: {kp, ki}
   float dt = 0; // Thread period, millis
 };
 

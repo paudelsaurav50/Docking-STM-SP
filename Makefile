@@ -98,7 +98,8 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
 -DSTM32F40_41xxx \
--D$(satellite)_SAT
+-D$(satellite)_SAT \
+-D$(pole)_POLE
 
 # AS includes
 AS_INCLUDES = \
@@ -157,7 +158,7 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) -nostartfiles -nodefaultlibs -n
 $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: clean-windows $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
 # build the application

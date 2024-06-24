@@ -2,6 +2,7 @@
 #include "magnet.h"
 #include "telemetry.h"
 #include "satellite_config.h"
+#include "collision_control.h"
 
 static CommBuffer<data_tof_range> cb_tof;
 static CommBuffer<data_current_ctrl> cb_current;
@@ -53,11 +54,11 @@ void telemetry_thread::run()
     const float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
     PRINTF("DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%d\r\n",
-    get_voltage(), i[0], i[1], i[2], i[3],
-    d[0], d[1], d[2], d[3], mean_vel,
-    // pid_distance.kp, pid_distance.ki, pid_velocity.kp, pid_velocity.ki,
-    111.1f, rx_current.dt, rx_collision.dt, dt,
-    rx_tof.dt, rx_tof.status);
+           get_voltage(), i[0], i[1], i[2], i[3], // Voltage and coil currents
+           d[0], d[1], d[2], d[3], // ToF distances
+           dpid[0].kp, dpid[0].ki, // PID gains
+           rx_current.dt, rx_collision.dt, dt, rx_tof.dt, // Thread periods
+           rx_tof.status); // Statuses
 
     dt =  (NOW() - time) / MILLISECONDS;
   }

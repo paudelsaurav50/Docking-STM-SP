@@ -1,4 +1,5 @@
 # Tamariw Testing Panel
+
 This Project contains the source code for the testing of different modules of the TAMARIW Panel Board.
 
 ## contents
@@ -44,6 +45,17 @@ This Project contains the source code for the testing of different modules of th
 5. [telemetry](threads/telemetry.cpp) - Transmits data to groundstation.
 6. [tof_range](threads/tof_range.cpp) - Performs ToF measurements and publishes to topic for other threads.
 
+## Compilation and macros
+
+1. <code>satellite=BLACK</code> to choose satellite from available configurations (see: [satellite_config.h](satellite/satellite_config.h)).
+2. <code>pole=CONSTANT</code> to specify that the satellite's magnetic polarity will not change during docking.
+
+Example:
+
+1. For <code>BLACK</code> satellite whose magnetic polarity is not supposed to change, use following command to compile and flash the code.
+<center>
+  <code>make satellite=BLACK pole=CONSTANT flash (flash-sftp)</code>
+</center>
 
 ## schematics of indices
 

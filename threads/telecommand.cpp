@@ -116,7 +116,6 @@ uint8_t execute_command(uint8_t telecommand_id)
       // Magnets off and disable magnet thread
       tamariw_current_control_thread.stop_control = true;
       tamariw_collision_control_thread.stop_thread = true;
-      magnet::stop(MAGNET_IDX_ALL);
     }
     else // Resume control thread
     {
@@ -145,22 +144,28 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case PI_POS_GAIN_KP:
   {
-    pid_distance.kp = float(atof(ReceiveData));
+    float kp = float(atof(ReceiveData));
+    dpid[0].kp = kp;
+    dpid[1].kp = kp;
+    dpid[2].kp = kp;
+    dpid[3].kp = kp;
     break;
   }
   case PI_POS_GAIN_KI:
   {
-    pid_distance.ki = float(atof(ReceiveData));
+    float ki = float(atof(ReceiveData));
+    dpid[0].ki = ki;
+    dpid[1].ki = ki;
+    dpid[2].ki = ki;
+    dpid[3].ki = ki;
     break;
   }
   case PI_VEL_GAIN_KP:
   {
-    pid_velocity.kp = float(atof(ReceiveData));
     break;
   }
   case PI_VEL_GAIN_KI:
   {
-    pid_velocity.ki = float(atof(ReceiveData));
     break;
   }
   default:
