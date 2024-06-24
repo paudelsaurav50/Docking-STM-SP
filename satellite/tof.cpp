@@ -234,7 +234,6 @@ void tof::int_xshunt(void)
 {
   tof_xshut_a.init(true, 1, 0);
   tof_xshut_b.init(true, 1, 0);
-  AT(NOW() + 5 * MILLISECONDS);
 }
 
 // Wakeup and wait for sensor to boot
