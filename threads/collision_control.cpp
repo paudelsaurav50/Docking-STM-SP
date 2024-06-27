@@ -59,11 +59,12 @@ void collision_control_thread::run()
   // Unsigned current
   for(uint8_t i = 0; i < 4; i++)
   {
-    tx_current.i[0] = fabs(tx_current.i[i]);
+    tx_current.i[i] = fabs(tx_current.i[i]);
   }
 #endif
 
-  //* For test. Add one '/' to uncomment.
+  //* Add one '/' to uncomment.
+    // Test current commands
     tx_current.i[0] = 2500;
     tx_current.i[1] = 2500;
     tx_current.i[2] = 2500;

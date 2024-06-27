@@ -84,13 +84,13 @@
 // Distance control params
 #define PID_DISTANCE_UMAX 2500 * 2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 15000
-#define PID_DISTANCE_KI 20.0
+#define PID_DISTANCE_KP 0.0
+#define PID_DISTANCE_KI 0.0
 
 // Velocity control params
 #define PID_VELOCITY_UMAX 2500
 #define PID_VELOCITY_UMIN 0
-#define PID_VELOCITY_KP 150.0
+#define PID_VELOCITY_KP 0.0
 #define PID_VELOCITY_KI 0.0
 
 // Current control params
