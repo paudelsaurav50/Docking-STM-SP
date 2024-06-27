@@ -21,6 +21,26 @@ void collision_control_thread::init()
   dpid.set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
 }
 
+// ToF values mean by limiting extreme values.
+// Returns 0.5(b + c) where data is sorted as a<b<c<d.
+float winsorized_mean(const int d[4])
+{
+  float arr[4];
+
+  for (int i = 0; i < 4; i++) {
+    arr[i] = (float)d[i];
+  }
+
+  // Sorting the necessary elements to find the middle two
+  if (arr[0] > arr[1]) swap(&arr[0], &arr[1]);
+  if (arr[2] > arr[3]) swap(&arr[2], &arr[3]);
+  if (arr[0] > arr[2]) swap(&arr[0], &arr[2]);
+  if (arr[1] > arr[3]) swap(&arr[1], &arr[3]);
+  if (arr[1] > arr[2]) swap(&arr[1], &arr[2]);
+
+  return (arr[1] + arr[2]) / 2.0;
+}
+
 void collision_control_thread::run()
 {
   TIME_LOOP (THREAD_START_COLLISION_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
@@ -38,7 +58,7 @@ void collision_control_thread::run()
     // Read relative distance and velocity
     cb_tof.getOnlyIfNewData(rx_tof);
     const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
-    float dmean = (d[0] + d[0] + d[0] + d[0]) / 4.0;
+    float dmean = winsorized_mean(d);
     // float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
 
     // Perform distance control
@@ -72,7 +92,8 @@ void collision_control_thread::run()
     // Publish telemetrty data
     tx_tof.dk[0] = dpid.kp,
     tx_tof.dk[1] = dpid.ki,
-    tx_tof.dt = (NOW() - time) / MILLISECONDS;
+    // tx_tof.dt = (NOW() - time) / MILLISECONDS;
+    tx_tof.dt = dmean;
     topic_collision_ctrl.publish(tx_tof);
   }
 }
