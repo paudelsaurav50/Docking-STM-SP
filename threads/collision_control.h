@@ -3,8 +3,7 @@
 
 #include "pid.h"
 #include "rodos.h"
-
-extern pid dpid[4];
+extern pid dpid;
 
 class collision_control_thread : public Thread
 {
