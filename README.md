@@ -98,3 +98,8 @@ Example:
 4. Filter current measurements (?).
 5. FSM for satellite states (least priority) after control is tested.
 6. Handle the sensor anomalies.
+
+## sunday goals
+
+1. Try tuning for a while.
+2. Get back to linear P controller with gainschedule.

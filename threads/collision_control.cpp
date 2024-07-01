@@ -11,7 +11,7 @@ static data_collision_ctrl tx_tof;
 static data_desired_current tx_current;
 
 pid dpid; // Distance PID
-static float dsp = 50.0; // Distance setpoint, mm
+float dsp = 50.0; // Distance setpoint, mm
 static double time = 0; // Thread timekeeper
 
 void collision_control_thread::init()

@@ -160,6 +160,11 @@ uint8_t execute_command(uint8_t telecommand_id)
   {
     break;
   }
+  case DISTANCE_SP:
+  {
+    dsp = float(atof(ReceiveData));
+    break;
+  }
   default:
   {
     return 0;

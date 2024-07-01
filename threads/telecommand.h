@@ -18,6 +18,7 @@
 #define PI_POS_GAIN_KI 'n'
 #define PI_VEL_GAIN_KP 'o'
 #define PI_VEL_GAIN_KI 'p'
+#define DISTANCE_SP 't'
 
 #define ENABLE_CONTROL 'q' // 0 enable, 1 idle mode
 #define TEST_MAGNETS 'r' // dutycycle for each magnets in [-90. 90]
