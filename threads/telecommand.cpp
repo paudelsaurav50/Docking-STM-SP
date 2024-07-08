@@ -144,12 +144,20 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case PI_POS_GAIN_KP:
   {
-    dpid.kp = float(atof(ReceiveData));
+    float kp = float(atof(ReceiveData));
+    dpid[0].kp = kp;
+    dpid[1].kp = kp;
+    dpid[2].kp = kp;
+    dpid[3].kp = kp;
     break;
   }
   case PI_POS_GAIN_KI:
   {
-    dpid.ki = float(atof(ReceiveData));
+    float ki = float(atof(ReceiveData));
+    dpid[0].ki = ki;
+    dpid[1].ki = ki;
+    dpid[2].ki = ki;
+    dpid[3].ki = ki;
     break;
   }
   case PI_VEL_GAIN_KP:

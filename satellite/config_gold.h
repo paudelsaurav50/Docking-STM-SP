@@ -47,14 +47,14 @@
 #define EM3_PWM_IDX PWM_IDX04
 
 // Direction pins for electromagnets
-#define EM0_PIN_IN1 GPIO_075
-#define EM0_PIN_IN2 GPIO_076
+#define EM0_PIN_IN1 GPIO_076
+#define EM0_PIN_IN2 GPIO_075
 #define EM1_PIN_IN1 GPIO_073
 #define EM1_PIN_IN2 GPIO_074
 #define EM2_PIN_IN1 GPIO_061
 #define EM2_PIN_IN2 GPIO_060
-#define EM3_PIN_IN1 GPIO_063
-#define EM3_PIN_IN2 GPIO_062
+#define EM3_PIN_IN1 GPIO_062
+#define EM3_PIN_IN2 GPIO_063
 
 // ADC channels for electromagnets
 #define EM_ADC_IDX ADC_IDX3
@@ -87,8 +87,8 @@
 // Distance control params
 #define PID_DISTANCE_UMAX 2500 * 2500
 #define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 0.0
-#define PID_DISTANCE_KI 0.0
+#define PID_DISTANCE_KP 40000.0
+#define PID_DISTANCE_KI 100.0
 
 // Velocity control params
 #define PID_VELOCITY_UMAX 2500

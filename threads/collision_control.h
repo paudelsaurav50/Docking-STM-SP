@@ -4,7 +4,7 @@
 #include "pid.h"
 #include "rodos.h"
 
-extern pid dpid;
+extern pid dpid[4];
 extern float dsp;
 
 class collision_control_thread : public Thread

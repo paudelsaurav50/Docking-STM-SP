@@ -14,4 +14,8 @@
 #include "config_white.h"
 #endif
 
+#ifdef SILVER_SAT
+#include "config_silver.h"
+#endif
+
 #endif // satellite_config.h

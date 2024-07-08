@@ -9,11 +9,4 @@
 
 int sign(const float in);
 
-inline void swap(float *a, float *b)
-{
-  float temp = *a;
-  *a = *b;
-  *b = temp;
-}
-
 #endif // utils.h

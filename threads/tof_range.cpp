@@ -2,7 +2,6 @@
 
 #include "hal.h"
 #include "tof.h"
-#include "utils.h"
 #include "rodos.h"
 #include "topics.h"
 #include "tof_range.h"
