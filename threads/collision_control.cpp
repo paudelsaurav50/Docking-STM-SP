@@ -12,6 +12,7 @@ static data_desired_current tx_current;
 
 pid dpid[4]; // Distance PID
 float dsp = 100.0; // Distance setpoint, mm
+bool control_mode = false; // true: control and false: pull mode
 static double time = 0; // Thread timekeeper
 
 void collision_control_thread::init()
@@ -48,12 +49,25 @@ void collision_control_thread::run()
     // float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
 
     // Perform distance control
-    for(uint8_t i = 0; i < 4; i++)
+    if(control_mode)
     {
-      float error = dsp - d[i];
-      float isq = dpid[i].update(error, period / 1000.0); // Current squared
-      tx_current.i[i] = sign(isq) * sqrt(fabs(isq)); // Signed current
+       for(uint8_t i = 0; i < 4; i++)
+       {
+         float error = dsp - d[i];
+         float isq = dpid[i].update(error, period / 1000.0); // Current squared
+         tx_current.i[i] = sign(isq) * sqrt(fabs(isq)); // Signed current
+       }
     }
+    else
+    {
+      tx_current.i[0] = -2500;
+      tx_current.i[1] = -2500;
+      tx_current.i[2] = -2500;
+      tx_current.i[3] = -2500;
+    }
+
+  // if(d[0] < 100) tx_current.i[0] = -tx_current.i[0];
+  // if(d[2] < 100) tx_current.i[2] = -tx_current.i[2];
 
 #ifdef CONSTANT_POLE
   // Unsigned current
@@ -61,6 +75,9 @@ void collision_control_thread::run()
   {
     tx_current.i[i] = fabs(tx_current.i[i]);
   }
+
+  // if(d[1] < 100) tx_current.i[1] = -tx_current.i[1];
+  // if(d[3] < 100) tx_current.i[3] = -tx_current.i[3];
 #endif
 
   /* Add one '/' to uncomment.

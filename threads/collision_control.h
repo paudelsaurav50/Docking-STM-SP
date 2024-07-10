@@ -6,6 +6,7 @@
 
 extern pid dpid[4];
 extern float dsp;
+extern bool control_mode;
 
 class collision_control_thread : public Thread
 {

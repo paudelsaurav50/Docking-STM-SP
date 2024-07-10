@@ -111,6 +111,8 @@ uint8_t execute_command(uint8_t telecommand_id)
   {
   case ENABLE_CONTROL:
   {
+    control_mode = true;
+
     if(int(atof(ReceiveData))== 1) // Idle mode
     {
       // Magnets off and disable magnet thread
@@ -127,19 +129,11 @@ uint8_t execute_command(uint8_t telecommand_id)
   }
   case TEST_MAGNETS:
   {
-    // tamariw_current_control_thread.stop_control = false;
-    tof::restart();
-
-    if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
+    control_mode = false;
+    for(uint8_t i = 0; i < 4; i++)
     {
-      PRINTF("VL53L4CD initialized!\n");
+      dpid[i].reset_memory();
     }
-    else
-    {
-      PRINTF("VL53L4CD error :(\n");
-    }
-
-    tof::enable_median_filter();
     break;
   }
   case PI_POS_GAIN_KP:
