@@ -54,7 +54,7 @@ void tof_range_thread::run()
           LidarData.d[i] = TOF_MAX_LENGTH_MM;
         }
       }
-      tof::get_velocity(LidarData.v);
+      // tof::get_velocity(LidarData.v);
 
       LidarData.status = status;
       topic_tof_range.publish(LidarData);
