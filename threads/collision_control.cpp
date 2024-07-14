@@ -1,6 +1,8 @@
+#include "fsm.h"
 #include "utils.h"
 #include "topics.h"
 #include "magnet.h"
+#include "config_fsm.h"
 #include "satellite_config.h"
 #include "collision_control.h"
 
@@ -14,20 +16,70 @@ pid dpid[4]; // Distance PID
 float dsp = 0.0; // Distance setpoint, mm
 bool control_mode = false; // true: control and false: pull mode
 static double time = 0; // Thread timekeeper
-bool first_time = true;
 
-void collision_control_thread::init()
+/**
+ * @brief Execute the input STATE of Tamariw FSM.
+ * @note Please refer to the block diagram.
+ */
+void execute_fsm(const tamariw_state state)
 {
-  for(uint8_t i = 0; i < 4; i++)
+  // Execute the state
+  switch (state)
   {
-    dpid[i].set_kp(PID_DISTANCE_KP);
-    dpid[i].set_ki(PID_DISTANCE_KI);
-    dpid[i].set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
+  case STANDBY:
+  {
+    magnet::stop(MAGNET_IDX_ALL);
+    break;
+  }
+
+  // We don't need to handle START_DOCKING because its only used to get out
+  // of the STANDBY state.
+  case START_DOCKING:
+  {
+    break;
+  }
+
+  case ACTUATE_FULL:
+  {
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      tx_current.i[i] = FSM_MAX_CURRENT_MILLI_AMP;
+    }
+    break;
+  }
+
+  case ACTUATE_ZERO:
+  {
+    magnet::stop(MAGNET_IDX_ALL);
+    break;
+  }
+
+  case ENABLE_CONTROL:
+  {
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      float error = dsp - d[i];
+      float isq = dpid[i].update(error, period / 1000.0); // Current squared
+      tx_current.i[i] = sign(isq) * sqrt(fabs(isq)); // Signed current
+    }
+    break;
+  }
+
+  case LATCH:
+  {
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      tx_current.i[i] = FSM_LATCH_CURRENT_MILLI_AMP;
+    }
+    break;
+  }
   }
 }
 
-// ToF values mean by limiting extreme values.
-// Returns 0.5(b + c) where data is sorted as a<b<c<d.
+/**
+ * @brief Mean of input data by limiting extreme values.
+ * @return 0.5 * (b + c) where data is sorted as a < b < c < d.
+ */
 float winsorized_mean(const int d[4])
 {
   float arr[4];
@@ -46,12 +98,23 @@ float winsorized_mean(const int d[4])
   return (arr[1] + arr[2]) / 2.0;
 }
 
+void collision_control_thread::init()
+{
+  for(uint8_t i = 0; i < 4; i++)
+  {
+    dpid[i].set_kp(PID_DISTANCE_KP);
+    dpid[i].set_ki(PID_DISTANCE_KI);
+    dpid[i].set_control_limits(PID_DISTANCE_UMIN, PID_DISTANCE_UMAX);
+  }
+}
+
 void collision_control_thread::run()
 {
   TIME_LOOP (THREAD_START_COLLISION_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
     time = NOW();
 
+    // Disable thread
     if(stop_thread)
     {
       for(uint8_t i = 0; i < 4; i++)
@@ -59,73 +122,29 @@ void collision_control_thread::run()
         dpid[i].reset_memory();
       }
 
-      first_time = true;
       tx_tof.dt = 0.0;
       topic_collision_ctrl.publish(tx_tof);
       suspendCallerUntil(END_OF_TIME);
     }
 
-    // Read relative distance and velocity
+    // Read relative distance and velocity from tof_range thread.
     cb_tof.getOnlyIfNewData(rx_tof);
     const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
-    float dmean = winsorized_mean(d);
+    float dr = winsorized_mean(d);
+    float vr = 0.0; // todo: Check multiple consecutive velocity signs.
 
-    if(dmean < 150.0)
-    {
-      if(first_time)
-      {
-        tx_current.i[0] = 0;
-        tx_current.i[1] = 0;
-        tx_current.i[2] = 0;
-        tx_current.i[3] = 0;
-        first_time = false;
-      }
+    tamariw_state state = fsm::transit_state(dr, vr); // Perform FSM state transition
+    execute_fsm(state); // Execute new state
 
-      for(uint8_t i = 0; i < 4; i++)
-      {
-        float error = dsp - d[i];
-        float isq = dpid[i].update(error, period / 1000.0); // Current squared
-        tx_current.i[i] = sign(isq) * sqrt(fabs(isq)); // Signed current
-      }
-
-      if(dmean < 40.0)
-      {
-        tx_current.i[0] = -1000;
-        tx_current.i[1] = -1000;
-        tx_current.i[2] = -1000;
-        tx_current.i[3] = -1000;
-      }
-    }
-    else
-    {
-      for(uint8_t i = 0; i < 4; i++)
-      {
-        dpid[i].reset_memory();
-      }
-
-      first_time = true;
-      tx_current.i[0] = -2500;
-      tx_current.i[1] = -2500;
-      tx_current.i[2] = -2500;
-      tx_current.i[3] = -2500;
-    }
-
-  // if(d[0] < 100) tx_current.i[0] = -tx_current.i[0];
-  // if(d[2] < 100) tx_current.i[2] = -tx_current.i[2];
-
+// Sets one of the satellite to constant polarity.
 #ifdef CONSTANT_POLE
-  // Unsigned current
   for(uint8_t i = 0; i < 4; i++)
   {
     tx_current.i[i] = fabs(tx_current.i[i]);
   }
-
-  // if(d[1] < 100) tx_current.i[1] = -tx_current.i[1];
-  // if(d[3] < 100) tx_current.i[3] = -tx_current.i[3];
 #endif
 
-  /* Add one '/' to uncomment.
-    // Test current commands
+  /* Add one '/' to uncomment for testing magnets.
     tx_current.i[0] = 2500;
     tx_current.i[1] = 2500;
     tx_current.i[2] = 2500;
