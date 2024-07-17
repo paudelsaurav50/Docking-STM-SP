@@ -1,12 +1,22 @@
 #include "fsm.h"
 #include "config_fsm.h"
 
-// State trackers
+// Present and past state trackers.
 static tamariw_state current_state = STANDBY;
 static tamariw_state last_state = STANDBY;
 
 // Enable docking with set_state(START_DOCKING) at STANDBY.
 static bool is_dock = false;
+
+tamariw_state fsm::get_state(void)
+{
+  return current_state;
+}
+
+tamariw_state fsm::get_last_state(void)
+{
+  return last_state;
+}
 
 /**
  * @brief Sets the state to the Finite State Machine.
@@ -59,7 +69,7 @@ tamariw_state fsm::transit_state(const float dr, const float vr)
          ((last_state == ACTUATE_ZERO) ||
          (last_state == START_DOCKING)))
   {
-    return set_state(ENABLE_CONTROL);
+    return set_state(START_CONTROL);
   }
 
   // Are the satellites approaching each other?
@@ -69,12 +79,12 @@ tamariw_state fsm::transit_state(const float dr, const float vr)
     return set_state(ACTUATE_ZERO);
   }
 
-  // Reached latching range
+  // Reached latching range.
   if(dr <= FSM_D_DOCK_MM)
   {
    return set_state(LATCH);
   }
 
-  // No state transition
+  // No state transition.
   return current_state;
 }

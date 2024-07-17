@@ -34,16 +34,17 @@ ASM_SOURCES =
 # libs/DockingMain.cpp \
 
 CXX_SOURCES = \
-libs/pid/pid.cpp \
 libs/topics.cpp \
+libs/pid/pid.cpp \
 libs/hbridge/hbridge.cpp \
 \
 libs/vl53l4ed/platform.cpp \
 libs/vl53l4ed/VL53L4ED_api.cpp \
 libs/vl53l4ed/VL53L4ED_calibration.cpp \
 \
-satellite/led.cpp \
 satellite/tof.cpp \
+satellite/fsm.cpp \
+satellite/led.cpp \
 satellite/utils.cpp \
 satellite/magnet.cpp \
 \
@@ -116,14 +117,16 @@ C_INCLUDES =  \
 -I"../rodos/src/bare-metal-generic" \
 -I"../rodos/src/independent/gateway" \
 -I"../rodos/src/independent" \
+-I"../rodos/default_usr_configs" \
 -I"../rodos/api/hal" \
 -I"../rodos/api" \
--I"../rodos/default_usr_configs" \
--I"libs/vl53l4ed" \
--I"threads" \
--I"satellite" \
+\
 -I"libs/pid" \
--I"libs/hbridge"
+-I"libs/hbridge" \
+-I"libs/vl53l4ed" \
+\
+-I"threads" \
+-I"satellite"
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -188,12 +191,12 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 #######################################
 # flash

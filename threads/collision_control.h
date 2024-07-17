@@ -2,6 +2,7 @@
 #define _COLLLISION_CONTROL_H_
 
 #include "pid.h"
+#include "fsm.h"
 #include "rodos.h"
 
 extern pid dpid[4];
@@ -18,8 +19,9 @@ public:
 
   bool stop_thread = true;
 
-  void init();
   void run();
+  void init();
+  void execute_fsm(const tamariw_state state, const int d[4], const float v[4]);
 };
 
 extern collision_control_thread tamariw_collision_control_thread;

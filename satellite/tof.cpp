@@ -7,11 +7,16 @@
 #include "platform.h"
 #include "MedianFilter.h"
 #include "VL53L4ED_api.h"
+#include "satellite_config.h"
 #include "VL53L4ED_calibration.h"
 
-bool tof_filter_flag = false;
-MedianFilter<int, 25> filter[4];
-float last_distance[4];
+// Median filter for ToF readings
+static bool tof_filter_flag = false;
+static MedianFilter<int, 25> filter[4];
+
+// Memory and flag for velocity computation
+static bool first_velocity = true;
+static float last_distance[4] = {0.0};
 
 HAL_GPIO tof_xshut_a(TOF_A_PIN_XSHUT);
 HAL_GPIO tof_xshut_b(TOF_B_PIN_XSHUT);
@@ -82,7 +87,7 @@ tof_status tof::init(const tof_idx idx)
   return TOF_STATUS_OK;
 }
 
-// Range in mm for a 'single' ToF
+// Range [mm] of a single ToF sensor without max distance check.
 // A guide to using the VL53L4CD ultra lite driver (UM2931): Figure 7
 tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 {
@@ -137,7 +142,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
   return TOF_STATUS_ERROR;
 }
 
-// Range in mm for 'all' sensors
+// Range [mm] of four ToFs with max distance check.
 tof_status tof::get_distance(int distance[4])
 {
 
@@ -149,9 +154,16 @@ tof_status tof::get_distance(int distance[4])
     status = get_single_distance((tof_idx)i, &temp_dist);
 
     if (status != TOF_STATUS_OK)
+    {
       return TOF_STATUS_ERROR;
+    }
 
     distance[i] = temp_dist;
+
+    if(distance[i] > TOF_MAX_LENGTH_MM)
+    {
+      distance[i] = TOF_MAX_LENGTH_MM;
+    }
   }
 
   return status;
@@ -189,38 +201,36 @@ tof_status tof::calibrate(const int16_t target_mm, const int16_t n)
   return TOF_STATUS_OK;
 }
 
-// Relative yaw between suspended spacecrafts
-tof_status tof::get_yaw(float *yaw)
+/**
+ * @brief Relative velocity [mm/s] wrt. to the other satellite.
+ * Negative value implies approaching and vice versa.
+ * @param d [mm] - 4 ToF range measurements.
+ * @param dt [s] - Time since last velocity measurement.
+ * @return false for the first time (i.e. 0 velocity), true otherwise.
+ */
+bool tof::get_velocity(const int d[4], const double dt, float v[4])
 {
-  int distance[4];
-
-  if (tof::get_distance(distance) == TOF_STATUS_OK)
-  {
-    *yaw = R2D * atan2(distance[0] - distance[2], TOF_DIMENSION_WIDTH_MM);
-
-    return TOF_STATUS_OK;
-  }
-
-  return TOF_STATUS_ERROR;
-}
-
-// Relative velocity wrt. to the satellite
-tof_status tof::get_velocity(float velocity[4])
-{
-  int distance[4];
-
-  if (tof::get_distance(distance) == TOF_STATUS_OK)
+  // Zero velocity for the first time
+  if(first_velocity)
   {
     for (uint8_t i = 0; i < 4; i++)
     {
-      velocity[i] = (distance[i] - last_distance[i]) * 100.0 / THREAD_PERIOD_TOF_MILLIS;
-      last_distance[i] = distance[i];
+      last_distance[i] = d[i];
+      v[i] = 0.0;
     }
 
-    return TOF_STATUS_OK;
+    first_velocity = false;
+    return false;
   }
 
-  return TOF_STATUS_ERROR;
+  // Compute velocity
+  for(uint8_t i = 0; i < 4; i++)
+  {
+    v[i] = (d[i] - last_distance[i]) / dt;
+    last_distance[i] = d[i];
+  }
+
+  return true;
 }
 
 void tof::shut_down(void)

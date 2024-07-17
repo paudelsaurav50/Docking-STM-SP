@@ -7,8 +7,9 @@
 #include "tof_range.h"
 #include "platform.h"
 
-data_tof_range LidarData;
-static double time = 0.0;
+data_tof_range tof_data; // ToF topic data
+static double time_vel = 0.0; // Velocity timekeeper, ns
+static double time_thread = 0.0; // Thread timekeeper, ns
 
 void tof_range_thread::init()
 {
@@ -43,23 +44,20 @@ void tof_range_thread::run()
     }
     else
     {
-      time = NOW();
-      tof_status status = tof::get_distance(LidarData.d);
+      time_thread = NOW();
 
-      // Remove crazy data
-      for(uint8_t i = 0; i < 4; i++)
-      {
-        if(LidarData.d[i] > TOF_MAX_LENGTH_MM)
-        {
-          LidarData.d[i] = TOF_MAX_LENGTH_MM;
-        }
-      }
-      // tof::get_velocity(LidarData.v);
+      // Measure ToF distances and compute velocities.
+      tof_status status = tof::get_distance(tof_data.d);
+      const double vel_dt = (NOW() - time_vel) / SECONDS;
+      tof::get_velocity(tof_data.d, vel_dt, tof_data.v);
+      time_vel = NOW();
 
-      LidarData.status = status;
-      topic_tof_range.publish(LidarData);
-      LidarData.dt = (NOW() - time) / MILLISECONDS;
+      // Publish data
+      tof_data.status = status;
+      tof_data.dt = (NOW() - time_thread) / MILLISECONDS;
+      topic_tof_range.publish(tof_data);
 
+      // Restart ToFs if error
       if(status != TOF_STATUS_OK)
       {
         restart_tof = true;
