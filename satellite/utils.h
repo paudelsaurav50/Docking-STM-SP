@@ -9,6 +9,6 @@
 
 int sign(const float in);
 inline void swap(float *a, float *b);
-float winsorized_mean(const int d[4]);
+float winsorized_mean(const float x[4]);
 
 #endif // utils.h

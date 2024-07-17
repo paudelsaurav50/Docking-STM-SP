@@ -22,6 +22,7 @@ struct data_collision_ctrl
   float dk[2]; // Distance gains: {kp, ki}
   float vk[2]; // Velocity gains: {kp, ki}
   float dt = 0; // Thread period, millis
+  bool approach; // true if approach detected
 };
 
 struct data_desired_current

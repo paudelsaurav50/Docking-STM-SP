@@ -24,12 +24,12 @@ void swap(float *a, float *b)
  * @brief Mean of input data by limiting extreme values.
  * @return 0.5 * (b + c) where data is sorted as a < b < c < d.
  */
-float winsorized_mean(const int d[4])
+float winsorized_mean(const float x[4])
 {
   float arr[4];
 
   for (int i = 0; i < 4; i++) {
-    arr[i] = (float)d[i];
+    arr[i] = x[i];
   }
 
   // Sorting the necessary elements to find the middle two

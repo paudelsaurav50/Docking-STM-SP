@@ -53,12 +53,12 @@ void telemetry_thread::run()
     const float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
     const float mean_vel = (v[0] + v[1] + v[2] + v[3]) / 4.0;
 
-    PRINTF("DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f\r\n",
+    PRINTF("DAT= %f,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%d\r\n",
            get_voltage(), i[0], i[1], i[2], i[3], // Voltage and coil currents
            d[0], d[1], d[2], d[3], // ToF distances
            dpid[0].kp, dpid[0].ki, // PID gains
            rx_current.dt, rx_collision.dt, dt, rx_tof.dt, // Thread periods
-           dsp); // Statuses
+           dsp, rx_collision.approach); // Statuses
 
     dt =  (NOW() - time) / MILLISECONDS;
   }

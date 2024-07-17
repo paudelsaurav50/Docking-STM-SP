@@ -11,10 +11,36 @@ static data_tof_range rx_tof;
 static data_collision_ctrl tx_tof;
 static data_desired_current tx_current;
 
-pid dpid[4]; // Distance PID
-float dsp = 0.0; // Distance setpoint, mm
-bool control_mode = false; // true: control and false: pull mode
-static double time = 0; // Thread timekeeper
+pid dpid[4]; // Distance PID controllers.
+float dsp = 0.0; // Distance setpoint, mm.
+bool control_mode = false; // true: control and false: pull mode.
+static double time = 0; // Thread timekeeper.
+
+// n consecutive -ve velocities to detech approach.
+const int n = 5; // THREAD_PERIOD_TOF_MILLIS * n millis
+static float n_vels[n] = {0.0};
+
+// Returns true if last n velocities are less than FSM_V_NEAR.
+bool detect_approach(const float vr)
+{
+  // Shift to right and append new velocity.
+  for (int i = n - 1; i > 0; i--)
+  {
+    n_vels[i] = n_vels[i - 1];
+  }
+  n_vels[0] = vr;
+
+  // Check if the satellites are approaching.
+  for(uint8_t i = 0; i < n; i++)
+  {
+    if(!(n_vels[i] < FSM_V_NEAR))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 void collision_control_thread::init()
 {
@@ -49,19 +75,20 @@ void collision_control_thread::run()
     cb_tof.getOnlyIfNewData(rx_tof);
     const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
     const float v[4] = {rx_tof.v[0], rx_tof.v[1], rx_tof.v[2], rx_tof.v[3]};
-    float dr = winsorized_mean(d);
-    float vr = 0.0; // todo: Check multiple consecutive velocity signs.
+    float dr = winsorized_mean((float*)d);
+    float vr = winsorized_mean(v);
+    tx_tof.approach = detect_approach(vr);
 
     // Decide the course of action and execute it.
     tamariw_state state = fsm::transit_state(dr, vr);
-    execute_fsm(state, d, v);
+    execute_fsm(state, d, v, tx_tof.approach);
 
 // Sets one of the satellite to constant polarity.
 #ifdef CONSTANT_POLE
-  for(uint8_t i = 0; i < 4; i++)
-  {
-    tx_current.i[i] = fabs(tx_current.i[i]);
-  }
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      tx_current.i[i] = fabs(tx_current.i[i]);
+    }
 #endif
 
   /* Add one '/' to uncomment for testing magnets.
@@ -87,8 +114,11 @@ void collision_control_thread::run()
  * @param state FSM state to be executed.
  * @param d[4] Relative distances, mm.
  * @param v[4] Relative velocities, mm.
+ * @param is_approaching true if satellites are approaching each other.
  */
-void collision_control_thread::execute_fsm(const tamariw_state state, const int d[4], const float v[4])
+void collision_control_thread::execute_fsm(const tamariw_state state,
+                                           const int d[4], const float v[4],
+                                           const bool is_approaching)
 {
   switch (state)
   {
