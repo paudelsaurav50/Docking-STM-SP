@@ -1,7 +1,7 @@
 
 #include <stdlib.h>
+#include "fsm.h"
 #include "led.h"
-#include "tof.h"
 #include "magnet.h"
 #include "telecommand.h"
 #include "current_control.h"
@@ -118,12 +118,14 @@ uint8_t execute_command(uint8_t telecommand_id)
       // Magnets off and disable magnet thread
       tamariw_current_control_thread.stop_control = true;
       tamariw_collision_control_thread.stop_thread = true;
+      fsm::set_state(STANDBY);
     }
     else // Resume control thread
     {
       tamariw_current_control_thread.stop_control = false;
       tamariw_collision_control_thread.stop_thread = false;
       tamariw_collision_control_thread.resume();
+      fsm::set_state(START_DOCKING);
     }
     break;
   }

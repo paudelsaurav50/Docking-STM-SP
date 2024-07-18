@@ -2,14 +2,12 @@
 
 #include "hal.h"
 #include "tof.h"
+#include "utils.h"
 #include "rodos.h"
 #include "topics.h"
-#include "tof_range.h"
 #include "platform.h"
-
-data_tof_range tof_data; // ToF topic data
-static double time_vel = 0.0; // Velocity timekeeper, ns
-static double time_thread = 0.0; // Thread timekeeper, ns
+#include "tof_range.h"
+#include "config_fsm.h"
 
 void tof_range_thread::init()
 {
@@ -52,18 +50,45 @@ void tof_range_thread::run()
       tof::get_velocity(tof_data.d, vel_dt, tof_data.v);
       time_vel = NOW();
 
-      // Publish data
+      // Winsorized mean and approach detection.
+      tof_data.dm = winsorized_mean(tof_data.d);
+      tof_data.vm = winsorized_mean(tof_data.v);
+      tof_data.approach = detect_approach(tof_data.vm);
+
+      // Publish data to collision control thread.
       tof_data.status = status;
       tof_data.dt = (NOW() - time_thread) / MILLISECONDS;
       topic_tof_range.publish(tof_data);
 
-      // Restart ToFs if error
+      // Restart ToFs if error.
       if(status != TOF_STATUS_OK)
       {
         restart_tof = true;
       }
     }
   }
+}
+
+// Returns true if last n velocities are less than FSM_V_NEAR.
+bool tof_range_thread::detect_approach(const float vr)
+{
+  // Shift to right and append new velocity.
+  for (int i = n - 1; i > 0; i--)
+  {
+    n_vels[i] = n_vels[i - 1];
+  }
+  n_vels[0] = vr;
+
+  // Check if the satellites are approaching.
+  for(uint8_t i = 0; i < n; i++)
+  {
+    if(!(n_vels[i] < FSM_V_NEAR))
+    {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 tof_range_thread tamariw_tof_range_thread("tof_range_thread", THREAD_PRIO_TELEMETRY);

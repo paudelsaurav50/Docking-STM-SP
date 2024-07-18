@@ -6,8 +6,11 @@
 struct data_tof_range
 {
   int d[4] = {0, 0, 0, 0}; // Distance, mm
-  float v[4] = {0, 0, 0, 0}; // Velocity, cm/s
+  float v[4] = {0, 0, 0, 0}; // Velocity, mm/s
+  float dm = 0.0; // Winsorized mean of distances, mm
+  float vm = 0.0; // Winsorized mean of velocity, mm/s
   float dt = 0; // Thread period, millis
+  bool approach = false; // true if satellites approach each other.
   int status = 0;
 };
 
@@ -22,7 +25,6 @@ struct data_collision_ctrl
   float dk[2]; // Distance gains: {kp, ki}
   float vk[2]; // Velocity gains: {kp, ki}
   float dt = 0; // Thread period, millis
-  bool approach; // true if approach detected
 };
 
 struct data_desired_current

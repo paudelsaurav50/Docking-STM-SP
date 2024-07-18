@@ -12,13 +12,13 @@
  */
 enum tamariw_state
 {
-  STANDBY,
-  START_DOCKING,
-  ACTUATE_FULL,
-  ACTUATE_ZERO,
-  START_CONTROL,
-  LATCH,
-  STOP
+  STANDBY = 0,
+  START_DOCKING = 1,
+  ACTUATE_FULL = 2,
+  ACTUATE_ZERO = 3,
+  START_CONTROL = 4,
+  LATCH = 5,
+  STOP = 6
 };
 
 namespace fsm
@@ -26,7 +26,7 @@ namespace fsm
   tamariw_state get_state(void);
   tamariw_state get_last_state(void);
   tamariw_state set_state(const tamariw_state state);
-  tamariw_state transit_state(const float dr, const float vr);
+  tamariw_state transit_state(const float dr, const float vr, const bool is_approach);
 }
 
 #endif // fsm.h

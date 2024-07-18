@@ -24,8 +24,7 @@ tamariw_state fsm::get_last_state(void)
  */
 tamariw_state fsm::set_state(const tamariw_state state)
 {
-  if((state == STANDBY) &&
-    (state == STOP))
+  if(state == STOP)
   {
     is_dock = false;
   }
@@ -50,7 +49,7 @@ tamariw_state fsm::set_state(const tamariw_state state)
  * @param dr Relative velocity [mm/ms].
  * @param vr Relative distance [mm/ms].
  */
-tamariw_state fsm::transit_state(const float dr, const float vr)
+tamariw_state fsm::transit_state(const float dr, const float vr, const bool is_approch)
 {
   // Nothing to do if STANDBY or STOP.
   if(!is_dock)
@@ -58,31 +57,33 @@ tamariw_state fsm::transit_state(const float dr, const float vr)
     return current_state;
   }
 
-  // Choose between control and full actuation.
-  if((dr < FSM_D_FAR_MM) &&
-     (dr > FSM_D_CTRL_MM) &&
-     (last_state == START_DOCKING))
+  // Out of range
+  if(dr > FSM_D_FAR_MM)
   {
-    return set_state(ACTUATE_FULL);
-  }
-  else if((dr <= FSM_D_CTRL_MM) &&
-         ((last_state == ACTUATE_ZERO) ||
-         (last_state == START_DOCKING)))
-  {
-    return set_state(START_CONTROL);
-  }
-
-  // Are the satellites approaching each other?
-  if((current_state == ACTUATE_FULL) &&
-    (vr < FSM_V_NEAR))
-  {
-    return set_state(ACTUATE_ZERO);
+    return set_state(STANDBY);
   }
 
   // Reached latching range.
   if(dr <= FSM_D_DOCK_MM)
   {
-   return set_state(LATCH);
+    // return set_state(LATCH);
+    return set_state(STOP); // check_me
+  }
+
+  // Choose between control and full actuation.
+  if(dr > FSM_D_CTRL_MM)
+  {
+    return set_state(ACTUATE_FULL);
+  }
+  else if(dr <= FSM_D_CTRL_MM)
+  {
+    return set_state(START_CONTROL);
+  }
+
+  // Stop magnets if satellites are approaching
+  if(dr > FSM_D_CTRL_MM && is_approch)
+  {
+    return set_state(ACTUATE_ZERO);
   }
 
   // No state transition.

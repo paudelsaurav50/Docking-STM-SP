@@ -36,9 +36,9 @@ void current_control_thread::run(void)
   TIME_LOOP(THREAD_START_CURRENT_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
     time = NOW();
-    magnet::get_current(tx.i);
+    tx.i[0] = tx.i[1] = tx.i[2] = tx.i[3] = 0.0;
 
-    if(stop_control) // Standby
+    if(stop_control)
     {
       for(uint8_t i = 0; i < 4; i++)
       {
@@ -46,9 +46,10 @@ void current_control_thread::run(void)
         magnet::stop(MAGNET_IDX_ALL);
       }
     }
-    else // Active
+    else
     {
-      cb_desired_current.getOnlyIfNewData(rx);
+      magnet::get_current(tx.i); // Feedback measurements
+      cb_desired_current.getOnlyIfNewData(rx); // Set points
 
       // Perform current control for each magnet
       for(uint8_t i = 0; i < 4; i++)

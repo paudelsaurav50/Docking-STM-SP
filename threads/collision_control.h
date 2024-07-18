@@ -22,8 +22,7 @@ public:
   void run();
   void init();
   void execute_fsm(const tamariw_state state,
-                   const int d[4], const float v[4],
-                   const bool is_approaching);
+                   const int d[4], const float v[4]);
 };
 
 extern collision_control_thread tamariw_collision_control_thread;
