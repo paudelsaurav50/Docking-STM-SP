@@ -1,6 +1,7 @@
 #ifndef _TOF_RANGE_H_
 #define _TOF_RANGE_H_
 
+#include "config_fsm.h"
 #include "satellite_config.h"
 
 class tof_range_thread : public Thread
@@ -12,10 +13,7 @@ private:
   data_tof_range tof_data; // ToF topic
   double time_vel = 0.0; // Velocity timekeeper, ns
   double time_thread = 0.0; // Thread timekeeper, ns
-
-  // n consecutive -ve velocities to detech approach.
-  static const int n = 5; // THREAD_PERIOD_TOF_MILLIS * n millis
-  float n_vels[n] = {0.0};
+  float n_vels[FSM_V_SAMPLES] = {0.0}; // Memory for approach detection, mm/ms
 
 public:
   tof_range_thread(const char *name, int priority) : Thread(name, priority) {}

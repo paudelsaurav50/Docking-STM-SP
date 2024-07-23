@@ -13,9 +13,9 @@ static data_collision_ctrl tx_tof;
 static data_desired_current tx_current;
 
 pid dpid[4]; // Distance PID controllers.
-float dsp = 0.0; // Distance setpoint, mm.
-bool control_mode = false; // true: control and false: pull mode.
 static double time = 0; // Thread timekeeper.
+bool control_mode = false; // true: control and false: pull mode.
+float dsp = FSM_DISTANCE_PID_SP_MM; // Distance setpoint, mm.
 
 void collision_control_thread::init()
 {
@@ -53,12 +53,25 @@ void collision_control_thread::run()
     tamariw_state state = fsm::transit_state(rx_tof.dm, rx_tof.vm, rx_tof.approach);
     execute_fsm(state, rx_tof.d, rx_tof.v);
 
+
+  // if(fsm::get_state() == START_CONTROL)
+  // {
+  //   tx_current.i[0] = -tx_current.i[0];
+  //   tx_current.i[2] = -tx_current.i[2];
+  // }
+
 // Sets one of the satellite to constant polarity.
 #ifdef CONSTANT_POLE
     for(uint8_t i = 0; i < 4; i++)
     {
       tx_current.i[i] = fabs(tx_current.i[i]);
     }
+
+    // if(fsm::get_state() == START_CONTROL)
+    // {
+    //   tx_current.i[1] = -tx_current.i[1];
+    //   tx_current.i[3] = -tx_current.i[3];
+    // }
 #endif
 
   /* Add one '/' to uncomment for testing magnets.

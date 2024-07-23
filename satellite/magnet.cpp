@@ -47,6 +47,8 @@ void magnet::stop(const magnet_idx idx)
       }
     }
 
+    AT(NOW() + 100 * MILLISECONDS);
+
     for(uint8_t i = MAGNET_IDX_0; i <= MAGNET_IDX_3; i++)
     {
       magnets[i]->set_duty_cycle(0);

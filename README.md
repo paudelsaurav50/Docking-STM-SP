@@ -96,5 +96,4 @@ Example:
 2. Open-loop current versus temperature graph.
 3. Closed-loop current versus temperature graph.
 4. Filter current measurements (?).
-5. FSM for satellite states (least priority) after control is tested.
-6. Handle the sensor anomalies.
+5. Handle the sensor anomalies.

@@ -7,7 +7,6 @@
 #include "topics.h"
 #include "platform.h"
 #include "tof_range.h"
-#include "config_fsm.h"
 
 void tof_range_thread::init()
 {
@@ -69,18 +68,23 @@ void tof_range_thread::run()
   }
 }
 
-// Returns true if last n velocities are less than FSM_V_NEAR.
+/**
+ * @brief Detects if two satellites are approaching each other.
+ * Should be true for THREAD_PERIOD_TOF_MILLIS * FSM_V_SAMPLES millis
+ * to be considered an approach.
+ * @return true if last FSM_V_SAMPLES velocities are less than FSM_V_NEAR.
+ */
 bool tof_range_thread::detect_approach(const float vr)
 {
   // Shift to right and append new velocity.
-  for (int i = n - 1; i > 0; i--)
+  for (int i = FSM_V_SAMPLES - 1; i > 0; i--)
   {
     n_vels[i] = n_vels[i - 1];
   }
   n_vels[0] = vr;
 
   // Check if the satellites are approaching.
-  for(uint8_t i = 0; i < n; i++)
+  for(uint8_t i = 0; i < FSM_V_SAMPLES; i++)
   {
     if(!(n_vels[i] < FSM_V_NEAR))
     {
