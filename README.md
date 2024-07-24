@@ -18,6 +18,8 @@ This Project contains the source code for the testing of different modules of th
 3. [magnet](satellite/magnet.h) - Interface to control electromagnets.
 4. [tof](satellite/tof.h) - Interface to access ToF measurements and relative position/velocity/orientation (state) estimates.
 5. [led](satellite/led.h) - Interface for switching LEDs in TAMARIW.
+6. [fsm](satellite/fsm.h) - Implementation of Tamariw Finite State Machine.
+7. [config_fsm](satellite/config_fsm.h) - Config file for FSM parameters.
 
 ### libs
 
