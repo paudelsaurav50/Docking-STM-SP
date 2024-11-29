@@ -2,6 +2,23 @@
 
 This Project contains the source code for the testing of different modules of the TAMARIW Panel Board.
 
+## dependencies
+
+Please visit [this](https://www.github.com/risherlock/floatsat) for the dependencies to configure STM32 programming environment for RODOS. Apart from that, you would need:
+
+1. sftp for wireless STM32 flashing using Raspberry Pi.
+
+## compile and flash
+
+1. To compile and flash example files: ```make main=hello_euler.cpp flash-sftp satellite=GOLD```
+
+Do the following:
+
+1. Open hotspot and configure it to name ```TAMARIWPiTest``` and password ```pi@tamariw```. In doing so, Raspberry Pi will automatically connect to your hotspot. If it does not, try rebooting the Pi.
+2. Check the IP address of Pi in ```Devices connected``` on hotspot.
+3. Goto [this](sftp-script.txt) file and reconfigure the IP address of Pi.
+4. To find the host key, use the command ```sftp raspberry@the_ip_address```. Again, goto [the same file](sftp-script.txt) and reconfigure the host key.
+
 ## contents
 
 ### folder structure
