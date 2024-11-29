@@ -25,32 +25,13 @@ public:
 void magnet_thread::init()
 {
   magnet::init();
+  magnet::actuate(MAGNET_IDX_ALL, -50);
 }
 
 void magnet_thread::run(void)
 {
   while(1)
   {
-    if(toggle_flag)
-    {
-      magnet::actuate(MAGNET_IDX_ALL, sign_flag * duty_cycle);
-
-      if(sign_flag == 1)
-      {
-        sign_flag = -1;
-      }
-      else
-      {
-        sign_flag = 1;
-      }
-    }
-    else
-    {
-      magnet::stop(MAGNET_IDX_ALL);
-    }
-
-    toggle_flag = !toggle_flag;
-    suspendCallerUntil(NOW() + period * MILLISECONDS);
   }
 }
 
