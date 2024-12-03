@@ -24,7 +24,7 @@ public:
   void run();
 };
 
-void tof_thread::init()
+void init_params()
 {
   if(tof::init(TOF_IDX_1) == TOF_STATUS_OK)
   {
@@ -38,8 +38,16 @@ void tof_thread::init()
   tof::enable_median_filter();
 }
 
+void tof_thread::init()
+{
+  tof::int_xshunt();
+}
+
 void tof_thread::run()
 {
+  tof::wakeup();
+  init_params();
+
   TIME_LOOP(1 * SECONDS, period * MILLISECONDS)
   {
     int distance;
