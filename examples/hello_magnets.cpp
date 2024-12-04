@@ -10,13 +10,13 @@ bool toggle_flag = true;
 int duty_cycle = 50; // Max: 100
 int sign_flag = 1;
 
-class magnet_thread : public Thread
+class magnet_thread : public StaticThread<>
 {
 private:
   int period = 2000; // millis
 
 public:
-  magnet_thread(const char* thread_name) : Thread(thread_name){}
+  magnet_thread(const char* thread_name) : StaticThread(thread_name){}
 
   void init(void);
   void run(void);

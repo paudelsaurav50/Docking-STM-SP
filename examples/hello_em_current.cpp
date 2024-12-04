@@ -14,13 +14,13 @@ int max_count = 5; // Current samples for each PWM
 int count = 0;
 float current[4] = {0.0};
 
-class magnet_thread : public Thread
+class magnet_thread : public StaticThread<>
 {
 private:
   int period = 500; // millis
 
 public:
-  magnet_thread(const char* thread_name) : Thread(thread_name){}
+  magnet_thread(const char* thread_name) : StaticThread(thread_name){}
 
   void init(void);
   void run(void);

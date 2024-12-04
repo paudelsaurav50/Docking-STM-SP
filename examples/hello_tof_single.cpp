@@ -12,13 +12,13 @@
 #include <math.h>
 #define R2D 57.2957795131
 
-class tof_thread : public Thread
+class tof_thread : public StaticThread<>
 {
 private:
   int period = 10; // millis
 
 public:
-  tof_thread(const char* thread_name) : Thread(thread_name){}
+  tof_thread(const char* thread_name) : StaticThread(thread_name){}
 
   void init();
   void run();

@@ -95,7 +95,6 @@ uint8_t VL53L4ED_RdByte(Dev_t dev, uint16_t RegisterAdress, uint8_t *value)
 
 uint8_t VL53L4ED_WrByte(Dev_t dev, uint16_t RegisterAdress, uint8_t value)
 {
-  uint8_t status = 255;
   uint8_t tx_buff[3] = {(uint8_t)(RegisterAdress & 0xFF00),
                         (uint8_t)(RegisterAdress & 0x00FF),
                         value};
@@ -104,7 +103,6 @@ uint8_t VL53L4ED_WrByte(Dev_t dev, uint16_t RegisterAdress, uint8_t value)
 
 uint8_t VL53L4ED_WrWord(Dev_t dev, uint16_t RegisterAdress, uint16_t value)
 {
-  uint8_t status = 255;
   uint8_t tx_buff[4] = {(uint8_t)(RegisterAdress & 0xFF00),
                         (uint8_t)(RegisterAdress & 0x00FF),
                         (uint8_t)(value & 0xFF00),
@@ -114,7 +112,6 @@ uint8_t VL53L4ED_WrWord(Dev_t dev, uint16_t RegisterAdress, uint16_t value)
 
 uint8_t VL53L4ED_WrDWord(Dev_t dev, uint16_t RegisterAdress, uint32_t value)
 {
-  uint8_t status = 255;
   uint8_t tx_buff[6] = {(uint8_t)(RegisterAdress & 0xFF00),
                         (uint8_t)(RegisterAdress & 0x00FF),
                         (uint8_t)(value & 0xFF000000),

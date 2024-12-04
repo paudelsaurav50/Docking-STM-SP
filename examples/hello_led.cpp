@@ -7,13 +7,13 @@
 #include <math.h>
 #define R2D 57.2957795131
 
-class led_thread : public Thread
+class led_thread : public StaticThread<>
 {
 private:
   int period = 1000; // millis
 
 public:
-  led_thread(const char* thread_name) : Thread(thread_name){}
+  led_thread(const char* thread_name) : StaticThread(thread_name){}
 
   void init();
   void run();

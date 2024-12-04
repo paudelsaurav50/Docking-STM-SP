@@ -109,7 +109,7 @@ AS_INCLUDES = \
 C_INCLUDES =  \
 -I"../rodos/src/bare-metal/stm32f4/CMSIS/Device/ST/STM32F4xx/Include" \
 -I"../rodos/src/bare-metal/stm32f4/STM32F4xx_StdPeriph_Driver/inc"  \
--I"../rodos/src/bare-metal/stm32f4/platform-parameter/discovery" \
+-I"../rodos/src/bare-metal/stm32f4/platform-parameter/skith" \
 -I"../rodos/src/bare-metal/stm32f4/CMSIS/Include" \
 -I"../rodos/src/bare-metal/stm32f4/sdCard" \
 -I"../rodos/src/bare-metal/stm32f4/hal" \

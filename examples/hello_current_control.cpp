@@ -28,13 +28,13 @@ float curr[4] = {0.0};
 int last_sign[4] = {0};
 pid ctrl[4];
 
-class magnet_thread : public Thread
+class magnet_thread : public StaticThread<>
 {
 private:
   int period = 10; // millis
 
 public:
-  magnet_thread(const char* thread_name) : Thread(thread_name){}
+  magnet_thread(const char* thread_name) : StaticThread(thread_name){}
 
   void init(void);
   void run(void);

@@ -6,7 +6,7 @@
 #define D2R 0.01745329251f
 #define R2D 57.2957795131f
 
-class HelloEuler : public Thread
+class HelloEuler : public StaticThread<>
 {
   void init()
   {

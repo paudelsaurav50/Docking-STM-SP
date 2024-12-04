@@ -8,13 +8,13 @@ int16_t calibration_distance_mm = 162;
 int16_t calibration_samples = 20;
 
 
-class tof_calthread : public Thread
+class tof_calthread : public StaticThread<>
 {
 private:
   int period = 5000; // millis
 
 public:
-  tof_calthread(const char* thread_name) : Thread(thread_name){}
+  tof_calthread(const char* thread_name) : StaticThread(thread_name){}
 
   void init();
   void run();
