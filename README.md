@@ -2,28 +2,6 @@
 
 This Project contains the source code for the testing of different modules of the TAMARIW Panel Board.
 
-## dependencies
-
-!!! The codebase now works with the latest RODOS. Please make following changes on ```rodos/api/gateway/linkinterfaceuart.h``` !!!
-
-```cpp
-#include "gateway/linkinterface.h"
-#include "hal/hal_uart.h"
-// #include "s3p-synchronous-interface.h"
-
-namespace RODOS {
-
-class LinkinterfaceUART : public Linkinterface, IOEventReceiver/*, S3pReceiverSynchronous, S3pSenderSynchronous*/ {
-private:
-    const int MAX_UART_MESSAGE_LENGTH = MAX_NETWORK_MESSAGE_LENGTH;
-    HAL_UART *uart;
-
-```
-
-Please visit [this](https://www.github.com/risherlock/floatsat) for the dependencies to configure STM32 programming environment for RODOS. Apart from that, you would need:
-
-1. sftp for wireless STM32 flashing using Raspberry Pi.
-
 ## compile and flash
 
 1. To compile and flash example files: ```make main=hello_euler.cpp flash-sftp satellite=GOLD```
