@@ -7,13 +7,13 @@
 void init_multimeter(void);
 float get_voltage(void);
 
-class telemetry_thread: public Thread
+class telemetry_thread: public StaticThread<>
 {
 private:
   int period = THREAD_PERIOD_TELEMETRY_MILLIS;
 
 public:
-  telemetry_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
+  telemetry_thread(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
 
   void init();
   void run();

@@ -4,7 +4,7 @@
 #include "config_fsm.h"
 #include "satellite_config.h"
 
-class tof_range_thread : public Thread
+class tof_range_thread : public StaticThread<>
 {
 private:
   int period = THREAD_PERIOD_TOF_MILLIS; // millis
@@ -16,7 +16,7 @@ private:
   float n_vels[FSM_V_SAMPLES] = {0.0}; // Memory for approach detection, mm/ms
 
 public:
-  tof_range_thread(const char *name, int priority) : Thread(name, priority) {}
+  tof_range_thread(const char *name, int priority) : StaticThread(name, priority) {}
   bool detect_approach(const float vr);
 
   void init_params();

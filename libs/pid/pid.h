@@ -1,5 +1,5 @@
 // Implementation PID controller with Tustin's approximation
-// Rishav (2023-12-13)
+// rms (2023-12-13)
 
 #ifndef _PID_H_
 #define _PID_H_

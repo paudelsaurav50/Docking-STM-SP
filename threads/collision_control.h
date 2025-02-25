@@ -9,13 +9,13 @@ extern pid dpid[4];
 extern float dsp;
 extern bool control_mode;
 
-class collision_control_thread : public Thread
+class collision_control_thread : public StaticThread<>
 {
 private:
   int period = THREAD_PERIOD_COLLISION_CTRL_MILLIS; // millis
 
 public:
-  collision_control_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
+  collision_control_thread(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
 
   bool stop_thread = true;
 

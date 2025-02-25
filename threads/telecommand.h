@@ -26,13 +26,13 @@
 uint8_t decode_command(uint8_t rx_buffer);
 uint8_t execute_command(uint8_t telecommand_id);
 
-class telecommand_thread: public Thread
+class telecommand_thread: public StaticThread<>
 {
 private:
   int period = THREAD_PERIOD_TELECOMMAND_MILLIS;
 
 public:
-  telecommand_thread(const char *thread_name, const int priority) : Thread(thread_name, priority) {}
+  telecommand_thread(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
 
   void init();
   void run();
