@@ -1,7 +1,7 @@
 # rms (2020)
 
 # OS: Linux, Windows
-OS = Windows
+OS = Linux
 
 ######################################
 # target
@@ -165,7 +165,7 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) -nostartfiles -nodefaultlibs -n
 $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
-all: clean-windows $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: clean $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
 # build the application
@@ -205,23 +205,14 @@ $(BUILD_DIR):
 #######################################
 # flash
 #######################################
-flash: clean-windows all
+flash: clean all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
-flash-gold: clean-windows all
+flash-gold: clean all
 	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=sftp-script-gold.txt
 
-flash-silver: clean-windows all
+flash-silver: clean all
 	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=sftp-script-silver.txt
-
-#######################################
-# clean up
-#######################################
-clean-windows:
-	if exist build rmdir /s/q build
-
-clean-linux:
-	rm -r $(BUILD_DIR) || true
 
 # Build RODOS for Linux
 rodos-linux:
