@@ -46,7 +46,8 @@ CXX_SOURCES = \
 ../satellite/utils.cpp \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
-$(main)
+tcmd.cpp \
+main.cpp
 
 #######################################
 # binaries
@@ -93,7 +94,7 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
 -DSTM32F40_41xxx \
--D$(satellite)_SAT
+-DGOLD_SAT
 
 # AS includes
 AS_INCLUDES = \

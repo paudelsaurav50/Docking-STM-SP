@@ -5,6 +5,7 @@
 #include "led.h"
 #include "tcmd.h"
 #include "rodos.h"
+#include "magnet.h"
 
 #include <math.h>
 #define R2D 57.2957795131
@@ -65,8 +66,9 @@ void tof_thread::init()
   led::init();
   led::off();
   tof::int_xshunt();
+  magnet::init();
 
-  period = 55;
+  period = 15;
 }
 
 void tof_thread::run()
@@ -76,20 +78,23 @@ void tof_thread::run()
 
   TIME_LOOP(0, period * MILLISECONDS)
   {
-    int distance[4];
+    int d[4];
+    float i[4] = {0.0};
 
-    if(tof::get_distance(distance) == TOF_STATUS_OK)
+    if(tof::get_distance(d) == TOF_STATUS_OK)
     {
-      int len = SNPRINTF(tx_msg, sizeof(tx_msg), "$d:%dx%dx%dx%d,", distance[0], distance[1], distance[2], distance[3]);
-      uint16_t crc = crc16_ccitt((uint8_t *)tx_msg, len);
-      len += SNPRINTF(tx_msg + len, sizeof(tx_msg) - len, "r:%u#\n", crc);
+      magnet::get_current(i);
+      int len = SNPRINTF(tx_msg, sizeof(tx_msg), "$d:%dx%dx%dx%d,c:%fx%fx%fx%f#", d[0], d[1], d[2], d[3], i[0], i[1], i[2], i[3]);
+      // uint16_t crc = crc16_ccitt((uint8_t *)tx_msg, len);
+      // len += SNPRINTF(tx_msg + len, sizeof(tx_msg) - len, "r:%u#\n", crc);
       int slen = serial.write(tx_msg, len);
 
-      PRINTF("%d, %d: %s", len, slen, tx_msg);
+      // PRINTF("%d, %d: %s", len, slen, tx_msg);
     }
     else
     {
       PRINTF("ToF ranging error!\n");
+      tof::restart();
     }
 
   }
