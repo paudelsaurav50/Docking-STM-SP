@@ -160,10 +160,10 @@ tof_status tof::get_distance(int distance[4])
 
     distance[i] = temp_dist;
 
-    if(distance[i] > TOF_MAX_LENGTH_MM)
-    {
-      distance[i] = TOF_MAX_LENGTH_MM;
-    }
+    // if(distance[i] > TOF_MAX_LENGTH_MM)
+    // {
+    //   distance[i] = TOF_MAX_LENGTH_MM;
+    // }
   }
 
   return status;

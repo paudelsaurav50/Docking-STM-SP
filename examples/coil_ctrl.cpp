@@ -34,6 +34,7 @@ void coil_ctrl::run(void)
       {
         if(rx.stop_coil[i])
         {
+          tx.i[i] = 0;
           ctrl[i].reset_memory();
           magnet::stop((magnet_idx)i);
         }

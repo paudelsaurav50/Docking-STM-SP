@@ -38,20 +38,20 @@ void range::run()
     int d[4];
     float i[4] = {0.0};
 
-    // if(tof::get_distance(d) == TOF_STATUS_OK)
-    // {
-    //   tx.d[0] = d[0];
-    //   tx.d[1] = d[1];
-    //   tx.d[2] = d[2];
-    //   tx.d[3] = d[3];
-    //   topic_tof.publish(tx);
-    // }
-    // else
-    // {
-    //   PRINTF("ToF ranging error!\n");
-    //   tof::restart();
-    // }
-
+    if(tof::get_distance(d) == TOF_STATUS_OK)
+    {
+      tx.d[0] = d[0];
+      tx.d[1] = d[1];
+      tx.d[2] = d[2];
+      tx.d[3] = d[3];
+      topic_tof.publish(tx);
+    }
+    else
+    {
+      PRINTF("ToF ranging error!\n");
+      tof::restart();
+      init_params();
+    }
   }
 }
 

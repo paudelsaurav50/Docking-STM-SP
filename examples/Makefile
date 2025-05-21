@@ -50,7 +50,7 @@ tcmd.cpp \
 topics.cpp \
 telem.cpp \
 coil_ctrl.cpp \
-main.cpp
+range.cpp
 
 #######################################
 # binaries
