@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "magnet.h"
 #include "hbridge.h"
-#include "satellite_config.h"
+#include "sat_config.h"
 
 hbridge em1(EM0_PWM_IDX, EM0_PIN_IN1, EM0_PIN_IN2);
 hbridge em2(EM1_PWM_IDX, EM1_PIN_IN1, EM1_PIN_IN2);

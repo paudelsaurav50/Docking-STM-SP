@@ -4,7 +4,7 @@
 #ifndef _TAMARIW_TOF_H_
 #define _TAMARIW_TOF_H_
 
-#include "satellite_config.h"
+#include "sat_config.h"
 #include <inttypes.h>
 
 // Indices to access individual sensor

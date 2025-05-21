@@ -36,7 +36,6 @@ void range::run()
   TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
   {
     int d[4];
-    float i[4] = {0.0};
 
     if(tof::get_distance(d) == TOF_STATUS_OK)
     {

@@ -5,7 +5,7 @@
 #define _LED_H_
 
 #include <inttypes.h>
-#include "satellite_config.h"
+#include "sat_config.h"
 
 namespace led
 {

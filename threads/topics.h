@@ -3,38 +3,35 @@
 
 #include "rodos.h"
 
-struct data_tof_range
+struct tof_t
 {
   int d[4] = {0, 0, 0, 0}; // Distance, mm
-  float v[4] = {0, 0, 0, 0}; // Velocity, mm/s
-  float dm = 0.0; // Winsorized mean of distances, mm
-  float vm = 0.0; // Winsorized mean of velocity, mm/s
-  float dt = 0; // Thread period, millis
-  bool approach = false; // true if satellites approach each other.
-  int status = 0;
+  float dt = 0;            // Thread period, millis
 };
 
-struct data_current_ctrl
+struct coil_t
 {
-  float i[4]; // Current, milli Amp
+  float i[4];   // Current, milli Amp
   float dt = 0; // Thread period, millis
 };
 
-struct data_collision_ctrl
+struct input_t
 {
-  float dk[2]; // Distance gains: {kp, ki}
-  float vk[2]; // Velocity gains: {kp, ki}
-  float dt = 0; // Thread period, millis
+  float i[4]; // Current set_points, milli Amp
+  bool stop_coils;  // Disable all coils
+  bool stop_coil[4]; // Disable individual coils
+  float kp;
+  float ki;
 };
 
-struct data_desired_current
-{
-  float i[4]; // milli Amp
-};
+extern input_t rx;
+extern Topic<tof_t> topic_tof;
+extern Topic<coil_t> topic_coil;
 
-extern Topic<data_tof_range> topic_tof_range;
-extern Topic<data_current_ctrl> topic_current_ctrl;
-extern Topic<data_collision_ctrl> topic_collision_ctrl;
-extern Topic<data_desired_current> topic_desired_current;
+extern CommBuffer<tof_t> cb_tof;
+extern CommBuffer<coil_t> cb_coil;
+
+extern Subscriber subs_tof;
+extern Subscriber subs_coil;
 
 #endif // telecommand.h

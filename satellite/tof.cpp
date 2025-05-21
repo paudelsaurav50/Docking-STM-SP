@@ -7,7 +7,7 @@
 #include "platform.h"
 #include "MedianFilter.h"
 #include "VL53L4ED_api.h"
-#include "satellite_config.h"
+#include "sat_config.h"
 #include "VL53L4ED_calibration.h"
 
 // Median filter for ToF readings

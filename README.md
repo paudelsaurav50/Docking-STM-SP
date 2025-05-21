@@ -24,7 +24,7 @@ Do the following:
 
 ### satellite
 
-1. [satellite_cofig](satellite/satellite_config.h) - Configuration of pins, peripherals, and parameters used in Tamariw.
+1. [satellite_cofig](satellite/sat_config.h) - Configuration of pins, peripherals, and parameters used in Tamariw.
 2. [utils](satellite/utils.h) - Utility functions, and macros that are generally useful.
 3. [magnet](satellite/magnet.h) - Interface to control electromagnets.
 4. [tof](satellite/tof.h) - Interface to access ToF measurements and relative position/velocity/orientation (state) estimates.
@@ -60,7 +60,7 @@ Do the following:
 
 ## Compilation and macros
 
-1. <code>satellite=BLACK</code> to choose satellite from available configurations (see: [satellite_config.h](satellite/satellite_config.h)).
+1. <code>satellite=BLACK</code> to choose satellite from available configurations (see: [sat_config.h](satellite/sat_config.h)).
 2. <code>pole=CONSTANT</code> to specify that the satellite's magnetic polarity will not change during docking.
 
 Example:

@@ -1,6 +1,20 @@
 #include "topics.h"
+#include "sat_config.h"
 
-Topic<data_tof_range> topic_tof_range(-1, "data_tof_range");
-Topic<data_current_ctrl> topic_current_ctrl(-1, "data_current_ctrl");
-Topic<data_collision_ctrl> topic_collision_ctrl(-1, "data_collision_ctrl");
-Topic<data_desired_current> topic_desired_current(-1, "data_desired_current");
+input_t rx =
+{
+    .i = {0.0, 0.0, 0.0, 0.0},
+    .stop_coils = true,
+    .stop_coil = {true, true, true, true},
+    .kp = PID_CURRENT_KP,
+    .ki = PID_CURRENT_KI,
+};
+
+Topic<tof_t> topic_tof(-1, "tof_t");
+Topic<coil_t> topic_coil(-1, "coil_t");
+
+CommBuffer<tof_t> cb_tof;
+CommBuffer<coil_t> cb_coil;
+
+Subscriber subs_tof{topic_tof, cb_tof};
+Subscriber subs_coil{topic_coil, cb_coil};

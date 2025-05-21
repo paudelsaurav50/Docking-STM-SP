@@ -1,7 +1,8 @@
+# Please make sure RODOS is compiled using 'make rodos' on '../Makefile'.
 # rms (2020)
 
 # OS: Linux, Windows
-OS = Linux
+OS = Windows
 
 ######################################
 # target
@@ -34,28 +35,24 @@ C_SOURCES =  \
 ASM_SOURCES =
 
 # C++ sources
-# libs/DockingMain.cpp \
-
 CXX_SOURCES = \
-libs/topics.cpp \
 libs/pid/pid.cpp \
+libs/lsm9ds1/lsm9ds1.cpp \
 libs/hbridge/hbridge.cpp \
-\
 libs/vl53l4ed/platform.cpp \
 libs/vl53l4ed/VL53L4ED_api.cpp \
 libs/vl53l4ed/VL53L4ED_calibration.cpp \
 \
-satellite/tof.cpp \
-satellite/fsm.cpp \
 satellite/led.cpp \
+satellite/tof.cpp \
 satellite/utils.cpp \
 satellite/magnet.cpp \
 \
-threads/telemetry.cpp \
-threads/tof_range.cpp \
-threads/telecommand.cpp \
-threads/current_control.cpp \
-threads/collision_control.cpp
+threads/tcmd.cpp \
+threads/telem.cpp \
+threads/range.cpp \
+threads/topics.cpp \
+threads/coil_ctrl.cpp
 
 #######################################
 # binaries
@@ -101,9 +98,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
--DSTM32F40_41xxx \
--D$(satellite)_SAT \
--D$(pole)_POLE
+-DSTM32F40_41xxx
 
 # AS includes
 AS_INCLUDES = \
@@ -124,13 +119,13 @@ C_INCLUDES =  \
 -I"rodos/api/hal" \
 -I"rodos/api" \
 -I"rodos/default_usr_configs" \
-\
--I"libs/pid" \
--I"libs/hbridge" \
 -I"libs/vl53l4ed" \
-\
+-I"libs/hbridge" \
+-I"libs/lsm9ds1" \
+-I"libs/pid" \
 -I"threads" \
--I"satellite"
+-I"satellite" \
+-I.
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -165,7 +160,7 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) -nostartfiles -nodefaultlibs -n
 $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
-all: clean $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
 # build the application
@@ -195,12 +190,12 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-
+	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@
-
+	$(BIN) $< $@	
+	
 $(BUILD_DIR):
-	mkdir $@
+	mkdir $@		
 
 #######################################
 # flash
@@ -208,64 +203,24 @@ $(BUILD_DIR):
 flash: clean all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
 
-flash-gold: clean all
-	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=sftp-script-gold.txt
+flash-sftp: clean all
+	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=../sftp-script.txt
 
-flash-silver: clean all
-	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=sftp-script-silver.txt
 
-# Build RODOS for Linux
-rodos-linux:
-	rm -r ../../rodos/build/CMakeFiles || true
-	rm -r ../../rodos/build/test-suite || true
-	rm ../../rodos/build/* || true
-	cmake -S../../rodos -B../rodos/build -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
-	make -C ../../rodos/build
-
-# Build RODOS for Windows
-rodos-windows:
-	if exist "../../rodos/build" rmdir /s/q "../../rodos/build"
-	cmake -S../../rodos -B../../rodos/build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
-	make -C ../../rodos/build
-
-bluetooth-black:
-	sudo rfcomm bind 0 00:0E:EA:CF:6D:70 1
-	python3 BLWSBridge.py
-
-bluetooth-white:
-	sudo rfcomm bind 0 00:0E:EA:CF:6C:ED 1
-	python3 BLWSBridge.py
+#######################
+#  UTILITY FUNCTIONS  #
+#######################
 
 # Linux
 ifeq ($(OS), Linux)
 clean:
 	rm -r $(BUILD_DIR) || true
-
-rodos: clean
-	git clone https://gitlab.com/rodos/rodos.git rodos || true
-	rm -r rodos/build/CMakeFiles || true
-	rm -r rodos/build/test-suite || true
-	rm rodos/build/* || true
-	cmake -Srodos -Brodos/build -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
-	make -C rodos/build
-
-udev:
-	sudo cp $(RULE_PATH) $(RULE_DEST)
-	sudo chmod 644 $(RULE_DEST)
-	sudo udevadm control --reload
-	sudo udevadm trigger
 endif
 
 # Windows
 ifeq ($(OS), Windows)
 clean:
 	if exist $(BUILD_DIR) rmdir /s/q $(BUILD_DIR)
-
-rodos: clean
-	if not exist "rodos" git clone https://gitlab.com/rodos/rodos.git
-	if exist "rodos/build" rmdir /s/q "rodos/build"
-	cmake -Srodos -Brodos/build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
-	make -C rodos/build
 endif
 
 #######################################
