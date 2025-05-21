@@ -32,6 +32,9 @@ void coil_ctrl::run(void)
       // Perform current control for each magnet
       for(uint8_t i = 0; i < 4; i++)
       {
+        ctrl[i].set_kp(rx.kp);
+        ctrl[i].set_ki(rx.ki);
+
         if(rx.stop_coil[i])
         {
           tx.i[i] = 0;

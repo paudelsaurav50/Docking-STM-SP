@@ -173,6 +173,14 @@ bool thread_tcmd::execute(const tcmd_t *cmd)
     rx.stop_coils = true;
     break;
 
+  case TCMD_EM_KP:
+    rx.kp = cmd->data;
+    break;
+
+  case TCMD_EM_KI:
+    rx.ki = cmd->data;
+    break;
+
   default:
     break;
   }
