@@ -7,7 +7,7 @@
 
 #include "rodos.h"
 #include "platform.h"
-#include "satellite_config.h"
+#include "sat_config.h"
 
 // Disable MUX (1) to use TOF without MUX
 #define  VL53L4ED_DISABLE_MUX 0

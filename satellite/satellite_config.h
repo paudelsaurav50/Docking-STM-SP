@@ -1,6 +1,7 @@
 #ifndef _SATELLITE_CONFIG_H_
 #define _SATELLITE_CONFIG_H_
 
+#include "sat_config.h"
 
 #ifdef GOLD_SAT
 #include "config_gold.h"

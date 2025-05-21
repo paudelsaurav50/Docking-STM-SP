@@ -47,6 +47,9 @@ CXX_SOURCES = \
 ../satellite/magnet.cpp \
 ../libs/hbridge/hbridge.cpp \
 tcmd.cpp \
+topics.cpp \
+telem.cpp \
+coil_ctrl.cpp \
 main.cpp
 
 #######################################
@@ -93,8 +96,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_STM32_DISCOVERY \
--DSTM32F40_41xxx \
--DGOLD_SAT
+-DSTM32F40_41xxx
 
 # AS includes
 AS_INCLUDES = \
@@ -120,7 +122,8 @@ C_INCLUDES =  \
 -I"../libs/lsm9ds1" \
 -I"../libs/pid" \
 -I"../threads" \
--I"../satellite"
+-I"../satellite" \
+-I.
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

@@ -26,13 +26,22 @@ extern HAL_UART serial;
 // Add/remove tcmds as enum elements
 enum tcmd_idx
 {
-  // PID gains
-  TCMD_KP,
-  TCMD_KI,
-  TCMD_KD,
+    // PID gains
+    TCMD_EM_KP,
+    TCMD_EM_KI,
+    TCMD_EM0,
+    TCMD_EM1,
+    TCMD_EM2,
+    TCMD_EM3,
+    TCMD_EM0_STOP,
+    TCMD_EM1_STOP,
+    TCMD_EM2_STOP,
+    TCMD_EM3_STOP,
+    TCMD_EM_ENABLE,
+    TCMD_EM_STOP_ALL,
 
-  // Do not remove!
-  TCMD_LENGTH
+    // Do not remove!
+    TCMD_LENGTH
 };
 
 // Telecommand data structure

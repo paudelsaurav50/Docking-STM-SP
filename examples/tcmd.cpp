@@ -1,4 +1,5 @@
 #include "tcmd.h"
+#include "topics.h"
 
 HAL_UART serial(UART_IDX3, GPIO_026, GPIO_027);
 
@@ -113,6 +114,55 @@ void thread_tcmd::run()
 
 bool thread_tcmd::execute(const tcmd_t *cmd)
 {
+  switch (cmd->idx)
+  {
+  case TCMD_EM0:
+    rx.stop = false;
+    rx.i[0] = cmd->data;
+    break;
+
+  case TCMD_EM1:
+    rx.stop = false;
+    rx.i[1] = cmd->data;
+    break;
+
+  case TCMD_EM2:
+    rx.stop = false;
+    rx.i[2] = cmd->data;
+    break;
+
+  case TCMD_EM3:
+    rx.stop = false;
+    rx.i[3] = cmd->data;
+    break;
+
+  case TCMD_EM0_STOP:
+    rx.i[0] = 0.0;
+    break;
+
+  case TCMD_EM1_STOP:
+    rx.i[1] = 0.0;
+    break;
+
+  case TCMD_EM2_STOP:
+    rx.i[2] = 0.0;
+    break;
+
+  case TCMD_EM3_STOP:
+    rx.i[3] = 0.0;
+    break;
+
+  case TCMD_EM_STOP_ALL:
+    rx.i[0] = 0.0;
+    rx.i[1] = 0.0;
+    rx.i[2] = 0.0;
+    rx.i[3] = 0.0;
+    rx.stop = true;
+
+  default:
+    break;
+  }
+
   return true;
 }
 

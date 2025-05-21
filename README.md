@@ -105,8 +105,5 @@ Example:
 
 ## todos
 
-1. Soft colision between two satellites.
-2. Open-loop current versus temperature graph.
-3. Closed-loop current versus temperature graph.
-4. Filter current measurements (?).
-5. Handle the sensor anomalies.
+1. Pi start software on startup
+

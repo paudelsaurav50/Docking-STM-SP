@@ -10,7 +10,7 @@ static CommBuffer<data_current_ctrl> cb_current;
 static CommBuffer<data_collision_ctrl> cb_collision;
 
 static Subscriber subs_tof(topic_tof_range, cb_tof);
-static Subscriber subs_current(topic_current_ctrl, cb_current);
+static Subscriber subs_coil(topic_current_ctrl, cb_current);
 static Subscriber subs_collision(topic_collision_ctrl, cb_collision);
 
 static data_tof_range rx_tof;
