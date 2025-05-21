@@ -3,49 +3,53 @@
 
 HAL_UART serial(UART_IDX3, GPIO_026, GPIO_027);
 
-// Parse the incoming message
 bool thread_tcmd::parse(const char *msg, tcmd_t *tcmd)
 {
-  // Check if the message starts with TCMD_START_CHAR and ends with TCMD_STOP_CHAR
   if (msg[0] != TCMD_START_CHAR || msg[strlen(msg) - 1] != TCMD_STOP_CHAR)
   {
     return false; // Invalid message format
   }
 
-  // Find the position of the delimiter
   const char *delimiter_pos = strchr(msg, TCMD_DELIMITER);
   if (!delimiter_pos)
   {
     return false; // Delimiter not found
   }
 
-  // Extract and validate the command
   int command_int = 0;
-  const char *ptr = msg + 1; // Start after TCMD_START_CHAR
+  const char *ptr = msg + 1;
   while (ptr < delimiter_pos)
   {
     if (*ptr >= '0' && *ptr <= '9')
     {
-      command_int = command_int * 10 + (*ptr - '0'); // Convert char to int
+      command_int = command_int * 10 + (*ptr - '0');
     }
     else
     {
-      return false; // Invalid character in command
+      return false;
     }
     ptr++;
   }
 
-  // Validate the command range using TCMD_LENGTH
   if (command_int < 0 || command_int >= TCMD_LENGTH)
   {
-    return false; // Invalid command
+    return false;
   }
 
-  // Extract and convert the data
+  // Begin parsing data
   float data_value = 0.0f;
-  ptr = delimiter_pos + 1; // Start after TCMD_DELIMITER
   bool decimal_found = false;
   float decimal_place = 0.1f;
+  int sign = 1;
+
+  ptr = delimiter_pos + 1;
+
+  // Negative sign
+  if (*ptr == '-')
+  {
+    sign = -1;
+    ptr++;
+  }
 
   while (*ptr != TCMD_STOP_CHAR && *ptr != '\0')
   {
@@ -63,20 +67,25 @@ bool thread_tcmd::parse(const char *msg, tcmd_t *tcmd)
     }
     else if (*ptr == '.')
     {
+      // Two decimals
+      if (decimal_found)
+      {
+        return false;
+      }
+
       decimal_found = true;
     }
-    else // Invalid character in data
+    else // Invalid character
     {
       return false;
     }
     ptr++;
   }
 
-  // Assign the parsed values
   tcmd->idx = static_cast<tcmd_idx>(command_int);
-  tcmd->data = data_value;
+  tcmd->data = sign * data_value;
 
-  return true; // Success
+  return true;
 }
 
 void thread_tcmd::init()
@@ -101,7 +110,7 @@ void thread_tcmd::run()
         topic_tcmd.publish(tcmd);
         execute(&tcmd);
 
-        PRINTF("Successful telecommand reception!\n");
+        PRINTF("Successful telecommand reception! %s\n", tcmd_msg);
         serial.write("Successful telecommand reception!\n", 35);
       }
       else
@@ -117,47 +126,52 @@ bool thread_tcmd::execute(const tcmd_t *cmd)
   switch (cmd->idx)
   {
   case TCMD_EM0:
-    rx.stop = false;
+    rx.stop_coils = false;
+    rx.stop_coil[0] = false;
     rx.i[0] = cmd->data;
     break;
 
   case TCMD_EM1:
-    rx.stop = false;
+    rx.stop_coils = false;
+    rx.stop_coil[1] = false;
     rx.i[1] = cmd->data;
     break;
 
   case TCMD_EM2:
-    rx.stop = false;
+    rx.stop_coils = false;
+    rx.stop_coil[2] = false;
     rx.i[2] = cmd->data;
     break;
 
   case TCMD_EM3:
-    rx.stop = false;
+    rx.stop_coils = false;
+    rx.stop_coil[3] = false;
     rx.i[3] = cmd->data;
     break;
 
   case TCMD_EM0_STOP:
-    rx.i[0] = 0.0;
+    rx.stop_coil[0] = true;
     break;
 
   case TCMD_EM1_STOP:
-    rx.i[1] = 0.0;
+    rx.stop_coil[1] = true;
     break;
 
   case TCMD_EM2_STOP:
-    rx.i[2] = 0.0;
+    rx.stop_coil[2] = true;
     break;
 
   case TCMD_EM3_STOP:
-    rx.i[3] = 0.0;
+    rx.stop_coil[3] = true;
     break;
 
   case TCMD_EM_STOP_ALL:
-    rx.i[0] = 0.0;
-    rx.i[1] = 0.0;
-    rx.i[2] = 0.0;
-    rx.i[3] = 0.0;
-    rx.stop = true;
+    rx.stop_coil[0] = true;
+    rx.stop_coil[1] = true;
+    rx.stop_coil[2] = true;
+    rx.stop_coil[3] = true;
+    rx.stop_coils = true;
+    break;
 
   default:
     break;
