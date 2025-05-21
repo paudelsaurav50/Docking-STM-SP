@@ -18,7 +18,8 @@ struct coil_t
 struct input_t
 {
   float i[4]; // Current set_points, milli Amp
-  bool stop;  // Disable all coils
+  bool stop_coils;  // Disable all coils
+  bool stop_coil[4]; // Disable individual coils
 };
 
 extern input_t rx;
