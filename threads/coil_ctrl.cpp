@@ -43,11 +43,11 @@ void coil_ctrl::run(void)
         }
         else
         {
-          tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
+          // tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
           float error = rx.i[i] - tx.i[i];
           float pwm = ctrl[i].update(error, period / 1000.0);
           magnet::actuate((magnet_idx)i, pwm);
-          last_sign[i] = sign(pwm); // Store sign
+          // last_sign[i] = sign(pwm); // Store sign
         }
       }
 
