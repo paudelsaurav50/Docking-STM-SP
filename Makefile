@@ -215,12 +215,32 @@ flash-sftp: clean all
 ifeq ($(OS), Linux)
 clean:
 	rm -r $(BUILD_DIR) || true
+
+rodos: clean
+	git clone https://gitlab.com/rodos/rodos.git rodos || true
+	rm -r rodos/build/CMakeFiles || true
+	rm -r rodos/build/test-suite || true
+	rm rodos/build/* || true
+	cmake -Srodos -Brodos/build -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
+	make -C rodos/build
+
+udev:
+	sudo cp $(RULE_PATH) $(RULE_DEST)
+	sudo chmod 644 $(RULE_DEST)
+	sudo udevadm control --reload
+	sudo udevadm trigger
 endif
 
 # Windows
 ifeq ($(OS), Windows)
 clean:
 	if exist $(BUILD_DIR) rmdir /s/q $(BUILD_DIR)
+
+rodos: clean
+	if not exist "rodos" git clone https://gitlab.com/rodos/rodos.git
+	if exist "rodos/build" rmdir /s/q "rodos/build"
+	cmake -Srodos -Brodos/build -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=cmake/port/skith.cmake
+	make -C rodos/build
 endif
 
 #######################################
