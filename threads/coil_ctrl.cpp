@@ -29,29 +29,29 @@ void coil_ctrl::run(void)
 
     magnet::get_current(tx.i);
 
-      // Perform current control for each magnet
-      for(uint8_t i = 0; i < 4; i++)
+    // Perform current control for each magnet
+    for(uint8_t i = 0; i < 4; i++)
+    {
+      ctrl[i].set_kp(rx.kp);
+      ctrl[i].set_ki(rx.ki);
+
+      tx.i[i] = computeMovingAverage(tx.i[i], filt[i]);
+
+      if(rx.stop_coil[i])
       {
-        ctrl[i].set_kp(rx.kp);
-        ctrl[i].set_ki(rx.ki);
-
-        tx.i[i] = computeMovingAverage(tx.i[i], filt[i]);
-
-        if(rx.stop_coil[i])
-        {
-          tx.i[i] = 0;
-          ctrl[i].reset_memory();
-          magnet::stop((magnet_idx)i);
-        }
-        else
-        {
-          tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
-          float error = rx.i[i] - tx.i[i];
-          float pwm = ctrl[i].update(error, period / 1000.0);
-          magnet::actuate((magnet_idx)i, pwm);
-          last_sign[i] = sign(pwm); // Store sign
-        }
+        tx.i[i] = 0;
+        ctrl[i].reset_memory();
+        magnet::stop((magnet_idx)i);
       }
+      else
+      {
+        tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
+        float error = rx.i[i] - tx.i[i];
+        float pwm = ctrl[i].update(error, period / 1000.0);
+        magnet::actuate((magnet_idx)i, pwm);
+        last_sign[i] = sign(pwm); // Store sign
+      }
+    }
 
     tx.dt =  (NOW() - time) / MILLISECONDS;
     topic_coil.publish(tx);
