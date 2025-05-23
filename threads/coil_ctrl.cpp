@@ -35,6 +35,8 @@ void coil_ctrl::run(void)
         ctrl[i].set_kp(rx.kp);
         ctrl[i].set_ki(rx.ki);
 
+        tx.i[i] = computeMovingAverage(tx.i[i], filt[i]);
+
         if(rx.stop_coil[i])
         {
           tx.i[i] = 0;

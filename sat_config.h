@@ -33,6 +33,9 @@
 #define TOF_DIMENSION_WIDTH_MM 44.95
 #define TOF_DIMENSION_LENGTH_MM 101.5
 
+// Moving average window size
+#define EM_MAVG_WINDOW 5
+
 // Electromagnet enable pin
 #define EM_ENABLE_PIN GPIO_056
 #define EM_SAFETY_THRESHOLD 50
@@ -57,7 +60,7 @@
 #define EM3_PIN_IN2 GPIO_063
 
 // ADC channels for electromagnets
-#define EM_ADC_IDX ADC_IDX3
+#define EM_ADC_IDX ADC_IDX1
 #define EM0_ADC_CH ADC_CH_012
 #define EM1_ADC_CH ADC_CH_013
 #define EM2_ADC_CH ADC_CH_011

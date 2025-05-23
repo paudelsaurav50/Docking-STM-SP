@@ -2,12 +2,14 @@
 #define _CURRENT_CONTROL_H_
 
 #include "sat_config.h"
+#include "mavg.h"
 
 class coil_ctrl : public StaticThread<>
 {
 private:
   int period = THREAD_PERIOD_CURRENT_CTRL_MILLIS; // millis
   int last_sign[4] = {1,1,1,1};
+  MovingAverageState filt[4];
   pid ctrl[4];
   coil_t tx;
   double time = 0;
