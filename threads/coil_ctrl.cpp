@@ -45,11 +45,23 @@ void coil_ctrl::run(void)
       }
       else
       {
-        tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
-        float error = rx.i[i] - tx.i[i];
-        float pwm = ctrl[i].update(error, period / 1000.0);
-        magnet::actuate((magnet_idx)i, pwm);
-        last_sign[i] = sign(pwm); // Store sign
+        ctrl[i].set_kp(rx.kp);
+        ctrl[i].set_ki(rx.ki);
+
+        if(rx.stop_coil[i])
+        {
+          tx.i[i] = 0;
+          ctrl[i].reset_memory();
+          magnet::stop((magnet_idx)i);
+        }
+        else
+        {
+          // tx.i[i] = last_sign[i] * tx.i[i]; // Signed current
+          float error = rx.i[i] - tx.i[i];
+          float pwm = ctrl[i].update(error, period / 1000.0);
+          magnet::actuate((magnet_idx)i, pwm);
+          // last_sign[i] = sign(pwm); // Store sign
+        }
       }
     }
 
