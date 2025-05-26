@@ -33,6 +33,9 @@
 #define TOF_DIMENSION_WIDTH_MM 44.95
 #define TOF_DIMENSION_LENGTH_MM 101.5
 
+// Moving average window size
+#define EM_MAVG_WINDOW 5
+
 // Electromagnet enable pin
 #define EM_ENABLE_PIN GPIO_056
 #define EM_SAFETY_THRESHOLD 50
@@ -40,7 +43,7 @@
 
 // PWMs for electromagnets
 #define EM_PWM_FREQUENCY 20000
-#define EM_PWM_INCREMENTS 1023
+#define EM_PWM_INCREMENTS 1000
 #define EM0_PWM_IDX PWM_IDX06
 #define EM1_PWM_IDX PWM_IDX07
 #define EM2_PWM_IDX PWM_IDX05
@@ -57,7 +60,7 @@
 #define EM3_PIN_IN2 GPIO_063
 
 // ADC channels for electromagnets
-#define EM_ADC_IDX ADC_IDX3
+#define EM_ADC_IDX ADC_IDX1
 #define EM0_ADC_CH ADC_CH_012
 #define EM1_ADC_CH ADC_CH_013
 #define EM2_ADC_CH ADC_CH_011
@@ -81,12 +84,6 @@
 #define THREAD_START_TELECOMMAND_MILLIS 300
 #define THREAD_START_CURRENT_CTRL_MILLIS 400
 #define THREAD_START_COLLISION_CTRL_MILLIS 500
-
-// Distance control params
-#define PID_DISTANCE_UMAX 2500 * 2500
-#define PID_DISTANCE_UMIN 0
-#define PID_DISTANCE_KP 20000.0
-#define PID_DISTANCE_KI 50.0
 
 // Current control params
 #define PID_CURRENT_UMAX 90
