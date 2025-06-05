@@ -1,6 +1,6 @@
 # Tamariw
 
-This branch contains the embedded source code to interface with a ground station for Tamariw.
+This branch contains the embedded source code to interface with the [ground station for Tamariw](https://github.com/TAMARIW/gs).
 
 ## schematics of indices
 
