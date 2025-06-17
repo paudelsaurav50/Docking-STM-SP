@@ -39,8 +39,14 @@ void telemetry_thread::run()
 
     const float i[4] = {rx_coil.i[0], rx_coil.i[1], rx_coil.i[2], rx_coil.i[3]};
     const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
+    const float e[4] = {rx_tof.kf_d[0], rx_tof.kf_d[1], rx_tof.kf_d[2], rx_tof.kf_d[3]};
+    const float f[4] = {rx_tof.kf_v[0], rx_tof.kf_v[1], rx_tof.kf_v[2], rx_tof.kf_v[3]};
 
-    int len = SNPRINTF(tx_msg, sizeof(tx_msg), "$d:%dx%dx%dx%d,c:%fx%fx%fx%f,r:11#\n", d[0], d[1], d[2], d[3], i[0], i[1], i[2], i[3]);
+    int len = SNPRINTF(tx_msg, sizeof(tx_msg), "$d:%dx%dx%dx%d,c:%fx%fx%fx%f,e:%fx%fx%fx%f,f:%fx%fx%fx%f,r:11#\n",
+                       d[0], d[1], d[2], d[3],
+                       i[0], i[1], i[2], i[3],
+                       e[0], e[1], e[2], e[3],
+                       f[0], f[1], f[2], f[3]);
     serial.write(tx_msg, len);
 
     // PRINTF("%s", tx_msg);

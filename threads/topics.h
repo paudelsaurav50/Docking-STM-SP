@@ -5,8 +5,10 @@
 
 struct tof_t
 {
-  int d[4] = {0, 0, 0, 0}; // Distance, mm
-  float dt = 0;            // Thread period, millis
+  int d[4] = {0, 0, 0, 0};            // Distance, mm
+  float kf_d[4] {0.0, 0.0, 0.0, 0.0}; // KF relative position estimates, mm
+  float kf_v[4] {0.0, 0.0, 0.0, 0.0}; // KF relative velocity estimates, mm/s
+  float dt = 0;                       // Thread period, millis
 };
 
 struct coil_t

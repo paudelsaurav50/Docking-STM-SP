@@ -26,6 +26,7 @@ void range::init()
   led::init();
   led::off();
   tof::int_xshunt();
+  tof::enable_median_filter();
 }
 
 void range::run()
@@ -43,6 +44,17 @@ void range::run()
       tx.d[1] = d[1];
       tx.d[2] = d[2];
       tx.d[3] = d[3];
+
+      tx.kf_d[0] = (float) d[0] + 3.0f;
+      tx.kf_d[1] = (float) d[1] + 3.0f;
+      tx.kf_d[2] = (float) d[2] + 3.0f;
+      tx.kf_d[3] = (float) d[3] + 3.0f;
+
+      tx.kf_v[0] = 10;
+      tx.kf_v[1] = 15;
+      tx.kf_v[2] = 20;
+      tx.kf_v[3] = 25;
+
       topic_tof.publish(tx);
     }
     else
