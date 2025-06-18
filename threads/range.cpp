@@ -44,7 +44,7 @@ void range::init()
   led::init();
   led::off();
   tof::int_xshunt();
-  tof::enable_median_filter();
+  // tof::enable_median_filter();
 }
 
 void range::run()
