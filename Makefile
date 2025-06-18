@@ -37,6 +37,7 @@ ASM_SOURCES =
 # C++ sources
 CXX_SOURCES = \
 libs/pid/pid.cpp \
+libs/kf1d/kf1d.cpp \
 libs/mavg/mavg.cpp \
 libs/lsm9ds1/lsm9ds1.cpp \
 libs/hbridge/hbridge.cpp \
@@ -125,6 +126,7 @@ C_INCLUDES =  \
 -I"libs/lsm9ds1" \
 -I"libs/pid" \
 -I"libs/mavg" \
+-I"libs/kf1d" \
 -I"threads" \
 -I"satellite" \
 -I.

@@ -3,11 +3,24 @@
 
 #include "led.h"
 #include "tof.h"
+#include "kf1d.h"
 #include "range.h"
 #include "sat_config.h"
 
 #include <math.h>
 #define R2D 57.2957795131
+
+#define KF1D_Q_POS 0.1f
+#define KF1D_Q_VEL 0.1f
+#define KF1D_R 1.0f
+
+kf1d tof_kf[4] =
+{
+  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R)
+};
 
 void init_params()
 {
@@ -18,6 +31,11 @@ void init_params()
   else
   {
     PRINTF("VL53L4CD error :(\n");
+  }
+
+  for (int i = 0; i < 4; i++)
+  {
+    tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
   }
 }
 
@@ -34,26 +52,28 @@ void range::run()
   tof::wakeup();
   init_params();
 
-  TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
-  {
+
+TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
+{
     int d[4];
+    float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
 
     if(tof::get_distance(d) == TOF_STATUS_OK)
     {
-      tx.d[0] = d[0];
-      tx.d[1] = d[1];
-      tx.d[2] = d[2];
-      tx.d[3] = d[3];
+      // Process each sensor measurement
+      for (int i = 0; i < 4; i++)
+      {
+        // Propagate state based on motion model
+        tof_kf[i].predict(dt);
 
-      tx.kf_d[0] = (float) d[0] + 3.0f;
-      tx.kf_d[1] = (float) d[1] + 3.0f;
-      tx.kf_d[2] = (float) d[2] + 3.0f;
-      tx.kf_d[3] = (float) d[3] + 3.0f;
+        // Update KF with new ToF measurement
+        tof_kf[i].update((float)d[i]);
 
-      tx.kf_v[0] = 10;
-      tx.kf_v[1] = 15;
-      tx.kf_v[2] = 20;
-      tx.kf_v[3] = 25;
+        // Save measurement and estimates for telemetry
+        tx.d[i] = d[i];                        // Raw measurement
+        tx.kf_d[i] = tof_kf[i].get_position(); // Filtered position
+        tx.kf_v[i] = tof_kf[i].get_velocity(); // Velocity estimation
+      }
 
       topic_tof.publish(tx);
     }
