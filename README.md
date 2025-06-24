@@ -28,3 +28,10 @@ This branch contains the embedded source code to interface with the [ground stat
 (O) - electromagnet
  o  - time of flight sensor
 ```
+
+# Todos
+
+1. Implement the KF tuner in STM32 side.
+2. Debug the issue with ToF sensor measurements.
+3. How to get away with that one prompt that appears for the first time when using `pscp` on GS.
+4. Implement the status flag for the Kalman Filter.
