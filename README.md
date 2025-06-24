@@ -29,6 +29,13 @@ This branch contains the embedded source code to interface with the [ground stat
  o  - time of flight sensor
 ```
 
+## Commands
+
+1. To cache the host key of the Raspberry Pi to transfer `main.hex`.
+```
+pscp -pw tamariw build/main.hex tamariw@tamariw.local:/home/tamariw/tpi/src
+```
+
 # Todos
 
 1. Implement the KF tuner in STM32 side.
