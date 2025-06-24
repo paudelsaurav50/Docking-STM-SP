@@ -181,6 +181,18 @@ bool thread_tcmd::execute(const tcmd_t *cmd)
     rx.ki = cmd->data;
     break;
 
+  case TCMD_KF_Q00:
+    rx.q_pos = cmd->data;
+    break;
+
+  case TCMD_KF_Q11:
+    rx.q_vel = cmd->data;
+    break;
+
+  case TCMD_KF_R:
+    rx.r = cmd->data;
+    break;
+
   default:
     break;
   }

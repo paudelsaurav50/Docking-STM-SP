@@ -39,6 +39,9 @@ enum tcmd_idx
     TCMD_EM3_STOP,
     TCMD_EM_ENABLE,
     TCMD_EM_STOP_ALL,
+    TCMD_KF_Q00,
+    TCMD_KF_Q11,
+    TCMD_KF_R,
 
     // Do not remove!
     TCMD_LENGTH
