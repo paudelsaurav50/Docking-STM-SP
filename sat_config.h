@@ -12,6 +12,11 @@
 #define TOF_MUX_TIMEOUT_MILLIS 2
 #define TOF_RANGE_TIMEOUT_MILLIS 2
 
+// ToF Kalman Filter parameters
+#define KF1D_Q_POS 0.1f
+#define KF1D_Q_VEL 0.1f
+#define KF1D_R 1.0f
+
 // ToF sensor
 #define TOF_MAX_LENGTH_MM 750
 // #define TOF_I2C_HAL_IDX I2C_IDX3

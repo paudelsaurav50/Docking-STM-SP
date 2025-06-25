@@ -33,8 +33,11 @@ public:
   float get_position() const { return   x[0]; }
   float get_velocity() const { return   x[1]; }
 
-  void set_position(float pos) {   x[0] = pos; }
-  void set_velocity(float vel) {   x[1] = vel; }
+  void set_position(float pos) { x[0] = pos; }
+  void set_velocity(float vel) { x[1] = vel; }
+
+  void set_q(const float q[2][2]) { Q[0][0] = q[0][0];  Q[0][1] = q[0][1];  Q[1][0] = q[1][0];  Q[1][1] = q[1][1]; }
+  void set_r(const float r) { R = r; }
 
   // Reset filter
   void reset(float pos = 0.0f, float vel = 0.0f,

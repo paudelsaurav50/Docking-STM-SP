@@ -10,10 +10,6 @@
 #include <math.h>
 #define R2D 57.2957795131
 
-#define KF1D_Q_POS 0.1f
-#define KF1D_Q_VEL 0.1f
-#define KF1D_R 1.0f
-
 kf1d tof_kf[4] =
 {
   kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
@@ -63,6 +59,10 @@ TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
       // Process each sensor measurement
       for (int i = 0; i < 4; i++)
       {
+        const float q[2][2] = {{rx.q_pos, 0.0}, {0.0, rx.q_vel}};
+        tof_kf[i].set_q(q);
+        tof_kf[i].set_r(rx.r);
+
         // Propagate state based on motion model
         tof_kf[i].predict(dt);
 

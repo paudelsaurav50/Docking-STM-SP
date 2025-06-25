@@ -8,6 +8,9 @@ input_t rx =
     .stop_coil = {true, true, true, true},
     .kp = PID_CURRENT_KP,
     .ki = PID_CURRENT_KI,
+    .q_pos = KF1D_Q_POS,
+    .q_vel = KF1D_Q_VEL,
+    .r = KF1D_R
 };
 
 Topic<tof_t> topic_tof(-1, "tof_t");

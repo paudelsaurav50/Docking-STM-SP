@@ -24,6 +24,9 @@ struct input_t
   bool stop_coil[4]; // Disable individual coils
   float kp;
   float ki;
+  float q_pos;
+  float q_vel;
+  float r;
 };
 
 extern input_t rx;
