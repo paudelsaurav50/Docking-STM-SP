@@ -28,7 +28,7 @@ enum tof_status
 namespace tof
 {
   tof_status init(const tof_idx idx);
-  tof_status get_distance(int distance[4]);
+  tof_status get_distance(int distance[4], tof_status s[4]);
   bool get_velocity(const int d[4], const double dt, float v[4]);
   tof_status calibrate(const int16_t target_mm, const int16_t n);
   tof_status get_single_distance(const tof_idx idx, int *distance);

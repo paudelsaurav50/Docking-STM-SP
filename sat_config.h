@@ -18,7 +18,9 @@
 #define KF1D_R 1.0f
 
 // ToF sensor
-#define TOF_MAX_LENGTH_MM 750
+#define TOF_MAX_LENGTH_MM 500
+#define TOF_MIN_LENGTH_MM 0
+
 // #define TOF_I2C_HAL_IDX I2C_IDX3
 // #define TOF_I2C_HAL_GPIO_SCL GPIO_008 // PA8
 // #define TOF_I2C_HAL_GPIO_SDA GPIO_041 // PC9

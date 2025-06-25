@@ -52,9 +52,11 @@ void range::run()
 TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
 {
     int d[4];
+    tof_status status[4];
+
     float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
 
-    if(tof::get_distance(d) == TOF_STATUS_OK)
+    if(tof::get_distance(d, status) == TOF_STATUS_OK)
     {
       // Process each sensor measurement
       for (int i = 0; i < 4; i++)

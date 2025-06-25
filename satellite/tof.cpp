@@ -143,7 +143,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 }
 
 // Range [mm] of four ToFs with max distance check.
-tof_status tof::get_distance(int distance[4])
+tof_status tof::get_distance(int distance[4], tof_status s[4])
 {
 
   int temp_dist;
@@ -151,19 +151,23 @@ tof_status tof::get_distance(int distance[4])
 
   for (uint8_t i = TOF_IDX_0; i <= TOF_IDX_3; i++)
   {
-    status = get_single_distance((tof_idx)i, &temp_dist);
+    s[i] = get_single_distance((tof_idx)i, &temp_dist);
 
-    if (status != TOF_STATUS_OK)
+    if (s[i] != TOF_STATUS_OK)
     {
-      return TOF_STATUS_ERROR;
+      status = TOF_STATUS_ERROR;
     }
 
     distance[i] = temp_dist;
 
-    // if(distance[i] > TOF_MAX_LENGTH_MM)
-    // {
-    //   distance[i] = TOF_MAX_LENGTH_MM;
-    // }
+    if(distance[i] > TOF_MAX_LENGTH_MM)
+    {
+      distance[i] = TOF_MAX_LENGTH_MM;
+    }
+    else if (distance[i] < TOF_MIN_LENGTH_MM)
+    {
+      distance[i] = TOF_MIN_LENGTH_MM;
+    }
   }
 
   return status;
