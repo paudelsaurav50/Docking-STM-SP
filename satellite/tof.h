@@ -21,8 +21,7 @@ enum tof_status
 {
   TOF_STATUS_ERROR,
   TOF_STATUS_OK,
-  TOF_STATUS_TOF_TIMEOUT,
-  TOF_STATUS_MUX_TIMEOUT
+  TOF_STATUS_OUT_OF_RANGE,
 };
 
 namespace tof

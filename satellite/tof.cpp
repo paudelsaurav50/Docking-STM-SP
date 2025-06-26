@@ -163,10 +163,12 @@ tof_status tof::get_distance(int distance[4], tof_status s[4])
     if(distance[i] > TOF_MAX_LENGTH_MM)
     {
       distance[i] = TOF_MAX_LENGTH_MM;
+      s[i] = TOF_STATUS_OUT_OF_RANGE;
     }
     else if (distance[i] < TOF_MIN_LENGTH_MM)
     {
       distance[i] = TOF_MIN_LENGTH_MM;
+      s[i] = TOF_STATUS_OUT_OF_RANGE;
     }
   }
 
