@@ -16,6 +16,7 @@
 #define KF1D_Q_POS 0.1f
 #define KF1D_Q_VEL 0.1f
 #define KF1D_R 1.0f
+#define KF1D_MAX_TOF_ERROR 4
 
 // ToF sensor
 #define TOF_MAX_LENGTH_MM 400
