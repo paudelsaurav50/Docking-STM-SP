@@ -28,11 +28,6 @@ void init_params()
   {
     PRINTF("VL53L4CD error :(\n");
   }
-
-  for (int i = 0; i < 4; i++)
-  {
-    tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
-  }
 }
 
 void range::init()
@@ -40,6 +35,12 @@ void range::init()
   led::init();
   led::off();
   tof::int_xshunt();
+
+  for (int i = 0; i < 4; i++)
+  {
+    tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
+  }
+  
   // tof::enable_median_filter();
 }
 
@@ -49,37 +50,40 @@ void range::run()
   init_params();
 
 
-TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
-{
+  TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
+  {
     int d[4];
     tof_status status[4];
 
     float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
 
-    if(tof::get_distance(d, status) == TOF_STATUS_OK)
+    tof_status all_good = tof::get_distance(d, status);
+    
+    // Process each sensor measurement
+    for (int i = 0; i < 4; i++)
     {
-      // Process each sensor measurement
-      for (int i = 0; i < 4; i++)
+      const float q[2][2] = {{rx.q_pos, 0.0}, {0.0, rx.q_vel}};
+      tof_kf[i].set_q(q);
+      tof_kf[i].set_r(rx.r);
+
+      // Propagate state based on motion model
+      tof_kf[i].predict(dt);
+
+      // Update KF with new ToF measurement
+      if (status[i] == TOF_STATUS_OK)
       {
-        const float q[2][2] = {{rx.q_pos, 0.0}, {0.0, rx.q_vel}};
-        tof_kf[i].set_q(q);
-        tof_kf[i].set_r(rx.r);
-
-        // Propagate state based on motion model
-        tof_kf[i].predict(dt);
-
-        // Update KF with new ToF measurement
         tof_kf[i].update((float)d[i]);
-
-        // Save measurement and estimates for telemetry
-        tx.d[i] = d[i];                        // Raw measurement
-        tx.kf_d[i] = tof_kf[i].get_position(); // Filtered position
-        tx.kf_v[i] = tof_kf[i].get_velocity(); // Velocity estimation
       }
-
-      topic_tof.publish(tx);
+    
+      // Save measurement and estimates for telemetry
+      tx.d[i] = d[i];                        // Raw measurement
+      tx.kf_d[i] = tof_kf[i].get_position(); // Filtered position
+      tx.kf_v[i] = tof_kf[i].get_velocity(); // Velocity estimation
     }
-    else
+
+    topic_tof.publish(tx);
+
+    if (all_good != TOF_STATUS_OK)
     {
       PRINTF("ToF ranging error!\n");
       tof::restart();

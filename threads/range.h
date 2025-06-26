@@ -7,7 +7,6 @@
 class range : public StaticThread<>
 {
 private:
-  int period = 10; // millis
 
 public:
   range(const char* thread_name) : StaticThread(thread_name){}
