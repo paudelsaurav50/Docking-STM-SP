@@ -16,6 +16,7 @@ enum kf_state
 class range : public StaticThread<>
 {
 private:
+  double timekeeper = NOW();
   int tof_status_counter[4] = {0, 0, 0, 0};
   void track_tof_status(const tof_status s[4], kf_state is_kf[4]);
 

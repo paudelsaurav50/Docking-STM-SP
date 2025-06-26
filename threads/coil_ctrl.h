@@ -12,7 +12,7 @@ private:
   MovingAverageState filt[4];
   pid ctrl[4];
   coil_t tx;
-  double time = 0;
+  double timekeeper = 0;
 
 public:
   coil_ctrl(const char* thread_name, int priority) : StaticThread(thread_name, priority){}

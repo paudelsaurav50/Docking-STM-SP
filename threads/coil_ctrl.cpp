@@ -24,10 +24,12 @@ void coil_ctrl::run(void)
 {
   TIME_LOOP(THREAD_START_CURRENT_CTRL_MILLIS * MILLISECONDS, period * MILLISECONDS)
   {
-    time = NOW();
     tx.i[0] = tx.i[1] = tx.i[2] = tx.i[3] = 0.0;
 
     magnet::get_current(tx.i);
+
+    float dt = (NOW() - timekeeper) / SECONDS;
+    timekeeper = NOW();
 
     // Perform current control for each magnet
     for(uint8_t i = 0; i < 4; i++)
@@ -65,7 +67,7 @@ void coil_ctrl::run(void)
       }
     }
 
-    tx.dt =  (NOW() - time) / MILLISECONDS;
+    tx.dt =  dt / 1000.0;
     topic_coil.publish(tx);
   }
 }

@@ -82,11 +82,14 @@ void range::run()
     kf_state is_kf[4];
     tof_status status[4];
 
-    float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
+    // float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
 
     // Read ToF measurements and validate status history
     tof_status all_good = tof::get_distance(d, status);
     track_tof_status(status, is_kf);
+
+    float dt = (NOW() - timekeeper) / SECONDS;
+    timekeeper = NOW();
 
     // Process each sensor measurement
     for (int i = 0; i < 4; i++)
@@ -119,6 +122,7 @@ void range::run()
       tx.kf_v[i] = tof_kf[i].get_velocity();
     }
 
+    tx.dt = dt / 1000.0;
     topic_tof.publish(tx);
 
     if (all_good != TOF_STATUS_OK)
