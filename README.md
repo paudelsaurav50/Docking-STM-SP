@@ -43,3 +43,4 @@ plink.exe tamarix@tamarix.local
 2. Debug the issue with ToF sensor measurements.
 3. How to get away with that one prompt that appears for the first time when using `pscp` on GS.
 4. Implement the status flag for the Kalman Filter.
+5. Ground station docuking params: Kp, Ki, Kd, distance set point, latching current, latching and unlatching buttons.
