@@ -5,6 +5,8 @@ HAL_UART serial(UART_IDX3, GPIO_026, GPIO_027);
 
 bool thread_tcmd::parse(const char *msg, tcmd_t *tcmd)
 {
+  // PRINTF("%s\n", msg);
+
   if (msg[0] != TCMD_START_CHAR || msg[strlen(msg) - 1] != TCMD_STOP_CHAR)
   {
     return false; // Invalid message format
@@ -99,6 +101,7 @@ void thread_tcmd::run()
 
   TIME_LOOP(0 * MILLISECONDS, period_ms * MILLISECONDS)
   {
+    memset(tcmd_msg, 0, sizeof(tcmd_msg));
     size_t rxlen = serial.read(tcmd_msg, sizeof(tcmd_msg));
 
     if (rxlen > 0)
