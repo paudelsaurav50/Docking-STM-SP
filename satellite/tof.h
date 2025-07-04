@@ -37,9 +37,6 @@ namespace tof
   void shut_down(void);
   void i2c_reset(void);
   void int_xshunt(void);
-
-  void enable_median_filter(void);
-  void disable_median_filter(void);
 }
 
 #endif // tof.h

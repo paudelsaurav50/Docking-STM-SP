@@ -39,7 +39,6 @@ CXX_SOURCES = \
 libs/pid/pid.cpp \
 libs/kf1d/kf1d.cpp \
 libs/mavg/mavg.cpp \
-libs/lsm9ds1/lsm9ds1.cpp \
 libs/hbridge/hbridge.cpp \
 libs/vl53l4ed/platform.cpp \
 libs/vl53l4ed/VL53L4ED_api.cpp \
@@ -51,10 +50,11 @@ satellite/utils.cpp \
 satellite/magnet.cpp \
 \
 threads/tcmd.cpp \
+threads/coil.cpp \
+threads/dock.cpp \
 threads/telem.cpp \
 threads/range.cpp \
-threads/topics.cpp \
-threads/coil_ctrl.cpp
+threads/topics.cpp
 
 #######################################
 # binaries
@@ -179,7 +179,7 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CXX_SOURCES:.cpp=.o)))
 vpath %.cpp $(sort $(dir $(CXX_SOURCES)))
 
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
@@ -194,22 +194,18 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 #######################################
 # flash
 #######################################
 flash: all
 	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program $(BUILD_DIR)/$(TARGET).hex verify reset exit"
-
-flash-sftp: clean all
-	'C:\Program Files (x86)\WinSCP\WinSCP.com' /ini=nul  /script=../sftp-script.txt
-
 
 #######################
 #  UTILITY FUNCTIONS  #

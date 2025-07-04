@@ -5,14 +5,9 @@
 #include "utils.h"
 #include "rodos.h"
 #include "platform.h"
-#include "MedianFilter.h"
-#include "VL53L4ED_api.h"
 #include "sat_config.h"
+#include "VL53L4ED_api.h"
 #include "VL53L4ED_calibration.h"
-
-// Median filter for ToF readings
-static bool tof_filter_flag = false;
-static MedianFilter<int, 25> filter[4];
 
 // Memory and flag for velocity computation
 static bool first_velocity = true;
@@ -24,16 +19,6 @@ HAL_GPIO tof_xshut_b(TOF_B_PIN_XSHUT);
 // VL53L4ED API params
 VL53L4ED_ResultsData_t tof_result;
 bool i2c_init_flag = false;
-
-void tof::enable_median_filter(void)
-{
-  tof_filter_flag = true;
-}
-
-void tof::disable_median_filter(void)
-{
-  tof_filter_flag = false;
-}
 
 // Initialize a single sensor
 tof_status init_single(const tof_idx idx)
@@ -122,16 +107,7 @@ tof_status tof::get_single_distance(const tof_idx idx, int *distance)
 
   if (VL53L4ED_GetResult(TOF_I2C_ADDRESS, &tof_result) == VL53L4ED_ERROR_NONE)
   {
-    if (tof_filter_flag)
-    {
-      filter[(uint8_t)idx].addSample(tof_result.distance_mm);
-      *distance = filter[(uint8_t)idx].getMedian();
-    }
-    else
-    {
-      *distance = tof_result.distance_mm;
-    }
-
+    *distance = tof_result.distance_mm;
     VL53L4ED_ClearInterrupt(TOF_I2C_ADDRESS);
 
     return TOF_STATUS_OK;

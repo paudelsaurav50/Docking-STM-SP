@@ -3,44 +3,40 @@
 #include "magnet.h"
 #include "sat_config.h"
 
-HAL_GPIO CHG_EN(EN_CHG_BAT);
-HAL_ADC BATT_ADC(ADC_NO_BAT_MES);
-
-static double time = NOW();
-static float dt = 0;
-
 extern HAL_UART serial;
-char tx_msg[200];
 
-void init_multimeter(void)
+void telem::init_multimeter(void)
 {
-  BATT_ADC.config(ADC_PARAMETER_RESOLUTION,12);
-  BATT_ADC.init(BATT_MES_ADC_CH);
+  batt_volt.config(ADC_PARAMETER_RESOLUTION, BATT_VOLT_ADC_RES);
+  batt_volt.init(BATT_VOLT_ADC_PIN);
 }
 
-float get_voltage()
+float telem::get_voltage()
 {
-  return 4.0 * ((float(BATT_ADC.read(BATT_MES_ADC_CH)))/4096)*3.3;
+  return 4.0 * ((float(batt_volt.read(BATT_VOLT_ADC_PIN))) / 4096.0) * 3.3;
 }
 
-void telemetry_thread::init()
+void telem::init()
 {
-  CHG_EN.init(true,1, 0);
+  timekeeper = NOW();
+  period_ms = THREAD_PERIOD_TELEM_MILLIS;
+
+  charge_en.init(true,1, 0);
   init_multimeter();
 }
 
-void telemetry_thread::run()
+void telem::run()
 {
-  TIME_LOOP (THREAD_START_TELEMETRY_MILLIS * MILLISECONDS, period * MILLISECONDS)
+  TIME_LOOP (THREAD_START_TELEM_MILLIS * MILLISECONDS, period_ms * MILLISECONDS)
   {
-    time = NOW();
-    cb_tof.getOnlyIfNewData(rx_tof);
+    timekeeper = NOW();
+    cb_range.getOnlyIfNewData(rx_range);
     cb_coil.getOnlyIfNewData(rx_coil);
 
     const float i[4] = {rx_coil.i[0], rx_coil.i[1], rx_coil.i[2], rx_coil.i[3]};
-    const int d[4] = {rx_tof.d[0], rx_tof.d[1], rx_tof.d[2], rx_tof.d[3]};
-    const float e[4] = {rx_tof.kf_d[0], rx_tof.kf_d[1], rx_tof.kf_d[2], rx_tof.kf_d[3]};
-    const float f[4] = {rx_tof.kf_v[0], rx_tof.kf_v[1], rx_tof.kf_v[2], rx_tof.kf_v[3]};
+    const int d[4] = {rx_range.d[0], rx_range.d[1], rx_range.d[2], rx_range.d[3]};
+    const float e[4] = {rx_range.kf_d[0], rx_range.kf_d[1], rx_range.kf_d[2], rx_range.kf_d[3]};
+    const float f[4] = {rx_range.kf_v[0], rx_range.kf_v[1], rx_range.kf_v[2], rx_range.kf_v[3]};
 
     int len = SNPRINTF(tx_msg, sizeof(tx_msg), "$d:%dx%dx%dx%d,c:%fx%fx%fx%f,e:%fx%fx%fx%f,f:%fx%fx%fx%f,r:11#\n",
                        d[0], d[1], d[2], d[3],
@@ -50,8 +46,8 @@ void telemetry_thread::run()
     serial.write(tx_msg, len);
 
     // PRINTF("%s", tx_msg);
-    dt =  (NOW() - time) / MILLISECONDS;
+    // double dt =  (NOW() - timekeeper) / MILLISECONDS;
   }
 }
 
-telemetry_thread tamariw_telemetry_thread("telemetry_thread", THREAD_PRIO_TELEMETRY);
+telem telem_thread("telem_thread", THREAD_PRIO_TELEM);

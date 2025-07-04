@@ -8,6 +8,7 @@
 #define D2R 0.01745329251
 
 int sign(const float in);
+bool float_to_bool(float val);
 inline void swap(float *a, float *b);
 float winsorized_mean(const float x[4]);
 float winsorized_mean(const int x[4]);

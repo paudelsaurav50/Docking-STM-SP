@@ -1,5 +1,7 @@
 #include "utils.h"
 
+#define EPSILON 1e-6
+
 // Sign of input number
 int sign(float in)
 {
@@ -18,6 +20,18 @@ void swap(float *a, float *b)
   float temp = *a;
   *a = *b;
   *b = temp;
+}
+
+
+/**
+ * @brief Converts a float (expected 0.0 or 1.0) to a boolean value.
+ *
+ * @param val The float value to convert.
+ * @return true if val is 1.0f, false otherwise.
+ */
+bool float_to_bool(float val)
+{
+  return val > 0.5f;
 }
 
 /**

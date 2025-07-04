@@ -1,5 +1,6 @@
 #include "tcmd.h"
 #include "topics.h"
+#include "sat_config.h"
 
 HAL_UART serial(UART_IDX3, GPIO_026, GPIO_027);
 
@@ -92,6 +93,9 @@ bool thread_tcmd::parse(const char *msg, tcmd_t *tcmd)
 
 void thread_tcmd::init()
 {
+  timekeeper = NOW();
+  period_ms = THREAD_PERIOD_TCMD_MILLIS;
+
   serial.init(115200);
 }
 
@@ -99,7 +103,7 @@ void thread_tcmd::run()
 {
   init();
 
-  TIME_LOOP(0 * MILLISECONDS, period_ms * MILLISECONDS)
+  TIME_LOOP(THREAD_START_TCMD_MILLIS * MILLISECONDS, period_ms * MILLISECONDS)
   {
     memset(tcmd_msg, 0, sizeof(tcmd_msg));
     size_t rxlen = serial.read(tcmd_msg, sizeof(tcmd_msg));
@@ -111,7 +115,6 @@ void thread_tcmd::run()
       if (parse(tcmd_msg, &tcmd))
       {
         topic_tcmd.publish(tcmd);
-        execute(&tcmd);
 
         PRINTF("Successful telecommand reception! %s\n", tcmd_msg);
         serial.write("Successful telecommand reception!\n", 35);
@@ -126,82 +129,7 @@ void thread_tcmd::run()
 
 bool thread_tcmd::execute(const tcmd_t *cmd)
 {
-  switch (cmd->idx)
-  {
-  case TCMD_EM0:
-    rx.stop_coils = false;
-    rx.stop_coil[0] = false;
-    rx.i[0] = cmd->data;
-    break;
-
-  case TCMD_EM1:
-    rx.stop_coils = false;
-    rx.stop_coil[1] = false;
-    rx.i[1] = cmd->data;
-    break;
-
-  case TCMD_EM2:
-    rx.stop_coils = false;
-    rx.stop_coil[2] = false;
-    rx.i[2] = cmd->data;
-    break;
-
-  case TCMD_EM3:
-    rx.stop_coils = false;
-    rx.stop_coil[3] = false;
-    rx.i[3] = cmd->data;
-    break;
-
-  case TCMD_EM0_STOP:
-    rx.stop_coil[0] = true;
-    break;
-
-  case TCMD_EM1_STOP:
-    rx.stop_coil[1] = true;
-    break;
-
-  case TCMD_EM2_STOP:
-    rx.stop_coil[2] = true;
-    break;
-
-  case TCMD_EM3_STOP:
-    rx.stop_coil[3] = true;
-    break;
-
-  case TCMD_EM_STOP_ALL:
-    rx.stop_coil[0] = true;
-    rx.stop_coil[1] = true;
-    rx.stop_coil[2] = true;
-    rx.stop_coil[3] = true;
-    rx.stop_coils = true;
-    break;
-
-  case TCMD_EM_KP:
-    rx.kp = cmd->data;
-    break;
-
-  case TCMD_EM_KI:
-    rx.ki = cmd->data;
-    break;
-
-  case TCMD_KF_Q00:
-    rx.q_pos = cmd->data;
-    break;
-
-  case TCMD_KF_Q11:
-    rx.q_vel = cmd->data;
-    break;
-
-  case TCMD_KF_R:
-    rx.r = cmd->data;
-    break;
-
-  default:
-    break;
-  }
-
   return true;
 }
 
-static thread_tcmd tcmd("tcmd", TCMD_THREAD_PROIRITY);
-Topic<tcmd_t> topic_tcmd(-1, "tcmd");
+thread_tcmd tcmd("tcmd", THREAD_PRIO_TCMD);

@@ -3,17 +3,15 @@
 
 #include "sat_config.h"
 
-#include <cstddef>
-#include <array>
-
-struct MovingAverageState
+typedef struct
 {
-  std::array<double, EM_MAVG_WINDOW> buffer = {0.0};  // Fixed-size buffer for window size 5
-  size_t index = 0;                      // Current index in the buffer
-  double sum = 0.0;                      // Running sum
-  size_t count = 0;                      // Number of valid elements
-};
+  int index;  // Current index in the buffer
+  int count;  // Number of valid elements
+  double sum; // Running sum
+  double buffer[EM_MAVG_WINDOW]; // Fixed-size buffer
+} mavg_t;
 
-double computeMovingAverage(double newValue, MovingAverageState& state);
+void mavg_init(mavg_t* state);
+double mavg_update(double new_value, mavg_t* state);
 
-#endif // mavg.h
+#endif // _MAVG_H_

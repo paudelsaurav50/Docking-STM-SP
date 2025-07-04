@@ -8,20 +8,35 @@
 void init_multimeter(void);
 float get_voltage(void);
 
-class telemetry_thread: public StaticThread<>
+class telem: public StaticThread<>
 {
 private:
-  int period = THREAD_PERIOD_TELEMETRY_MILLIS;
-  tof_t rx_tof;
+  int period_ms;
+  double timekeeper;
+
+  HAL_GPIO charge_en{PIN_CHARGE_ENABLE};
+  HAL_ADC batt_volt{BATT_VOLT_ADC_IDX};
+
+  // Setup subsriber
+  CommBuffer<coil_t> cb_coil;
+  CommBuffer<range_t> cb_range;
+  Subscriber subs_coil{topic_coil, cb_coil};
+  Subscriber subs_range{topic_range, cb_range};
+
+  // Latest data received from topics
+  range_t rx_range;
   coil_t rx_coil;
 
+  void init_multimeter(void);
+  float get_voltage();
+
+  char tx_msg[200];
+
 public:
-  telemetry_thread(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
+  telem(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
 
   void init();
   void run();
 };
-
-extern telemetry_thread tamariw_telemetry_thread;
 
 #endif // telemetry.h

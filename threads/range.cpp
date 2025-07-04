@@ -31,6 +31,9 @@ void init_params()
 
 void range::init()
 {
+  timekeeper = NOW();
+  period_ms = THREAD_PERIOD_RANGE_MILLIS;
+
   led::init();
   led::off();
   tof::int_xshunt();
@@ -39,8 +42,6 @@ void range::init()
   {
     tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
   }
-
-  // tof::enable_median_filter();
 }
 
 void range::track_tof_status(const tof_status status[4], kf_state is_kf[4])
@@ -70,19 +71,16 @@ void range::track_tof_status(const tof_status status[4], kf_state is_kf[4])
   }
 }
 
-
 void range::run()
 {
   tof::wakeup();
   init_params();
 
-  TIME_LOOP(THREAD_START_TOF_MILLIS, THREAD_PERIOD_TOF_MILLIS * MILLISECONDS)
+  TIME_LOOP(THREAD_START_RANGE_MILLIS, period_ms * MILLISECONDS)
   {
     int d[4];
     kf_state is_kf[4];
     tof_status status[4];
-
-    // float dt = THREAD_PERIOD_TOF_MILLIS * 0.001f;
 
     // Read ToF measurements and validate status history
     tof_status all_good = tof::get_distance(d, status);
@@ -123,7 +121,7 @@ void range::run()
     }
 
     tx.dt = dt / 1000.0;
-    topic_tof.publish(tx);
+    topic_range.publish(tx);
 
     if (all_good != TOF_STATUS_OK)
     {
@@ -134,4 +132,4 @@ void range::run()
  }
 }
 
-range tamariw_range_thread("lidar_thread");
+range range_thread("range_thread", THREAD_PRIO_RANGE);

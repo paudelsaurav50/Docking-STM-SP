@@ -1,5 +1,5 @@
-#ifndef _THREAD_TCMD_H_
-#define _THREAD_TCMD_H_
+#ifndef _THREAD_RANGE_H_
+#define _THREAD_RANGE_H_
 
 #include "rodos.h"
 #include "topics.h"
@@ -16,13 +16,15 @@ enum kf_state
 class range : public StaticThread<>
 {
 private:
-  double timekeeper = NOW();
+  int period_ms;
+  double timekeeper;
+
   int tof_status_counter[4] = {0, 0, 0, 0};
   void track_tof_status(const tof_status s[4], kf_state is_kf[4]);
 
 public:
-  range(const char* thread_name) : StaticThread(thread_name){}
-  tof_t tx;
+  range(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
+  range_t tx;
 
   void init();
   void run();

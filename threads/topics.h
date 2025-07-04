@@ -3,7 +3,30 @@
 
 #include "rodos.h"
 
-struct tof_t
+// Add/remove tcmds as enum elements
+enum tcmd_idx
+{
+  // PID gains
+  TCMD_EM_KP,
+  TCMD_EM_KI,
+  TCMD_EM0,
+  TCMD_EM1,
+  TCMD_EM2,
+  TCMD_EM3,
+  TCMD_EM0_STOP,
+  TCMD_EM1_STOP,
+  TCMD_EM2_STOP,
+  TCMD_EM3_STOP,
+  TCMD_EM_STOP_ALL,
+  TCMD_KF_Q00,
+  TCMD_KF_Q11,
+  TCMD_KF_R,
+
+  // Do not remove!
+  TCMD_LENGTH
+};
+
+struct range_t
 {
   int d[4] = {0, 0, 0, 0};            // Distance, mm
   float kf_d[4] {0.0, 0.0, 0.0, 0.0}; // KF relative position estimates, mm
@@ -13,30 +36,29 @@ struct tof_t
 
 struct coil_t
 {
-  float i[4];   // Current, milli Amp
-  float dt = 0; // Thread period, millis
+  float i[4]; // Current measurements [mA]
+  float dt;   // Thread period, millis
 };
 
-struct input_t
+struct dock_t
 {
-  float i[4]; // Current set_points, milli Amp
-  bool stop_coils;  // Disable all coils
-  bool stop_coil[4]; // Disable individual coils
-  float kp;
-  float ki;
-  float q_pos;
-  float q_vel;
-  float r;
+  float dt;        // Thread period, millis
+  float i[4];      // Current setpoints to coil [mA]
+  bool stop[4];    // Switch for each coil
+  bool stop_all;   // Switch for all coils
+  bool is_docking; // Is the docking controller in action?
 };
 
-extern input_t rx;
-extern Topic<tof_t> topic_tof;
+// Telecommand data structure
+typedef struct       // Telecommands from groundstation
+{
+  enum tcmd_idx idx; // Received tcommand_t
+  float data;        // Corresponding value
+} tcmd_t;
+
+extern Topic<tcmd_t> topic_tcmd;
 extern Topic<coil_t> topic_coil;
-
-extern CommBuffer<tof_t> cb_tof;
-extern CommBuffer<coil_t> cb_coil;
-
-extern Subscriber subs_tof;
-extern Subscriber subs_coil;
+extern Topic<dock_t> topic_dock;
+extern Topic<range_t> topic_range;
 
 #endif // telecommand.h
