@@ -1,7 +1,4 @@
 #include "telem.h"
-#include "topics.h"
-#include "magnet.h"
-#include "sat_config.h"
 
 extern HAL_UART serial;
 
@@ -11,7 +8,7 @@ void telem::init_multimeter(void)
   batt_volt.init(BATT_VOLT_ADC_PIN);
 }
 
-float telem::get_voltage()
+float telem::get_voltage(void)
 {
   return 4.0 * ((float(batt_volt.read(BATT_VOLT_ADC_PIN))) / 4096.0) * 3.3;
 }
@@ -21,13 +18,13 @@ void telem::init()
   timekeeper = NOW();
   period_ms = THREAD_PERIOD_TELEM_MILLIS;
 
-  charge_en.init(true,1, 0);
+  charge_en.init(true, 1, 0);
   init_multimeter();
 }
 
 void telem::run()
 {
-  TIME_LOOP (THREAD_START_TELEM_MILLIS * MILLISECONDS, period_ms * MILLISECONDS)
+  TIME_LOOP(THREAD_START_TELEM_MILLIS * MILLISECONDS, period_ms * MILLISECONDS)
   {
     timekeeper = NOW();
     cb_range.getOnlyIfNewData(rx_range);

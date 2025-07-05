@@ -41,7 +41,7 @@ private:
   tcmd_t rx_tcmd;
 
 public:
-  coil(const char* thread_name, int priority) : StaticThread(thread_name, priority){}
+  coil(const char *thread_name, int priority) : StaticThread(thread_name, priority) {}
 
   void init(void);
   void run(void);
@@ -50,4 +50,4 @@ public:
   void handle_docking_setpoints(const dock_t);
 };
 
-#endif // coil_ctrl.h
+#endif // coil.h

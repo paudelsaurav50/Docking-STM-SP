@@ -37,10 +37,6 @@ pscp -pw tamariw build/main.hex tamariw@tamariw.local:/home/tamariw/tpi/src
 plink.exe tamarix@tamarix.local
 ```
 
-# Todos
+## Todos
 
-1. Implement the KF tuner in STM32 side.
-2. Debug the issue with ToF sensor measurements.
-3. How to get away with that one prompt that appears for the first time when using `pscp` on GS.
-4. Implement the status flag for the Kalman Filter.
-5. Ground station docuking params: Kp, Ki, Kd, distance set point, latching current, latching and unlatching buttons.
+1. Ground station docuking params: Kp, Ki, Kd, distance set point, latching current, latching and unlatching buttons.

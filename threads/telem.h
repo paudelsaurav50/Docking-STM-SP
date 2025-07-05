@@ -5,10 +5,7 @@
 #include "topics.h"
 #include "sat_config.h"
 
-void init_multimeter(void);
-float get_voltage(void);
-
-class telem: public StaticThread<>
+class telem : public StaticThread<>
 {
 private:
   int period_ms;
@@ -24,13 +21,13 @@ private:
   Subscriber subs_range{topic_range, cb_range};
 
   // Latest data received from topics
-  range_t rx_range;
   coil_t rx_coil;
+  range_t rx_range;
 
+  float get_voltage(void);
   void init_multimeter(void);
-  float get_voltage();
 
-  char tx_msg[200];
+  char tx_msg[MAX_BUFFER_SIZE_TELEM];
 
 public:
   telem(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
@@ -39,4 +36,4 @@ public:
   void run();
 };
 
-#endif // telemetry.h
+#endif // telem.h

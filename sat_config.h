@@ -8,11 +8,15 @@
 #define PIN_CHARGE_ENABLE GPIO_038   // PC6
 #define BATT_VOLT_ADC_PIN ADC_CH_014 // PC4
 #define BATT_VOLT_ADC_IDX ADC_IDX1   // ADC3_CH14
-#define BATT_VOLT_ADC_RES 12 // PC4
+#define BATT_VOLT_ADC_RES 12         // PC4
 
 // Timeouts
 #define TOF_MUX_TIMEOUT_MILLIS 2
 #define TOF_RANGE_TIMEOUT_MILLIS 2
+
+// Buffer size
+#define MAX_BUFFER_SIZE_TCMD 25
+#define MAX_BUFFER_SIZE_TELEM 200
 
 // ToF Kalman Filter parameters
 #define KF1D_Q_POS 0.1f
@@ -69,7 +73,7 @@
 #define EM3_PIN_IN1 GPIO_062
 #define EM3_PIN_IN2 GPIO_063
 
-// ADC channels for electromagnets
+// ADC channels for electromagnets current sense
 #define EM_ADC_IDX ADC_IDX1
 #define EM0_ADC_CH ADC_CH_012
 #define EM1_ADC_CH ADC_CH_013
