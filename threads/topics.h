@@ -28,6 +28,7 @@ enum tcmd_idx
   TCMD_LENGTH
 };
 
+// ToF KF estimator to docking controller and telemetry
 struct range_t
 {
   float dt;      // Thread period, millis
@@ -36,12 +37,14 @@ struct range_t
   float kf_v[4]; // KF relative velocity estimates, mm/s
 };
 
+// Current controller to telemetry
 struct coil_t
 {
   float dt;   // Thread period, millis
   float i[4]; // Current measurements [mA]
 };
 
+// Docking controller to coil controller
 struct dock_t
 {
   float dt;        // Thread period, millis
