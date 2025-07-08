@@ -59,17 +59,17 @@ void range::track_tof_status(const tof_status status[4], kf_state is_kf[4])
       if (tof_status_counter[i] >= KF1D_MAX_TOF_ERROR)
       {
         tof_status_counter[i] = 0;   // Reset counter
-        is_kf[i] = KF_STATE_DISABLE; // Completely disable KF
+        is_kf[i] = KF_STATE_ERROR; // Completely disable KF
       }
       else // Not enough consecutive errors
       {
-        is_kf[i] = KF_STATE_DISABLE_UPDATE; // Keep predicting but don't update
+        is_kf[i] = KF_STATE_PREDICTION; // Keep predicting but don't update
       }
     }
     else // Successful reading
     {
       tof_status_counter[i] = 0;    // Reset counter
-      is_kf[i] = KF_STATE_ALL_GOOD; // Normal KF operation
+      is_kf[i] = KF_STATE_OKAY; // Normal KF operation
     }
   }
 }
@@ -97,19 +97,19 @@ void range::run()
     {
       switch (is_kf[i])
       {
-      case KF_STATE_DISABLE:
+      case KF_STATE_ERROR:
       {
         tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
         break;
       }
 
-      case KF_STATE_DISABLE_UPDATE:
+      case KF_STATE_PREDICTION:
       {
         tof_kf[i].predict(dt);
         break;
       }
 
-      case KF_STATE_ALL_GOOD:
+      case KF_STATE_OKAY:
       {
         tof_kf[i].predict(dt);
         tof_kf[i].update((float)d[i]);

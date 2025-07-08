@@ -8,9 +8,9 @@
 
 enum kf_state
 {
-  KF_STATE_DISABLE,        // Completely disable the KF (no prediction or update)
-  KF_STATE_ALL_GOOD,       // Normal operation (both prediction and update)
-  KF_STATE_DISABLE_UPDATE, // Run prediction but skip measurement update
+  KF_STATE_ERROR,      // No KF estimate due to ToF error
+  KF_STATE_OKAY,       // Normal operation (both prediction and update)
+  KF_STATE_PREDICTION, // Run prediction but skip measurement update
 };
 
 class range : public StaticThread<>
@@ -22,7 +22,7 @@ private:
   int tof_status_counter[4];
   void track_tof_status(const tof_status s[4], kf_state is_kf[4]);
 
-  kf1d  tof_kf[4];
+  kf1d tof_kf[4];
 
 public:
   range(const char *thread_name, const int priority);
