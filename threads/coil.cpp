@@ -17,7 +17,6 @@ void coil::init()
     mavg_init(&filt[i]);
 
     isp[i] = 0.0;
-
     ctrl[i].set_kp(PID_COIL_KP);
     ctrl[i].set_ki(PID_COIL_KI);
     ctrl[i].set_control_limits(PID_COIL_UMIN, PID_COIL_UMAX);
@@ -160,7 +159,7 @@ void coil::run(void)
         {
           // Feedback current control for each coil
           float error = isp[i] - tx.i[i];
-          float pwm = ctrl[i].update(error, period_ms / 1000.0);
+          float pwm = ctrl[i].update(error, dt);
           magnet::actuate((magnet_idx)i, pwm);
         }
       }
