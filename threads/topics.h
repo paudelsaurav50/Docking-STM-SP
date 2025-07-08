@@ -3,10 +3,9 @@
 
 #include "rodos.h"
 
-// Add/remove tcmds as enum elements
+// Add/remove new7obsolete telecommands as enum elements
 enum tcmd_idx
 {
-  // PID gains
   TCMD_EM_KP,
   TCMD_EM_KI,
   TCMD_EM0,
@@ -17,12 +16,15 @@ enum tcmd_idx
   TCMD_EM1_STOP,
   TCMD_EM2_STOP,
   TCMD_EM3_STOP,
+  TCMD_EM_ENABLE,
   TCMD_EM_STOP_ALL,
   TCMD_KF_Q00,
   TCMD_KF_Q11,
   TCMD_KF_R,
+  TCMD_START_DOCK,
+  TCMD_LATCH,
+  TCMD_LATCH_CURRENT,
 
-  // Do not remove!
   TCMD_LENGTH
 };
 

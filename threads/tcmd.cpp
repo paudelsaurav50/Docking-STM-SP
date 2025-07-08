@@ -116,12 +116,11 @@ void thread_tcmd::run()
       {
         topic_tcmd.publish(tcmd);
 
-        PRINTF("Successful telecommand reception! %s\n", tcmd_msg);
-        serial.write("Successful telecommand reception!\n", 35);
+        PRINTF("tcmd ok! %s\n", tcmd_msg);
       }
       else
       {
-        PRINTF("Invalid telecommand!\n");
+        PRINTF("invalid tcmd!\n");
       }
     }
   }

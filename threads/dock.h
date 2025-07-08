@@ -26,8 +26,10 @@ private:
 public:
   dock(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
 
-  void init();
   void run();
+  void init();
+
+  void handle_telecommands(const tcmd_t tcmd);
 };
 
 #endif // dock.h

@@ -40,12 +40,16 @@ private:
   dock_t rx_dock;
   tcmd_t rx_tcmd;
 
+  // Was the satellite docking?
+  bool was_docking;
+
 public:
   coil(const char* thread_name, int priority) : StaticThread(thread_name, priority){}
 
   void init(void);
   void run(void);
 
+  void reset(void);
   void handle_telecommands(const tcmd_t tcmd);
   void handle_docking_setpoints(const dock_t);
 };

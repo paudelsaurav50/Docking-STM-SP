@@ -38,8 +38,8 @@ public:
 
   void run();
   void init();
-  bool parse(const char *msg, tcmd_t *tcmd);
   bool execute(const tcmd_t *tcmd);
+  bool parse(const char *msg, tcmd_t *tcmd);
 };
 
 #endif //tcmd.h
