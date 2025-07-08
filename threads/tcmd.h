@@ -11,16 +11,13 @@
 #ifndef _THREAD_TCMD_H_
 #define _THREAD_TCMD_H_
 
-#include "topics.h"
 #include "rodos.h"
+#include "topics.h"
+#include "sat_config.h"
 
 #define TCMD_START_CHAR '$'
-#define TCMD_DELIMITER  ':'
-#define TCMD_STOP_CHAR  '#'
-
-#define TCMD_THREAD_PERIOD_MS 20
-#define TCMD 100
-#define TCMD_MAX_BUFFER_THREAD_PROIRITY_SIZE 25
+#define TCMD_DELIMITER ':'
+#define TCMD_STOP_CHAR '#'
 
 extern HAL_UART serial;
 
@@ -31,7 +28,7 @@ private:
   double timekeeper;
 
   tcmd_t tx;
-  char tcmd_msg[25];
+  char tcmd_msg[MAX_BUFFER_SIZE_TCMD];
 
 public:
   thread_tcmd(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}
@@ -42,4 +39,4 @@ public:
   bool parse(const char *msg, tcmd_t *tcmd);
 };
 
-#endif //tcmd.h
+#endif // tcmd.h

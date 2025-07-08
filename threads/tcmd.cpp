@@ -1,6 +1,4 @@
 #include "tcmd.h"
-#include "topics.h"
-#include "sat_config.h"
 
 HAL_UART serial(UART_IDX3, GPIO_026, GPIO_027);
 

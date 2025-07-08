@@ -9,17 +9,19 @@
 #include <math.h>
 #define R2D 57.2957795131
 
-kf1d tof_kf[4] =
+range::range(const char *thread_name, const int priority)
+    : StaticThread(thread_name, priority),
+      tof_kf{
+          kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+          kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+          kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
+          kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R)}
 {
-  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
-  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
-  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R),
-  kf1d(KF1D_Q_POS, KF1D_Q_VEL, KF1D_R)
-};
+}
 
 void init_params()
 {
-  if(tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
+  if (tof::init(TOF_IDX_ALL) == TOF_STATUS_OK)
   {
     PRINTF("VL53L4CD initialized!\n");
   }
@@ -40,6 +42,7 @@ void range::init()
 
   for (int i = 0; i < 4; i++)
   {
+    tof_status_counter[i] = 0;
     tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
   }
 }
@@ -92,26 +95,26 @@ void range::run()
     // Process each sensor measurement
     for (int i = 0; i < 4; i++)
     {
-      switch(is_kf[i])
+      switch (is_kf[i])
       {
-        case KF_STATE_DISABLE:
-        {
-          tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
-          break;
-        }
+      case KF_STATE_DISABLE:
+      {
+        tof_kf[i].reset(0.0f, 0.0f, 100.0f, 100.0f);
+        break;
+      }
 
-        case KF_STATE_DISABLE_UPDATE:
-        {
-          tof_kf[i].predict(dt);
-          break;
-        }
+      case KF_STATE_DISABLE_UPDATE:
+      {
+        tof_kf[i].predict(dt);
+        break;
+      }
 
-        case KF_STATE_ALL_GOOD:
-        {
-          tof_kf[i].predict(dt);
-          tof_kf[i].update((float)d[i]);
-          break;
-        }
+      case KF_STATE_ALL_GOOD:
+      {
+        tof_kf[i].predict(dt);
+        tof_kf[i].update((float)d[i]);
+        break;
+      }
       }
 
       // Save results for telemetry
@@ -129,7 +132,7 @@ void range::run()
       tof::restart();
       init_params();
     }
- }
+  }
 }
 
 range range_thread("range_thread", THREAD_PRIO_RANGE);

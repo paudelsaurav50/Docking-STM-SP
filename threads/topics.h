@@ -30,16 +30,16 @@ enum tcmd_idx
 
 struct range_t
 {
-  int d[4] = {0, 0, 0, 0};            // Distance, mm
-  float kf_d[4] {0.0, 0.0, 0.0, 0.0}; // KF relative position estimates, mm
-  float kf_v[4] {0.0, 0.0, 0.0, 0.0}; // KF relative velocity estimates, mm/s
-  float dt = 0;                       // Thread period, millis
+  float dt;      // Thread period, millis
+  int d[4];      // Distance, mm
+  float kf_d[4]; // KF relative position estimates, mm
+  float kf_v[4]; // KF relative velocity estimates, mm/s
 };
 
 struct coil_t
 {
-  float i[4]; // Current measurements [mA]
   float dt;   // Thread period, millis
+  float i[4]; // Current measurements [mA]
 };
 
 struct dock_t
@@ -52,7 +52,7 @@ struct dock_t
 };
 
 // Telecommand data structure
-typedef struct       // Telecommands from groundstation
+typedef struct // Telecommands from groundstation
 {
   enum tcmd_idx idx; // Received tcommand_t
   float data;        // Corresponding value
@@ -63,4 +63,4 @@ extern Topic<coil_t> topic_coil;
 extern Topic<dock_t> topic_dock;
 extern Topic<range_t> topic_range;
 
-#endif // telecommand.h
+#endif // topics.h

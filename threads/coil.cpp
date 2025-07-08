@@ -17,6 +17,7 @@ void coil::init()
     mavg_init(&filt[i]);
 
     isp[i] = 0.0;
+
     ctrl[i].set_kp(PID_COIL_KP);
     ctrl[i].set_ki(PID_COIL_KI);
     ctrl[i].set_control_limits(PID_COIL_UMIN, PID_COIL_UMAX);
