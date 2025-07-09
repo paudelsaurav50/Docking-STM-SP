@@ -3,6 +3,7 @@
 #ifndef _THREAD_DOCK_H_
 #define _THREAD_DOCK_H_
 
+#include "pid.h"
 #include "rodos.h"
 #include "topics.h"
 
@@ -13,8 +14,16 @@ enum dock_state
   DOCK_STATE_CAPTURE, // Passive coil actuation to bring satellites together
   DOCK_STATE_CONTROL, // Soft docking control with position and velocity feedback
   DOCK_STATE_LATCH,   // Extra push to overcome latch friction
-  DOCK_STATE_UNLATCH,  // Repel latched satellites
-  DOCK_STATE_ABORT     // Actively abortig the docking sequence under unsafe conditions
+  DOCK_STATE_UNLATCH, // Repel latched satellites
+  DOCK_STATE_ABORT    // Actively abortig the docking sequence under unsafe conditions
+};
+
+// Docking state for each coils
+enum dock_coil_state
+{
+  DOCK_COIL_STATE_IDLE,
+  DOCK_COIL_STATE_CONTROL,
+  DOCK_COIL_STATE_LATCH
 };
 
 enum dock_error
@@ -45,6 +54,25 @@ private:
   dock_t tx;
   tcmd_t rx_tcmd;
   range_t rx_range;
+
+  // State trackers for FSM
+  enum dock_state fsm_last_state;
+  enum dock_state fsm_current_state;
+  enum dock_state fsm_state_transition(enum dock_state current, const range_t range);
+  void fsm_execute(const enum dock_state state, const range_t range, const double dt);
+  void fsm_print_state(const enum dock_state state);
+
+  double kp; // Proportional gain for position feedback
+  double ki; // Integral gain for the position feedback
+  double kd; // Derivative gain for position (i.e. proportional gain for velocity)
+  double kf; // A gain to tweak the expression for force to current conversion
+  double latch_current_ma;
+  double unlatch_current_ma;
+  double capture_current_ma;
+  double v_sp;
+  double d_sp;
+
+  pid pi[4]; // PI controllers for docking
 
 public:
   dock(const char *thread_name, const int priority) : StaticThread(thread_name, priority) {}

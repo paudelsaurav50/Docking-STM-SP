@@ -25,16 +25,31 @@ enum tcmd_idx
   TCMD_LATCH,
   TCMD_LATCH_CURRENT,
 
+  TCMD_DOCK_STATE_IDLE,
+  TCMD_DOCK_STATE_CAPTURE,
+  TCMD_DOCK_STATE_CONTROL,
+  TCMD_DOCK_STATE_LATCH,
+  TCMD_DOCK_STATE_UNLATCH,
+  TCMD_DOCK_STATE_ABORT,
+
   TCMD_LENGTH
+};
+
+enum kf_state
+{
+  KF_STATE_ERROR,      // No KF estimate due to ToF error
+  KF_STATE_FULL_KF,    // Normal operation (both prediction and update)
+  KF_STATE_PREDICTION, // Run prediction but skip measurement update
 };
 
 // ToF KF estimator to docking controller and telemetry
 struct range_t
 {
-  float dt;      // Thread period, millis
-  int d[4];      // Distance, mm
-  float kf_d[4]; // KF relative position estimates, mm
-  float kf_v[4]; // KF relative velocity estimates, mm/s
+  float dt;                // Thread period, millis
+  int d[4];                // Distance, mm
+  float kf_d[4];           // KF relative position estimates, mm
+  float kf_v[4];           // KF relative velocity estimates, mm/s
+  enum kf_state status[4]; // Status of Kalman filter
 };
 
 // Current controller to telemetry

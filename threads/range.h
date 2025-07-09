@@ -6,13 +6,6 @@
 
 #include "tof.h"
 
-enum kf_state
-{
-  KF_STATE_ERROR,      // No KF estimate due to ToF error
-  KF_STATE_OKAY,       // Normal operation (both prediction and update)
-  KF_STATE_PREDICTION, // Run prediction but skip measurement update
-};
-
 class range : public StaticThread<>
 {
 private:

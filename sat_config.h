@@ -4,6 +4,24 @@
 #ifndef _SAT_CONFIG_H_
 #define _SAT_CONFIG_H_
 
+// Docking parameters
+#define DOCK_LATCH_CURRENT_mA 1000
+#define DOCK_UNLATCH_CURRENT_mA -1000
+#define DOCK_CAPTURE_CURRENT_mA 2000
+#define DOCK_CONTROL_VELOCITY_SP 0.0
+#define DOCK_CONTROL_DISTANCE_SP_MM 20
+
+// Parameters of the electromagnet
+#define COIL_PARAM_u0 1.25663706127e-6 // Vacuum permeability [N/A^2]
+#define COIL_PARAM_N 100               // Number of turns
+#define COIL_PARAM_A 0.1               // Cross section area of coil [m^2]
+
+// Docking controller gains
+#define DOCK_CONTROLLER_GAIN_KP 0.0001
+#define DOCK_CONTROLLER_GAIN_KI 0.0
+#define DOCK_CONTROLLER_GAIN_KD 0.0
+#define DOCK_CONTROLLER_GAIN_KF 1.0
+
 // Battery charge and voltage monitor
 #define PIN_CHARGE_ENABLE GPIO_038   // PC6
 #define BATT_VOLT_ADC_PIN ADC_CH_014 // PC4
@@ -111,4 +129,4 @@
 #define LED_FAR_COUNTS 6
 #define LED_NEAR_COUNTS 6
 
-#endif // sat_config
+#endif // sat_config.h
