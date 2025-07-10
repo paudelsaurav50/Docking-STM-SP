@@ -30,7 +30,8 @@ void dock::init()
   {
     pi[i].set_kp(PID_COIL_KP);
     pi[i].set_ki(PID_COIL_KI);
-    pi[i].set_control_limits(PID_COIL_UMIN, PID_COIL_UMAX);
+    pi[i].set_output_limits(PID_COIL_UMIN, PID_COIL_UMAX);
+    pi[i].set_integrator_limits(DOCK_CONTROLLER_INTEGRATOR_MIN, DOCK_CONTROLLER_INTEGRATOR_MAX);
   }
 }
 
@@ -39,46 +40,58 @@ void dock::handle_telecommands(const tcmd_t tcmd)
 {
   switch (tcmd.idx)
   {
+
+  /**
+   * Implement the first cace after you validate controller and the sequences manually from GS. Setting fsm_current_state
+   * to DOCK_STATE_START would mean that you have to implement the logic to proceed ahead on state transition function
+   * of FSM. Right now I have put dummy DOCK_STATE_CONTROL. -rms
+   */
   case TCMD_DOCK_STATE_START:
-  {
-    /**
-     * Implement this after you validate controller and the sequences manually from GS. Setting fsm_current_state to
-     * DOCK_STATE_START would mean that you have to implement the logic to proceed ahead on state transition function
-     * of FSM. -rms
-     */
-    fsm_current_state = DOCK_STATE_CONTROL; // This is dummy.
-    break;
-  }
-
-  case TCMD_DOCK_STATE_IDLE:
-  {
-    fsm_current_state = DOCK_STATE_IDLE;
-    break;
-  }
-
-  case TCMD_DOCK_STATE_CAPTURE:
-  {
-    fsm_current_state = DOCK_STATE_CAPTURE;
-    break;
-  }
-
-  case TCMD_DOCK_STATE_CONTROL:
-  {
     fsm_current_state = DOCK_STATE_CONTROL;
     break;
-  }
-
+  case TCMD_DOCK_STATE_IDLE:
+    fsm_current_state = DOCK_STATE_IDLE;
+    break;
+  case TCMD_DOCK_STATE_CAPTURE:
+    fsm_current_state = DOCK_STATE_CAPTURE;
+    break;
+  case TCMD_DOCK_STATE_CONTROL:
+    fsm_current_state = DOCK_STATE_CONTROL;
+    break;
   case TCMD_DOCK_STATE_LATCH:
-  {
     fsm_current_state = DOCK_STATE_LATCH;
     break;
-  }
-
   case TCMD_DOCK_STATE_UNLATCH:
-  {
     fsm_current_state = DOCK_STATE_UNLATCH;
     break;
-  }
+
+  // Control gains
+  case TCMD_DOCK_KP:
+    kp = tcmd.data;
+    break;
+  case TCMD_DOCK_KI:
+    ki = tcmd.data;
+    break;
+  case TCMD_DOCK_KD:
+    kd = tcmd.data;
+    break;
+  case TCMD_DOCK_KF:
+    kf = tcmd.data;
+    break;
+
+  // Some parameters associated with docking sequence
+  case TCMD_DOCK_LATCH_CURRENT:
+    latch_current_ma = fabs(tcmd.data);
+    break;
+  case TCMD_DOCK_UNLATCH_CURRENT:
+    unlatch_current_ma = -1 * fabs(tcmd.data);
+    break;
+  case TCMD_DOCK_VELOCITY_SP:
+    v_sp = tcmd.data;
+    break;
+  case TCMD_DOCK_DISTANCE_SP:
+    d_sp = tcmd.data;
+    break;
 
   default:
     break;
@@ -129,7 +142,7 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
 }
 
 // Produce current set-points to the coils based on input state and KF estimates
-void dock::fsm_execute(const enum dock_state state, const range_t range, const double dt)
+void dock::fsm_execute(const enum dock_state state, const range_t range, const float dt)
 {
   // Reset PID internal states for next run
   if (fsm_last_state == DOCK_STATE_CONTROL)
@@ -201,6 +214,10 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
 
       // Force to current conversion
       int sign_f = sign(f);
+
+#ifdef SAT_B
+      sign_f = 1;
+#endif
       tx.i[i] = sign_f * sqrtf(kf * COIL_PARAM_CONSTANT * fabsf(f) * d_sq);
     }
 
@@ -209,10 +226,16 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
 
   case DOCK_STATE_LATCH:
   {
+    int sign = 1;
+
+#ifdef SAT_B
+    sign = -1;
+#endif
+
     tx = (dock_t){
         .dt = (float)(dt * 1000.0),
-        .i = {DOCK_LATCH_CURRENT_mA, DOCK_LATCH_CURRENT_mA,
-              DOCK_LATCH_CURRENT_mA, DOCK_LATCH_CURRENT_mA},
+        .i = {sign * latch_current_ma, sign * latch_current_ma,
+              sign * latch_current_ma, sign * latch_current_ma},
         .stop = {false, false, false, false},
         .stop_all = false,
         .is_docking = true};
@@ -222,10 +245,16 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
 
   case DOCK_STATE_UNLATCH:
   {
+    int sign = 1;
+
+#ifdef SAT_B
+    sign = -1;
+#endif
+
     tx = (dock_t){
         .dt = (float)(dt * 1000.0),
-        .i = {DOCK_UNLATCH_CURRENT_mA, DOCK_UNLATCH_CURRENT_mA,
-              DOCK_UNLATCH_CURRENT_mA, DOCK_UNLATCH_CURRENT_mA},
+        .i = {sign * unlatch_current_ma, sign * unlatch_current_ma,
+              sign * unlatch_current_ma, sign * unlatch_current_ma},
         .stop = {false, false, false, false},
         .stop_all = false,
         .is_docking = true};

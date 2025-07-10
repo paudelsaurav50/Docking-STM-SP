@@ -21,6 +21,15 @@
 #define DOCK_CONTROLLER_GAIN_KI 0.0
 #define DOCK_CONTROLLER_GAIN_KD 0.0
 #define DOCK_CONTROLLER_GAIN_KF 1.0
+#define DOCK_CONTROLLER_INTEGRATOR_MAX 0.9
+#define DOCK_CONTROLLER_INTEGRATOR_MIN -0.9
+
+// Current control params
+#define PID_COIL_KP 0.065
+#define PID_COIL_KI 0.3
+#define PID_COIL_UMAX 90
+#define PID_COIL_UMIN -90
+#define PID_COIL_MAX_CURRENT_mA 2000
 
 // Battery charge and voltage monitor
 #define PIN_CHARGE_ENABLE GPIO_038   // PC6
@@ -118,12 +127,6 @@
 #define THREAD_START_DOCK_MILLIS 300
 #define THREAD_START_RANGE_MILLIS 400
 #define THREAD_START_TELEM_MILLIS 500
-
-// Current control params
-#define PID_COIL_KP 0.065
-#define PID_COIL_KI 0.3
-#define PID_COIL_UMAX 90
-#define PID_COIL_UMIN 0
 
 // LEDs (see: led.cpp)
 #define LED_FAR_COUNTS 6

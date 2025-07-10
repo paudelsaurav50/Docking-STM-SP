@@ -1,4 +1,6 @@
 // Implementation PID controller with Tustin's approximation
+// Todo add mutex protection for thread safety.
+// Add option on how to clamp for dead-zone.
 // rms (2023-12-13)
 
 #ifndef _PID_H_
@@ -9,11 +11,13 @@
 class pid
 {
 private:
-  bool is_p = false, is_i = false, is_d = false; // Enable flags
-  float ez = 0.0, iz = 0.0, dz = 0.0; // Past variables
-  float u_min = 0.0, u_max = 0.0; // Output limits
+  bool is_p, is_i, is_d; // Enable flags
+  float ez, iz, dz;      // Past variables
+  float u_min, u_max;    // Output limits
+  float i_min, i_max;    // Integrator limits
 
-  float saturate_control(const float in);
+  float clamp_output(float in) const;
+  float clamp_integrator(float in) const;
 
 public:
   pid();
@@ -21,13 +25,15 @@ public:
 
   float kp, ki, kd; // PID gains
 
-  void set_kp(const float p);
-  void set_ki(const float i);
-  void set_kd(const float d);
+  void set_kp(float p);
+  void set_ki(float i);
+  void set_kd(float d);
+
+  void set_output_limits(float min, float max);
+  void set_integrator_limits(float min, float max);
 
   void reset_memory(void);
-  float update(const float e, const float dt);
-  void set_control_limits(const float u_min, const float u_max);
+  float update(float e, float dt);
 };
 
 #endif // pid.h

@@ -36,10 +36,3 @@ This branch contains the embedded source code to interface with the [ground stat
 pscp -pw tamariw build/main.hex tamariw@tamariw.local:/home/tamariw/tpi/src
 plink.exe tamarix@tamarix.local
 ```
-
-## Todos
-
-1. Implement the docking configurations from GS
-2. Make sure all the variables are documented on the .h files.
-3. Implement the sat A sat B and sign business
-4. Clip input to the coil controller

@@ -19,7 +19,7 @@ void coil::init()
     isp[i] = 0.0;
     ctrl[i].set_kp(PID_COIL_KP);
     ctrl[i].set_ki(PID_COIL_KI);
-    ctrl[i].set_control_limits(PID_COIL_UMIN, PID_COIL_UMAX);
+    ctrl[i].set_output_limits(PID_COIL_UMIN, PID_COIL_UMAX);
   }
 
   stop_all = true;
@@ -209,6 +209,12 @@ void coil::run(void)
         }
         else
         {
+          // Limit the max allowable set-point
+          if (fabs(isp[i]) > PID_COIL_MAX_CURRENT_mA)
+          {
+            isp[i] = copysign(PID_COIL_MAX_CURRENT_mA, isp[i]);
+          }
+
           // Feedback current control for each coil
           float error = isp[i] - tx.i[i];
           float pwm = ctrl[i].update(error, dt);

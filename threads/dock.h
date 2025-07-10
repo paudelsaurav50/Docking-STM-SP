@@ -11,7 +11,7 @@ class dock : public StaticThread<>
 {
 private:
   int period_ms;
-  double timekeeper;
+  float timekeeper;
 
   // Setup subsriber
   CommBuffer<tcmd_t> cb_tcmd;
@@ -28,18 +28,18 @@ private:
   enum dock_state fsm_last_state;
   enum dock_state fsm_current_state;
   enum dock_state fsm_state_transition(enum dock_state current, const range_t range);
-  void fsm_execute(const enum dock_state state, const range_t range, const double dt);
+  void fsm_execute(const enum dock_state state, const range_t range, const float dt);
   void fsm_print_state(const enum dock_state state);
 
-  double kp; // Proportional gain for position feedback
-  double ki; // Integral gain for the position feedback
-  double kd; // Derivative gain for position (i.e. proportional gain for velocity)
-  double kf; // A gain to tweak the expression for force to current conversion
-  double latch_current_ma;
-  double unlatch_current_ma;
-  double capture_current_ma;
-  double v_sp;
-  double d_sp;
+  float kp; // Proportional gain for position feedback
+  float ki; // Integral gain for the position feedback
+  float kd; // Derivative gain for position (i.e. proportional gain for velocity)
+  float kf; // A gain to tweak the expression for force to current conversion
+  float latch_current_ma;
+  float unlatch_current_ma;
+  float capture_current_ma;
+  float v_sp;
+  float d_sp;
 
   pid pi[4]; // PI controllers for docking
 

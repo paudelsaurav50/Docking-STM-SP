@@ -2,6 +2,11 @@
 
 pid::pid()
 {
+  kp = ki = kd = 0.0;
+  ez = iz = dz = 0.0;
+  u_max = i_max = INFINITY;
+  u_min = i_min = -INFINITY;
+  is_p = is_i = is_d = false;
 }
 
 pid::~pid()
@@ -15,33 +20,18 @@ void pid::reset_memory(void)
   dz = 0.0;
 }
 
-// Sign of input number
-static int sign(float in)
+float pid::clamp_output(float in) const
 {
-  if(in < 0)
-  {
-    return -1;
-  }
-  else
-  {
-    return 1;
-  }
+  if (in < u_min) return u_min;
+  if (in > u_max) return u_max;
+  return in;
 }
 
-float pid::saturate_control(const float in)
+float pid::clamp_integrator(float in) const
 {
-  float out = in;
-
-  if (abs(in) < u_min)
-  {
-    out = sign(in) * u_min;
-  }
-  else if (abs(in) > u_max)
-  {
-    out = sign(in) * u_max;
-  }
-
-  return out;
+  if (in < i_min) return i_min;
+  if (in > i_max) return i_max;
+  return in;
 }
 
 /*           ______________________
@@ -60,41 +50,49 @@ float pid::update(float e, float dt)
 
   if (is_i)
   {
-    i = iz + 0.5 * ki * dt * (e + ez);
+    i = iz + 0.5f * ki * dt * (e + ez);
+    i = clamp_integrator(i);
     iz = i;
   }
 
   if (is_d)
   {
-    d = -dz + 2 * kd * (e - ez) / dt;
+    d = -dz + 2.0f * kd * (e - ez) / dt;
     dz = d;
   }
 
-  const float u = p + i + d;
   ez = e;
-
-  return saturate_control(u);
+  return clamp_output(p + i + d);
 }
 
-void pid::set_kp(const float p)
+void pid::set_kp(float p)
 {
   kp = p;
   is_p = true;
 }
 
-void pid::set_ki(const float i)
+void pid::set_ki(float i)
 {
   ki = i;
   is_i = true;
 }
 
-void pid::set_kd(const float d)
+void pid::set_kd(float d)
 {
   kd = d;
   is_d = true;
 }
 
-void pid::set_control_limits(const float min, const float max)
+void pid::set_integrator_limits(float min, float max)
+{
+  if (min < max)
+  {
+    i_min = min;
+    i_max = max;
+  }
+}
+
+void pid::set_output_limits(float min, float max)
 {
   if (min < max)
   {
