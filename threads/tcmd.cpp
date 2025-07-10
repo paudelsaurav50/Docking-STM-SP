@@ -120,7 +120,7 @@ void thread_tcmd::run()
       }
       else
       {
-        PRINTF("invalid tcmd!\n");
+        PRINTF("invalid tcmd! %s\n", tcmd_msg);
       }
     }
   }

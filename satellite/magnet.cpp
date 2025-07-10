@@ -51,9 +51,18 @@ void magnet::stop(const magnet_idx idx)
   {
     for(uint8_t i = MAGNET_IDX_0; i <= MAGNET_IDX_3; i++)
     {
-      last_dc[i] = 0.0;
+      if(abs(last_dc[i]) >= EM_SAFETY_THRESHOLD)
+      {
+        magnets[i]->set_duty_cycle(sign(last_dc[i]) * EM_SAFETY_INTERMEDIATE);
+      }
+    }
+
+    AT(NOW() + 100 * MILLISECONDS);
+
+    for(uint8_t i = MAGNET_IDX_0; i <= MAGNET_IDX_3; i++)
+    {
       magnets[i]->set_duty_cycle(0);
-      magnets[i]->brake();
+      last_dc[i] = 0.0;
     }
 
     // Saurav's discovery
@@ -61,9 +70,14 @@ void magnet::stop(const magnet_idx idx)
     return;
   }
 
-  last_dc[(uint8_t)idx] = 0.0;
+  // Stop single magnet
+  if(abs(last_dc[(uint8_t)idx]) >= EM_SAFETY_THRESHOLD)
+  {
+    magnets[(uint8_t)idx]->set_duty_cycle(sign(last_dc[(uint8_t)idx]) * EM_SAFETY_INTERMEDIATE);
+  }
+
   magnets[(uint8_t)idx]->set_duty_cycle(0);
-  magnets[(uint8_t)idx]->brake();
+  last_dc[(uint8_t)idx] = 0.0;
 }
 
 void magnet::actuate(const magnet_idx idx, const float dc)
