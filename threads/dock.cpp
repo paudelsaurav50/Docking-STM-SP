@@ -133,7 +133,6 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
       is_latch = is_latch && (range.d[i] < DOCK_CONTROL_DISTANCE_SP_MM);
     }
 
-    PRINTF("DOCK_STATE_CONTROL\n");
     return is_latch ? DOCK_STATE_LATCH : DOCK_STATE_CONTROL;
   }
 
@@ -331,7 +330,7 @@ void dock::run()
 
     if (fsm_last_state != fsm_current_state)
     {
-      fsm_print_state(fsm_current_state);
+      // fsm_print_state(fsm_current_state);
       fsm_last_state = fsm_current_state;
     }
   }
