@@ -39,4 +39,7 @@ plink.exe tamarix@tamarix.local
 
 ## Todos
 
-1. Ground station docuking params: Kp, Ki, Kd, distance set point, latching current, latching and unlatching buttons.
+1. Implement the docking configurations from GS
+2. Make sure all the variables are documented on the .h files.
+3. Implement the sat A sat B and sign business
+4. Clip input to the coil controller

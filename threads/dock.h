@@ -7,37 +7,6 @@
 #include "rodos.h"
 #include "topics.h"
 
-// Satellite docking states
-enum dock_state
-{
-  DOCK_STATE_IDLE,    // Do nothing at all
-  DOCK_STATE_CAPTURE, // Passive coil actuation to bring satellites together
-  DOCK_STATE_CONTROL, // Soft docking control with position and velocity feedback
-  DOCK_STATE_LATCH,   // Extra push to overcome latch friction
-  DOCK_STATE_UNLATCH, // Repel latched satellites
-  DOCK_STATE_ABORT    // Actively abortig the docking sequence under unsafe conditions
-};
-
-// Docking state for each coils
-enum dock_coil_state
-{
-  DOCK_COIL_STATE_IDLE,
-  DOCK_COIL_STATE_CONTROL,
-  DOCK_COIL_STATE_LATCH
-};
-
-enum dock_error
-{
-  // State transition errors and timeouts
-  DOCK_ERROR_CAPTURE_TIMEOUT,
-  DOCK_ERROR_CONTROL_TIMEOUT,
-  DOCK_ERROR_LATCH_ERROR,
-  DOCK_ERROR_UNLATCH_ERROR,
-
-  // Errors on sensor measurements
-  DOCK_ERROR_TOF,
-};
-
 class dock : public StaticThread<>
 {
 private:

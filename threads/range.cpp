@@ -124,7 +124,7 @@ void range::run()
       tx.kf_v[i] = tof_kf[i].get_velocity();
     }
 
-    tx.dt = dt / 1000.0;
+    tx.dt = dt * 1000.0;
     topic_range.publish(tx);
 
     if (all_good != TOF_STATUS_OK)

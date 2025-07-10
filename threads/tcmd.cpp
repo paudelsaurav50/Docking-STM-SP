@@ -106,13 +106,15 @@ void thread_tcmd::run()
     memset(tcmd_msg, 0, sizeof(tcmd_msg));
     size_t rxlen = serial.read(tcmd_msg, sizeof(tcmd_msg));
 
+    double dt = (NOW() - timekeeper) / MILLISECONDS;
+    timekeeper = NOW();
+    topic_tcmd_dt.publish(dt);
+
     if (rxlen > 0)
     {
-      tcmd_t tcmd;
-
-      if (parse(tcmd_msg, &tcmd))
+      if (parse(tcmd_msg, &tx))
       {
-        topic_tcmd.publish(tcmd);
+        topic_tcmd.publish(tx);
 
         PRINTF("tcmd ok! %s\n", tcmd_msg);
       }

@@ -39,9 +39,14 @@ void dock::handle_telecommands(const tcmd_t tcmd)
 {
   switch (tcmd.idx)
   {
-  case TCMD_START_DOCK:
+  case TCMD_DOCK_STATE_START:
   {
-    fsm_current_state = DOCK_STATE_UNLATCH;
+    /**
+     * Implement this after you validate controller and the sequences manually from GS. Setting fsm_current_state to
+     * DOCK_STATE_START would mean that you have to implement the logic to proceed ahead on state transition function
+     * of FSM. -rms
+     */
+    fsm_current_state = DOCK_STATE_CONTROL; // This is dummy.
     break;
   }
 
@@ -140,7 +145,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
   case DOCK_STATE_IDLE:
   {
     tx = (dock_t){
-        .dt = (float)dt,
+        .dt = (float)(dt * 1000.0),
         .i = {0.0, 0.0, 0.0, 0.0},
         .stop = {true, true, true, true},
         .stop_all = true,
@@ -152,7 +157,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
   case DOCK_STATE_CAPTURE:
   {
     tx = (dock_t){
-        .dt = (float)dt,
+        .dt = (float)(dt * 1000.0),
         .i = {DOCK_CAPTURE_CURRENT_mA, DOCK_CAPTURE_CURRENT_mA,
               DOCK_CAPTURE_CURRENT_mA, DOCK_CAPTURE_CURRENT_mA},
         .stop = {false, false, false, false},
@@ -164,11 +169,11 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
 
   case DOCK_STATE_CONTROL:
   {
-    tx = (dock_t){.dt = (float)dt, .stop = {false, false, false, false}, .stop_all = false, .is_docking = true};
+    tx = (dock_t){.dt = (float)(dt * 1000.0), .stop = {false, false, false, false}, .stop_all = false, .is_docking = true};
 
     for (uint8_t i = 0; i < 4; i++)
     {
-      // If one of the corner is early, proceed with latching
+      // If one of the corner is early to set-point, proceed with latching
       if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
       {
         tx.i[i] = DOCK_LATCH_CURRENT_mA;
@@ -199,14 +204,13 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
       tx.i[i] = sign_f * sqrtf(kf * COIL_PARAM_CONSTANT * fabsf(f) * d_sq);
     }
 
-    PRINTF("%f, \t%f, \t%f, \t%f\n", tx.i[0], tx.i[1], tx.i[2], tx.i[3]);
     break;
   }
 
   case DOCK_STATE_LATCH:
   {
     tx = (dock_t){
-        .dt = (float)dt,
+        .dt = (float)(dt * 1000.0),
         .i = {DOCK_LATCH_CURRENT_mA, DOCK_LATCH_CURRENT_mA,
               DOCK_LATCH_CURRENT_mA, DOCK_LATCH_CURRENT_mA},
         .stop = {false, false, false, false},
@@ -219,7 +223,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
   case DOCK_STATE_UNLATCH:
   {
     tx = (dock_t){
-        .dt = (float)dt,
+        .dt = (float)(dt * 1000.0),
         .i = {DOCK_UNLATCH_CURRENT_mA, DOCK_UNLATCH_CURRENT_mA,
               DOCK_UNLATCH_CURRENT_mA, DOCK_UNLATCH_CURRENT_mA},
         .stop = {false, false, false, false},
@@ -232,7 +236,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
   case DOCK_STATE_ABORT:
   {
     tx = (dock_t){
-        .dt = (float)dt,
+        .dt = (float)(dt * 1000.0),
         .i = {0.0, 0.0, 0.0, 0.0},
         .stop = {true, true, true, true},
         .stop_all = true,
@@ -247,6 +251,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const d
   }
   }
 
+  tx.state = state;
   topic_dock.publish(tx);
 }
 

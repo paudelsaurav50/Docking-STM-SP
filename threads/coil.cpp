@@ -50,15 +50,67 @@ void coil::handle_telecommands(const tcmd_t tcmd)
   }
 
   // Current setpoints are effective only if the satellite is not in docking mode
-  case TCMD_EM0: if (!rx_dock.is_docking) { isp[0] = tcmd.data; stop_all = false; stop[0] = false; } break;
-  case TCMD_EM1: if (!rx_dock.is_docking) { isp[1] = tcmd.data; stop_all = false; stop[1] = false; } break;
-  case TCMD_EM2: if (!rx_dock.is_docking) { isp[2] = tcmd.data; stop_all = false; stop[2] = false; } break;
-  case TCMD_EM3: if (!rx_dock.is_docking) { isp[3] = tcmd.data; stop_all = false; stop[3] = false; } break;
+  case TCMD_EM0:
+    if (!rx_dock.is_docking)
+    {
+      isp[0] = tcmd.data;
+      stop_all = false;
+      stop[0] = false;
+    }
+    break;
+  case TCMD_EM1:
+    if (!rx_dock.is_docking)
+    {
+      isp[1] = tcmd.data;
+      stop_all = false;
+      stop[1] = false;
+    }
+    break;
+  case TCMD_EM2:
+    if (!rx_dock.is_docking)
+    {
+      isp[2] = tcmd.data;
+      stop_all = false;
+      stop[2] = false;
+    }
+    break;
+  case TCMD_EM3:
+    if (!rx_dock.is_docking)
+    {
+      isp[3] = tcmd.data;
+      stop_all = false;
+      stop[3] = false;
+    }
+    break;
 
-  case TCMD_EM0_STOP: stop[0] = float_to_bool(tcmd.data); if (!stop[0]) { isp[0] = 0.0; } break;
-  case TCMD_EM1_STOP: stop[1] = float_to_bool(tcmd.data); if (!stop[1]) { isp[1] = 0.0; } break;
-  case TCMD_EM2_STOP: stop[2] = float_to_bool(tcmd.data); if (!stop[2]) { isp[2] = 0.0; } break;
-  case TCMD_EM3_STOP: stop[3] = float_to_bool(tcmd.data); if (!stop[3]) { isp[3] = 0.0; } break;
+  case TCMD_EM0_STOP:
+    stop[0] = float_to_bool(tcmd.data);
+    if (!stop[0])
+    {
+      isp[0] = 0.0;
+    }
+    break;
+  case TCMD_EM1_STOP:
+    stop[1] = float_to_bool(tcmd.data);
+    if (!stop[1])
+    {
+      isp[1] = 0.0;
+    }
+    break;
+  case TCMD_EM2_STOP:
+    stop[2] = float_to_bool(tcmd.data);
+    if (!stop[2])
+    {
+      isp[2] = 0.0;
+    }
+    break;
+  case TCMD_EM3_STOP:
+    stop[3] = float_to_bool(tcmd.data);
+    if (!stop[3])
+    {
+      isp[3] = 0.0;
+    }
+    break;
 
   case TCMD_EM_STOP_ALL:
   {
@@ -165,7 +217,7 @@ void coil::run(void)
       }
     }
 
-    tx.dt =  dt / 1000.0;
+    tx.dt = dt * 1000.0;
     topic_coil.publish(tx);
   }
 }
