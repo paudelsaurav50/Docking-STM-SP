@@ -27,7 +27,7 @@ private:
   float isp[4];   // Current set-points to the coil [mA]
   bool stop[4];   // Flags to stop coil actuation if true
   bool stop_all;  // Flag to stop all coils if true
-  mavg_t filt[4]; // Moving average for current measurements
+  MovingAverageState filt[4]; // Moving average for current measurements
 
   // Setup subscribers
   CommBuffer<tcmd_t> cb_tcmd;

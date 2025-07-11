@@ -14,7 +14,6 @@ void coil::init()
   for (uint8_t i = 0; i < 4; i++)
   {
     stop[i] = true;
-    mavg_init(&filt[i]);
 
     isp[i] = 0.0;
     ctrl[i].set_kp(PID_COIL_KP);
@@ -186,7 +185,7 @@ void coil::run(void)
     magnet::get_current(tx.i);
     for (uint8_t i = 0; i < 4; i++)
     {
-      tx.i[i] = mavg_update(tx.i[i], &filt[i]);
+      tx.i[i] = computeMovingAverage(tx.i[i], filt[i]);
     }
 
     float dt = (NOW() - timekeeper) / SECONDS;
