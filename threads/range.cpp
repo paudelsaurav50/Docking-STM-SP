@@ -58,9 +58,8 @@ void range::track_tof_status(const tof_status status[4], kf_state is_kf[4])
       // Check if error threshold has reached
       if (tof_status_counter[i] >= KF1D_MAX_TOF_ERROR)
       {
-        tof_status_counter[i] = 0; // Reset counter
-        is_kf[i] = KF_STATE_ERROR; // Completely disable KF
-        // PRINTF("KF-error: %d\n", i);
+        tof_status_counter[i] = KF1D_MAX_TOF_ERROR; // Retain error status unless good measurement
+        is_kf[i] = KF_STATE_ERROR;                  // Completely disable KF
       }
       else // Not enough consecutive errors
       {

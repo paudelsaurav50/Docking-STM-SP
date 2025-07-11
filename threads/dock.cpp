@@ -189,6 +189,7 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
       if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
       {
         tx.i[i] = DOCK_LATCH_CURRENT_mA;
+        continue; // Skip control for this magnet
       }
 
       // Set control gains if changed
