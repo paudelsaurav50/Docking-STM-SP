@@ -63,6 +63,7 @@ void magnet::stop(const magnet_idx idx)
     {
       magnets[i]->set_duty_cycle(0);
       last_dc[i] = 0.0;
+      AT(NOW() + 10 * MILLISECONDS);
     }
 
     // Saurav's discovery
@@ -74,10 +75,12 @@ void magnet::stop(const magnet_idx idx)
   if(abs(last_dc[(uint8_t)idx]) >= EM_SAFETY_THRESHOLD)
   {
     magnets[(uint8_t)idx]->set_duty_cycle(sign(last_dc[(uint8_t)idx]) * EM_SAFETY_INTERMEDIATE);
+    AT(NOW() + 10 * MILLISECONDS);
   }
 
   magnets[(uint8_t)idx]->set_duty_cycle(0);
   last_dc[(uint8_t)idx] = 0.0;
+  
 }
 
 void magnet::actuate(const magnet_idx idx, const float dc)
@@ -90,6 +93,7 @@ void magnet::actuate(const magnet_idx idx, const float dc)
     {
       magnets[i]->set_duty_cycle(dc);
       last_dc[i] = dc;
+      AT(NOW() + 3 * MILLISECONDS);
     }
 
     return;
@@ -97,6 +101,7 @@ void magnet::actuate(const magnet_idx idx, const float dc)
 
   magnets[(uint8_t)idx]->set_duty_cycle(dc);
   last_dc[(uint8_t)idx] = dc;
+  AT(NOW() + 3 * MILLISECONDS);
 }
 
 // Current through 'single' electromagnet in miliamps

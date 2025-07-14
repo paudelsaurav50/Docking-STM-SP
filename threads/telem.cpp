@@ -40,7 +40,7 @@ void telem::run()
     const float f[4] = {rx_range.kf_v[0], rx_range.kf_v[1], rx_range.kf_v[2], rx_range.kf_v[3]};
     const int g = (int)rx_dock.state;
     const float h[5] = {rx_dock.dt, rx_coil.dt, dt, rx_tcmd_dt, rx_range.dt};
-
+    
     int len = SNPRINTF(tx_msg, sizeof(tx_msg),
                        "$d:%dx%dx%dx%d,c:%.1fx%.1fx%.1fx%.1f,e:%.1fx%.1fx%.1fx%.1f,f:%.1fx%.1fx%.1fx%.1f,h:%.1fx%.1fx%.1fx%.1fx%.1f,g:%d,r:11#\n",
                        d[0], d[1], d[2], d[3],
@@ -51,8 +51,7 @@ void telem::run()
                        g);
 
     serial.write(tx_msg, len);
-
-    // PRINTF("%s", tx_msg);
+    //PRINTF("%s", tx_msg);
   }
 }
 

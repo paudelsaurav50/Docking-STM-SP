@@ -253,8 +253,8 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
 
     tx = (dock_t){
         .dt = (float)(dt * 1000.0),
-        .i = {sign * unlatch_current_ma, sign * unlatch_current_ma,
-              sign * unlatch_current_ma, sign * unlatch_current_ma},
+        .i = { unlatch_current_ma, unlatch_current_ma,
+               unlatch_current_ma,  unlatch_current_ma},
         .stop = {false, false, false, false},
         .stop_all = false,
         .is_docking = true};
