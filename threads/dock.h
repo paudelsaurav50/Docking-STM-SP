@@ -40,6 +40,7 @@ private:
   float capture_current_ma;
   float v_sp;
   float d_sp;
+  float d_latch_unlatch;
 
   pid pi[4]; // PI controllers for docking
 

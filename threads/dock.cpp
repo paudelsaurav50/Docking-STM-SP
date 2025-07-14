@@ -19,6 +19,7 @@ void dock::init()
   kf = DOCK_CONTROLLER_GAIN_KF;
   v_sp = DOCK_CONTROL_VELOCITY_SP;
   d_sp = DOCK_CONTROL_DISTANCE_SP_MM;
+  d_latch_unlatch=DOCK_CONTROL_LATCH_UNLATCH_DISTANCE_SP_MM;
   latch_current_ma = DOCK_LATCH_CURRENT_mA;
   unlatch_current_ma = DOCK_UNLATCH_CURRENT_mA;
   capture_current_ma = DOCK_CAPTURE_CURRENT_mA;
@@ -117,6 +118,7 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
     return DOCK_STATE_IDLE;
   }
 
+
   // If one of the KF estimates is not good, abort docking
   // if (!is_all_kf_good)
   // {
@@ -125,16 +127,32 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
 
   // Check if the satellites are near enough to latch
   // Satellite must be in control mode to dock
-  if (current == DOCK_STATE_CONTROL)
+  if (current == DOCK_STATE_CONTROL || current == DOCK_STATE_LATCH || current == DOCK_STATE_UNLATCH)
   {
-    bool is_latch = true;
+    bool is_latch_unlatch = true;
+
+
     for (int i = 0; i < 4; i++)
     {
-      is_latch = is_latch && (range.d[i] < DOCK_CONTROL_DISTANCE_SP_MM);
+      is_latch_unlatch = is_latch_unlatch && (range.d[i] < d_latch_unlatch);
     }
-
-    return is_latch ? DOCK_STATE_LATCH : DOCK_STATE_CONTROL;
+    
+    if((d_sp>d_latch_unlatch) && is_latch_unlatch)
+    {
+      //PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n",d_latch_unlatch,d_sp);
+      return DOCK_STATE_UNLATCH;
+    }
+      
+    else if((d_sp<d_latch_unlatch) && is_latch_unlatch)
+    {
+      //PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n ",d_latch_unlatch,d_sp);
+      return DOCK_STATE_LATCH;
+    }
+    else
+      return DOCK_STATE_CONTROL;
+    
   }
+
 
   // Any unhandled situation results in same
   return current;
@@ -186,11 +204,11 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
     for (uint8_t i = 0; i < 4; i++)
     {
       // If one of the corner is early to set-point, proceed with latching
-      if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
+     /* if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
       {
         tx.i[i] = DOCK_LATCH_CURRENT_mA;
         continue; // Skip control for this magnet
-      }
+      }*/
 
       // Set control gains if changed
       pi[i].set_kp(kp);

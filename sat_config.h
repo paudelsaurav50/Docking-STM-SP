@@ -5,12 +5,12 @@
 #define _SAT_CONFIG_H_
 
 // Docking parameters
-#define DOCK_LATCH_CURRENT_mA 1000
-#define DOCK_UNLATCH_CURRENT_mA -1000
+#define DOCK_LATCH_CURRENT_mA 2000
+#define DOCK_UNLATCH_CURRENT_mA -2000
 #define DOCK_CAPTURE_CURRENT_mA 2000
 #define DOCK_CONTROL_VELOCITY_SP 0.0
-#define DOCK_CONTROL_DISTANCE_SP_MM 20
-
+#define DOCK_CONTROL_DISTANCE_SP_MM 50
+#define DOCK_CONTROL_LATCH_UNLATCH_DISTANCE_SP_MM 30
 // Parameters of the electromagnet
 #define COIL_PARAM_u0 1.25663706127e-6 // Vacuum permeability [N/A^2]
 #define COIL_PARAM_N 100               // Number of turns
