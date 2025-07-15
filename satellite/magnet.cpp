@@ -29,7 +29,7 @@ int16_t last_dc[4] = {0, 0, 0, 0}; // Last dutycycle to stop with ramp
 void magnet::init(void)
 {
   hbridge_enable.init(true, 1, 0);
-
+  hbridge_enable.setPins(1);
   // Init a channel for each em
   em_adc.init(EM0_ADC_CH);
 	em_adc.init(EM1_ADC_CH);
@@ -74,10 +74,11 @@ void magnet::stop(const magnet_idx idx)
   // Stop single magnet
   if(abs(last_dc[(uint8_t)idx]) >= EM_SAFETY_THRESHOLD)
   {
-    magnets[(uint8_t)idx]->set_duty_cycle(sign(last_dc[(uint8_t)idx]) * EM_SAFETY_INTERMEDIATE);
     AT(NOW() + 10 * MILLISECONDS);
+    magnets[(uint8_t)idx]->set_duty_cycle(sign(last_dc[(uint8_t)idx]) * EM_SAFETY_INTERMEDIATE);
+   
   }
-
+  AT(NOW() + 10 * MILLISECONDS);
   magnets[(uint8_t)idx]->set_duty_cycle(0);
   last_dc[(uint8_t)idx] = 0.0;
   
@@ -85,23 +86,24 @@ void magnet::stop(const magnet_idx idx)
 
 void magnet::actuate(const magnet_idx idx, const float dc)
 {
-  hbridge_enable.setPins(1);
+ // hbridge_enable.setPins(1);
 
   if(idx == MAGNET_IDX_ALL)
   {
     for(uint8_t i = MAGNET_IDX_0; i <= MAGNET_IDX_3; i++)
     {
+      AT(NOW() + 3 * MILLISECONDS);
       magnets[i]->set_duty_cycle(dc);
       last_dc[i] = dc;
-      AT(NOW() + 3 * MILLISECONDS);
+      
     }
 
     return;
   }
-
+  AT(NOW() + 3 * MILLISECONDS);
   magnets[(uint8_t)idx]->set_duty_cycle(dc);
   last_dc[(uint8_t)idx] = dc;
-  AT(NOW() + 3 * MILLISECONDS);
+
 }
 
 // Current through 'single' electromagnet in miliamps
