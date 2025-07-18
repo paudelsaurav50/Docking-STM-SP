@@ -92,7 +92,7 @@ void magnet::actuate(const magnet_idx idx, const float dc)
   {
     for(uint8_t i = MAGNET_IDX_0; i <= MAGNET_IDX_3; i++)
     {
-      AT(NOW() + 3 * MILLISECONDS);
+      AT(NOW() + 10 * MILLISECONDS);
       magnets[i]->set_duty_cycle(dc);
       last_dc[i] = dc;
       
@@ -100,7 +100,7 @@ void magnet::actuate(const magnet_idx idx, const float dc)
 
     return;
   }
-  AT(NOW() + 3 * MILLISECONDS);
+  AT(NOW() + 10 * MILLISECONDS);
   magnets[(uint8_t)idx]->set_duty_cycle(dc);
   last_dc[(uint8_t)idx] = dc;
 

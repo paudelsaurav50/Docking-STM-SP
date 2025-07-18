@@ -140,19 +140,19 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
     if((d_sp>d_latch_unlatch) && is_latch_unlatch)
     {
       PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n",d_latch_unlatch,d_sp);
-      //AT(NOW() + 100 * MILLISECONDS);
+      AT(NOW() + 10 * MILLISECONDS);
       return DOCK_STATE_UNLATCH;
     }
       
     else if((d_sp<d_latch_unlatch) && is_latch_unlatch)
     {
       PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n ",d_latch_unlatch,d_sp);
-      //AT(NOW() + 100 * MILLISECONDS);
+      AT(NOW() + 10 * MILLISECONDS);
       return DOCK_STATE_LATCH;
     }
     else
     {
-      //AT(NOW() + 100 * MILLISECONDS);
+      AT(NOW() + 10 * MILLISECONDS);
       return DOCK_STATE_CONTROL;
     }
     
@@ -340,7 +340,6 @@ void dock::run()
   TIME_LOOP(THREAD_START_DOCK_MILLIS, period_ms * MILLISECONDS)
   {
     cb_range.getOnlyIfNewData(rx_range);
-
     if (cb_tcmd.getOnlyIfNewData(rx_tcmd))
     {
       handle_telecommands(rx_tcmd);
