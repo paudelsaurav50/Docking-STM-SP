@@ -102,6 +102,42 @@ void dock::handle_telecommands(const tcmd_t tcmd)
 // Determine the next state based on current state and KF estimates
 enum dock_state dock::fsm_state_transition(enum dock_state current, const range_t range)
 {
+
+  uint64_t now = NOW();
+
+  // Repel duration and cooldown logic
+  if (current == DOCK_STATE_REPEL)
+  {
+    if (!repel_active)
+    {
+        repel_active = true;
+        repel_start_time = now;
+        repel_cooldown_active = false;
+    }
+    else if (now - repel_start_time >= REPEL_DURATION_MS * MILLISECONDS)
+    {
+        repel_active = false;
+        repel_cooldown_active = true;
+        repel_start_time = now;
+        PRINTF("Repel done, switching to CONTROL with cooldown\n");
+        return DOCK_STATE_CONTROL;
+    }
+    return DOCK_STATE_REPEL;
+  }
+
+  if (repel_cooldown_active)
+  {
+    if (now - repel_start_time >= REPEL_COOLDOWN_MS * MILLISECONDS)
+    {
+        repel_cooldown_active = false;
+        PRINTF("Repel cooldown ended\n");
+    }
+    else
+    {
+        return DOCK_STATE_CONTROL;
+    }
+  }
+
   // Check if each of the KF estimates are
   bool is_all_kf_good = true;
   for (int i = 0; i < 4; i++)
@@ -159,8 +195,14 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
       float delta = max_d - min_d;
       if (delta > TIP_ALIGNMENT_THRESHOLD_MM)
       {
-        PRINTF("Misalignment detected — transitioning to REPEL (delta = %.2f mm)\n", delta);
-        return DOCK_STATE_REPEL;
+      was_repel_triggered = true;
+      PRINTF("Misalignment detected — transitioning to REPEL (delta=%.2f mm)\n", delta);
+      return DOCK_STATE_REPEL;
+      }
+      else if (was_repel_triggered && delta < (TIP_ALIGNMENT_THRESHOLD_MM * 0.7))
+      {
+        // Clear flag only when misalignment reduces below 70% threshold
+        was_repel_triggered = false;
       }
 
       // Decide between LATCH or UNLATCH

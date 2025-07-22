@@ -12,13 +12,21 @@
 // ===========================
 #define TIP_ALIGNMENT_THRESHOLD_MM 10.0f   // Max spread across sensors before triggering repel
 #define REPEL_CURRENT_MA -150.0f           // Reverse current for repelling
-#define REPEL_DURATION_MS 500              // Time to stay in repel state before retrying control
+
+
 
 class dock : public StaticThread<>
 {
 private:
     int period_ms;
     float timekeeper;
+    uint64_t repel_start_time = 0;      // Time when repel started
+    const uint64_t REPEL_DURATION_MS = 500;   // Repel duration (500 ms)
+    const uint64_t REPEL_COOLDOWN_MS = 300;   // Cooldown time after repel (300 ms)
+    bool repel_active = false;           // Flag: currently in repel
+    bool repel_cooldown_active = false; // Flag: in cooldown period
+    bool was_repel_triggered = false;
+
 
     // Subscribers
     CommBuffer<tcmd_t> cb_tcmd;
