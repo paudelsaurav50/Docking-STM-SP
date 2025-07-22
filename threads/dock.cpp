@@ -118,6 +118,14 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
     return DOCK_STATE_IDLE;
   }
 
+   // Transition from UNLATCH to CONTROL automatically
+  if (current == DOCK_STATE_UNLATCH)
+  {
+  PRINTF("Transitioning from UNLATCH to CONTROL\n");
+  AT(NOW() + 50 * MILLISECONDS);  // brief hold time for unlatch pulse
+  return DOCK_STATE_CONTROL;
+  }
+
 
   // If one of the KF estimates is not good, abort docking
   // if (!is_all_kf_good)
@@ -131,35 +139,52 @@ enum dock_state dock::fsm_state_transition(enum dock_state current, const range_
   {
     bool is_latch_unlatch = true;
 
-
+    
     for (int i = 0; i < 4; i++)
     {
       is_latch_unlatch = is_latch_unlatch && (range.d[i] < d_latch_unlatch);
     }
-    
-    if((d_sp>d_latch_unlatch) && is_latch_unlatch)
+
+    if (is_latch_unlatch)
     {
-      PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n",d_latch_unlatch,d_sp);
-      AT(NOW() + 10 * MILLISECONDS);
-      return DOCK_STATE_UNLATCH;
-    }
-      
-    else if((d_sp<d_latch_unlatch) && is_latch_unlatch)
-    {
-      PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n ",d_latch_unlatch,d_sp);
-      AT(NOW() + 10 * MILLISECONDS);
-      return DOCK_STATE_LATCH;
+      // --- TIP ALIGNMENT CHECK ---
+      float max_d = range.d[0];
+      float min_d = range.d[0];
+      for (int i = 1; i < 4; ++i)
+      {
+        if (range.d[i] > max_d) max_d = range.d[i];
+        if (range.d[i] < min_d) min_d = range.d[i];
+      }
+
+      float delta = max_d - min_d;
+      if (delta > TIP_ALIGNMENT_THRESHOLD_MM)
+      {
+        PRINTF("Misalignment detected — transitioning to REPEL (delta = %.2f mm)\n", delta);
+        return DOCK_STATE_REPEL;
+      }
+
+      // Decide between LATCH or UNLATCH
+      if ((d_sp > d_latch_unlatch))
+      {
+        PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n", d_latch_unlatch, d_sp);
+        AT(NOW() + 10 * MILLISECONDS);
+        return DOCK_STATE_UNLATCH;
+      }
+      else
+      {
+        PRINTF("DOCK_STATE_LATCH , dsp=%f, d_l_ul=%f\n", d_latch_unlatch, d_sp);
+        AT(NOW() + 10 * MILLISECONDS);
+        return DOCK_STATE_LATCH;
+      }
     }
     else
     {
       AT(NOW() + 10 * MILLISECONDS);
       return DOCK_STATE_CONTROL;
     }
-    
   }
 
-
-  // Any unhandled situation results in same
+  // Any unhandled situation results in same state
   return current;
 }
 
@@ -177,6 +202,18 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
 
   switch (state)
   {
+
+  case DOCK_STATE_REPEL:
+  {
+    // Apply reverse current to repel
+    for (int i = 0; i < 4; ++i)
+        tx.i[i] = REPEL_CURRENT_MA;
+
+    topic_dock.publish(tx);
+    suspendCallerUntil(NOW() + REPEL_DURATION_MS * MILLISECONDS);
+    break;
+  }
+
   case DOCK_STATE_IDLE:
   {
     tx = (dock_t){
