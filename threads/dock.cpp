@@ -19,7 +19,6 @@ void dock::init()
   kf = DOCK_CONTROLLER_GAIN_KF;
   v_sp = DOCK_CONTROL_VELOCITY_SP;
   d_sp = DOCK_CONTROL_DISTANCE_SP_MM;
-  d_latch_unlatch=DOCK_CONTROL_LATCH_UNLATCH_DISTANCE_SP_MM;
   latch_current_ma = DOCK_LATCH_CURRENT_mA;
   unlatch_current_ma = DOCK_UNLATCH_CURRENT_mA;
   capture_current_ma = DOCK_CAPTURE_CURRENT_mA;
@@ -100,134 +99,304 @@ void dock::handle_telecommands(const tcmd_t tcmd)
 }
 
 // Determine the next state based on current state and KF estimates
-enum dock_state dock::fsm_state_transition(enum dock_state current, const range_t range)
+enum dock_state dock::fsm_state_transition(enum dock_state state, const range_t range, float d_desired)
 {
-
-  uint64_t now = NOW();
-
-  // Repel duration and cooldown logic
-  if (current == DOCK_STATE_REPEL)
+  switch (state)
   {
-    if (!repel_active)
+    case DOCK_STATE_IDLE:
     {
-        repel_active = true;
-        repel_start_time = now;
-        repel_cooldown_active = false;
+      bool all_unlatched = true;
+
+      for (int i = 0; i < 4; i++)
+      {
+        if (range.kf_d[i] <= DOCK_LATCH_DISTANCE_MM)
+        {
+          all_unlatched = false;
+          break;
+        }
+      }
+
+      // State Transitions:
+      if (d_desired > DOCK_LATCH_DISTANCE_MM && state !=DOCK_STATE_ABORT)  //Undocking
+      {
+        if (!all_unlatched)
+        {
+            return DOCK_STATE_UNLATCH; // Start unlatching
+        }
+        else
+        {
+            return DOCK_STATE_CONTROL; // Proceed with undocking control
+        }
+      }
+      else if (d_desired <= DOCK_LATCH_DISTANCE_MM && state !=DOCK_STATE_ABORT ) //Docking
+      {
+        if (!all_unlatched)
+        {
+            return DOCK_STATE_LATCH; // Start latching
+        }
+        else
+        {
+            return DOCK_STATE_CONTROL; // Proceed with docking control
+        }
+      }
+
+      break; // Stay in IDLE if all_unlatched is true and desired is <= DOCK_LATCH_DISTANCE_MM
+
     }
-    else if (now - repel_start_time >= REPEL_DURATION_MS * MILLISECONDS)
+    case DOCK_STATE_UNLATCH:
     {
-        repel_active = false;
-        repel_cooldown_active = true;
-        repel_start_time = now;
-        PRINTF("Repel done, switching to CONTROL with cooldown\n");
+      bool all_unlatched = true;
+      for (int i = 0; i < 4; i++)
+      {
+        if (range.kf_d[i] <= DOCK_LATCH_DISTANCE_MM)
+        {
+          all_unlatched = false;
+          break;
+        }
+      }
+      if (all_unlatched)
+      {
         return DOCK_STATE_CONTROL;
-    }
-    return DOCK_STATE_REPEL;
-  }
-
-  if (repel_cooldown_active)
-  {
-    if (now - repel_start_time >= REPEL_COOLDOWN_MS * MILLISECONDS)
-    {
-        repel_cooldown_active = false;
-        PRINTF("Repel cooldown ended\n");
-    }
-    else
-    {
-        return DOCK_STATE_CONTROL;
-    }
-  }
-
-  // Check if each of the KF estimates are
-  bool is_all_kf_good = true;
-  for (int i = 0; i < 4; i++)
-  {
-    if (range.status[i] == KF_STATE_ERROR)
-    {
-      is_all_kf_good = false;
-    }
-  }
-
-  // After the rituals of abort has been performed, retract to idle
-  if (fsm_last_state == DOCK_STATE_ABORT)
-  {
-    return DOCK_STATE_IDLE;
-  }
-
-   // Transition from UNLATCH to CONTROL automatically
-  if (current == DOCK_STATE_UNLATCH)
-  {
-  PRINTF("Transitioning from UNLATCH to CONTROL\n");
-  AT(NOW() + 50 * MILLISECONDS);  // brief hold time for unlatch pulse
-  return DOCK_STATE_CONTROL;
-  }
-
-
-  // If one of the KF estimates is not good, abort docking
-  // if (!is_all_kf_good)
-  // {
-  //   return DOCK_STATE_ABORT;
-  // }
-
-  // Check if the satellites are near enough to latch
-  // Satellite must be in control mode to dock
-  if (current == DOCK_STATE_CONTROL || current == DOCK_STATE_LATCH || current == DOCK_STATE_UNLATCH)
-  {
-    bool is_latch_unlatch = true;
-
-    
-    for (int i = 0; i < 4; i++)
-    {
-      is_latch_unlatch = is_latch_unlatch && (range.d[i] < d_latch_unlatch);
+      }
+      break;
     }
 
-    if (is_latch_unlatch)
+    case DOCK_STATE_CONTROL:
     {
-      // --- TIP ALIGNMENT CHECK ---
-      float max_d = range.d[0];
-      float min_d = range.d[0];
-      for (int i = 1; i < 4; ++i)
+      bool all_in_latch = true;
+      for (int i = 0; i < 4; i++)
       {
-        if (range.d[i] > max_d) max_d = range.d[i];
-        if (range.d[i] < min_d) min_d = range.d[i];
+        if (range.kf_d[i] > DOCK_LATCH_DISTANCE_MM)
+        {
+          all_in_latch = false;
+          break;
+        }
       }
 
-      float delta = max_d - min_d;
-      if (delta > TIP_ALIGNMENT_THRESHOLD_MM)
+      bool all_far_enough = true;
+      for (int i = 0; i < 4; i++)
       {
-      was_repel_triggered = true;
-      PRINTF("Misalignment detected — transitioning to REPEL (delta=%.2f mm)\n", delta);
-      return DOCK_STATE_REPEL;
-      }
-      else if (was_repel_triggered && delta < (TIP_ALIGNMENT_THRESHOLD_MM * 0.7))
-      {
-        // Clear flag only when misalignment reduces below 70% threshold
-        was_repel_triggered = false;
+        if (fabs(d_desired - range.kf_d[i]) > SETTLE_DISTANCE_TOLERANCE_MM)
+        {
+          all_far_enough = false;
+          break;
+        }
       }
 
-      // Decide between LATCH or UNLATCH
-      if ((d_sp > d_latch_unlatch))
+      if (d_desired > DOCK_LATCH_DISTANCE_MM) // Undocking control
       {
-        PRINTF("DOCK_STATE_UNLATCH , dsp=%f, d_l_ul=%f\n", d_latch_unlatch, d_sp);
-        AT(NOW() + 10 * MILLISECONDS);
-        return DOCK_STATE_UNLATCH;
+        if (all_far_enough)
+        {
+          return UNDOCK_SUCCESS;
+        }
       }
-      else
+      else // Docking control
       {
-        PRINTF("DOCK_STATE_LATCH , dsp=%f, d_l_ul=%f\n", d_latch_unlatch, d_sp);
-        AT(NOW() + 10 * MILLISECONDS);
-        return DOCK_STATE_LATCH;
+        if (all_in_latch)
+        {
+          return DOCK_STATE_LATCH;
+        }
       }
+
+      //if (abort_flag || timeout)
+      //{
+        //return DOCK_STATE_ABORT;
+      //}
+
+      break;
     }
-    else
+
+    case DOCK_STATE_LATCH:
     {
-      AT(NOW() + 10 * MILLISECONDS);
-      return DOCK_STATE_CONTROL;
+      bool all_inside_dock_distance = true;
+      for (int i = 0; i < 4; i++)
+      {
+        if (range.kf_d[i] >= DOCK_DISTANCE_MM)
+        {
+          all_inside_dock_distance = false;
+          break;
+        }
+      }
+
+      if (all_inside_dock_distance)
+      {
+        return DOCKING_SUCCESS;
+      }
+
+      break;
     }
+
+    case DOCKING_SUCCESS:
+    {
+      return DOCK_STATE_IDLE;
+      break;
+    }
+
+    case UNDOCK_SUCCESS:
+    {
+      return DOCK_STATE_IDLE;
+      break;
+    }
+
+    case DOCK_STATE_ABORT:
+    {
+      return DOCK_STATE_IDLE;
+      break;
+    }
+
+    default:
+      break;
   }
 
-  // Any unhandled situation results in same state
-  return current;
+  return state; // Stay in current state if no condition met
+}
+
+void dock::fsm_execute2(enum dock_state state, const range_t range, float dt)
+{
+    switch (state)
+    {
+        case DOCK_STATE_IDLE:
+
+        {
+          tx = (dock_t){
+              .dt = (float)(dt * 1000.0),
+              .i = {0.0, 0.0, 0.0, 0.0},
+              .stop = {true, true, true, true},
+              .stop_all = true,
+              .is_docking = false};
+
+          break;
+        }
+
+        case DOCK_STATE_UNLATCH:
+
+        {
+          int sign = 1;
+
+          #ifdef SAT_B
+            sign = -1;
+          #endif
+
+          tx = (dock_t){
+                .dt = (float)(dt * 1000.0),
+                  .i = {sign * unlatch_current_ma, sign * unlatch_current_ma,
+                        sign * unlatch_current_ma, sign * unlatch_current_ma},
+                  .stop = {false, false, false, false},
+                  .stop_all = false,
+                  .is_docking = true};
+
+          break;
+        }
+
+        case DOCK_STATE_CONTROL:
+        {
+          tx = (dock_t){.dt = (float)(dt * 1000.0), .stop = {false, false, false, false}, .stop_all = false, .is_docking = true};
+
+          float m = 3.0;
+          float k = 0.000025;
+          float lambda = 20.0;
+          float beta = 10.0;
+          float I_gain = 0.8;
+          float integrator_limit = 0.05;
+
+          for (uint8_t i = 0; i < 4; i++)
+          {
+
+
+
+     
+
+            // Set control gains if changed
+            lambda = kd;
+            beta = kp;
+            I_gain = ki;
+
+            // Cache variables
+            float d = range.kf_d[i];
+            float v = range.kf_v[i];
+
+            // Compute errors
+            float d_err = d_sp - d;
+
+            // sliding mode controller with integrator action
+            integral_error += d_err * dt;
+
+            // Manually limit integral error
+            if (integral_error > integrator_limit)
+                integral_error = integrator_limit;
+            else if (integral_error < -integrator_limit)
+                integral_error = -integrator_limit;
+
+
+
+            // Controller ouput with distance and velocity feedback
+            float s = -lambda * v + beta * d_err + I_gain * integral_error;
+            float sign_s = (s > 0) - (s < 0);
+
+            float current = std::sqrt(((m * d * d) / (2.0 * k)) * std::abs(s)) * sign_s;
+
+            // Manually clip current
+            if (current > 2.0)
+              current = 2.0;
+            else if (current < -2.0)
+              current = -2.0;
+
+            #ifdef SAT_B
+              current = abs(current);
+            #endif
+
+            tx.i[i] = current;
+           }
+
+            break;
+          }
+          
+        case DOCK_STATE_LATCH:
+
+        {
+          int sign = 1;
+
+          #ifdef SAT_B
+            sign = -1;
+          #endif
+
+          tx = (dock_t){
+                .dt = (float)(dt * 1000.0),
+                .i = {sign * latch_current_ma, sign * latch_current_ma,
+                      sign * latch_current_ma, sign * latch_current_ma},
+                .stop = {false, false, false, false},
+                .stop_all = false,
+                .is_docking = true};
+
+          break;
+        }
+            
+           
+
+        case DOCKING_SUCCESS:
+            
+            break;
+
+        case UNDOCK_SUCCESS:
+            
+            break;
+
+        case DOCK_STATE_ABORT:
+
+          tx = (dock_t){
+              .dt = (float)(dt * 1000.0),
+              .i = {0.0, 0.0, 0.0, 0.0},
+              .stop = {true, true, true, true},
+              .stop_all = true,
+              .is_docking = false};
+           
+            break;
+
+        default:
+            break;
+    }
+    tx.state = state;
+    topic_dock.publish(tx);
 }
 
 // Produce current set-points to the coils based on input state and KF estimates
@@ -244,18 +413,6 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
 
   switch (state)
   {
-
-  case DOCK_STATE_REPEL:
-  {
-    // Apply reverse current to repel
-    for (int i = 0; i < 4; ++i)
-        tx.i[i] = REPEL_CURRENT_MA;
-
-    topic_dock.publish(tx);
-    suspendCallerUntil(NOW() + REPEL_DURATION_MS * MILLISECONDS);
-    break;
-  }
-
   case DOCK_STATE_IDLE:
   {
     tx = (dock_t){
@@ -288,11 +445,11 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
     for (uint8_t i = 0; i < 4; i++)
     {
       // If one of the corner is early to set-point, proceed with latching
-     /* if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
+      if (range.kf_d[i] < DOCK_CONTROL_DISTANCE_SP_MM)
       {
         tx.i[i] = DOCK_LATCH_CURRENT_mA;
         continue; // Skip control for this magnet
-      }*/
+      }
 
       // Set control gains if changed
       pi[i].set_kp(kp);
@@ -355,8 +512,8 @@ void dock::fsm_execute(const enum dock_state state, const range_t range, const f
 
     tx = (dock_t){
         .dt = (float)(dt * 1000.0),
-        .i = { unlatch_current_ma, unlatch_current_ma,
-               unlatch_current_ma,  unlatch_current_ma},
+        .i = {sign * unlatch_current_ma, sign * unlatch_current_ma,
+              sign * unlatch_current_ma, sign * unlatch_current_ma},
         .stop = {false, false, false, false},
         .stop_all = false,
         .is_docking = true};
@@ -419,22 +576,25 @@ void dock::run()
   TIME_LOOP(THREAD_START_DOCK_MILLIS, period_ms * MILLISECONDS)
   {
     cb_range.getOnlyIfNewData(rx_range);
+
     if (cb_tcmd.getOnlyIfNewData(rx_tcmd))
     {
       handle_telecommands(rx_tcmd);
     }
 
-    float dt = (NOW() - timekeeper) / SECONDS;
-    timekeeper = NOW();
+    int64_t timeNow = NOW();
+    float dt = (timeNow - timekeeper) / (float)SECONDS;
+    timekeeper = timeNow;
 
-    fsm_current_state = fsm_state_transition(fsm_current_state, rx_range);
-    fsm_execute(fsm_current_state, rx_range, dt);
+    fsm_current_state = fsm_state_transition(fsm_current_state, rx_range, d_sp);
+    //fsm_execute(fsm_current_state, rx_range, dt);
+    fsm_execute2(fsm_current_state, rx_range, dt);
 
-    if (fsm_last_state != fsm_current_state)
-    {
+    //if (fsm_last_state != fsm_current_state)
+    //{
       // fsm_print_state(fsm_current_state);
-      fsm_last_state = fsm_current_state;
-    }
+      //fsm_last_state = fsm_current_state;
+    //}
   }
 }
 

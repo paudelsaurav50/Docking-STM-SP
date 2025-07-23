@@ -63,7 +63,8 @@ enum dock_state
   DOCK_STATE_LATCH,   // Extra push to overcome latch friction
   DOCK_STATE_UNLATCH, // Repel latched satellites
   DOCK_STATE_ABORT,    // Abort the docking sequence under unsafe conditions
-  DOCK_STATE_REPEL  // New state for tip-touch repulsion
+  DOCKING_SUCCESS,
+  UNDOCK_SUCCESS
 };
 
 // This is a proposal. Not implemented yet.

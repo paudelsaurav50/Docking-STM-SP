@@ -4,15 +4,17 @@
 #ifndef _SAT_CONFIG_H_
 #define _SAT_CONFIG_H_
 
-#define GOLD_SAT  //The TOF and EM alignment is set by this at platform.cpp
-
 // Docking parameters
-#define DOCK_LATCH_CURRENT_mA 2000
-#define DOCK_UNLATCH_CURRENT_mA -2000
+#define DOCK_LATCH_CURRENT_mA 1000
+#define DOCK_UNLATCH_CURRENT_mA -1000
 #define DOCK_CAPTURE_CURRENT_mA 2000
 #define DOCK_CONTROL_VELOCITY_SP 0.0
-#define DOCK_CONTROL_DISTANCE_SP_MM 50
-#define DOCK_CONTROL_LATCH_UNLATCH_DISTANCE_SP_MM 25
+#define DOCK_CONTROL_DISTANCE_SP_MM 20
+#define DOCK_LATCH_DISTANCE_MM 50
+#define DOCK_DISTANCE_MM 25
+#define SETTLE_DISTANCE_TOLERANCE_MM 10
+
+
 // Parameters of the electromagnet
 #define COIL_PARAM_u0 1.25663706127e-6 // Vacuum permeability [N/A^2]
 #define COIL_PARAM_N 100               // Number of turns
@@ -54,15 +56,15 @@
 #define KF1D_MAX_TOF_ERROR 4
 
 // ToF sensor
-#define TOF_MAX_LENGTH_MM 200
+#define TOF_MAX_LENGTH_MM 400
 #define TOF_MIN_LENGTH_MM 0
 
- #define TOF_I2C_HAL_IDX I2C_IDX3
- #define TOF_I2C_HAL_GPIO_SCL GPIO_008 // PA8
- #define TOF_I2C_HAL_GPIO_SDA GPIO_041 // PC9
-//#define TOF_I2C_HAL_IDX I2C_IDX1
-//#define TOF_I2C_HAL_GPIO_SCL GPIO_022 // PB6
-//#define TOF_I2C_HAL_GPIO_SDA GPIO_023 // PB7
+// #define TOF_I2C_HAL_IDX I2C_IDX3
+// #define TOF_I2C_HAL_GPIO_SCL GPIO_008 // PA8
+// #define TOF_I2C_HAL_GPIO_SDA GPIO_041 // PC9
+#define TOF_I2C_HAL_IDX I2C_IDX1
+#define TOF_I2C_HAL_GPIO_SCL GPIO_022 // PB6
+#define TOF_I2C_HAL_GPIO_SDA GPIO_023 // PB7
 #define TOF_I2C_HAL_FREQUENCY_HZ 400000
 #define TOF_I2C_ADDRESS 0x29
 #define TOF_I2C_MUX_ADDRESS 0x70
@@ -82,7 +84,7 @@
 // Electromagnet enable pin
 #define EM_ENABLE_PIN GPIO_056
 #define EM_SAFETY_THRESHOLD 50
-#define EM_SAFETY_INTERMEDIATE 50
+#define EM_SAFETY_INTERMEDIATE 20
 
 // PWMs for electromagnets
 #define EM_PWM_FREQUENCY 20000
@@ -106,12 +108,12 @@
 #define EM_ADC_IDX ADC_IDX1
 #define EM0_ADC_CH ADC_CH_012
 #define EM1_ADC_CH ADC_CH_013
-#define EM2_ADC_CH ADC_CH_011       
+#define EM2_ADC_CH ADC_CH_011
 #define EM3_ADC_CH ADC_CH_010
 
 // Periods of threads
 #define THREAD_PERIOD_TCMD_MILLIS 100
-#define THREAD_PERIOD_COIL_MILLIS 100
+#define THREAD_PERIOD_COIL_MILLIS 6
 #define THREAD_PERIOD_DOCK_MILLIS 20
 #define THREAD_PERIOD_RANGE_MILLIS 15
 #define THREAD_PERIOD_TELEM_MILLIS 50
